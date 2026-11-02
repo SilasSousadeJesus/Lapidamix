@@ -150,6 +150,7 @@ void LapidamixAudioProcessor::storeAnalysisResult (const lapidamix::AnalysisResu
 
     // A análise nova ainda não foi aplicada: o som continua como estava (D99).
     correctionIsApplied.store (false);
+    analysisWasApplied.store (false);
     ++resultVersion;
 }
 
@@ -181,6 +182,7 @@ void LapidamixAudioProcessor::applyCurrentCorrection()
     applyCorrectionPlan (plan);
     appliedIntensity.store (parameters.getRawParameterValue (intensityParameterId)->load());
     correctionIsApplied.store (true);
+    analysisWasApplied.store (true);
 }
 
 void LapidamixAudioProcessor::handleIntensityChange()
@@ -325,6 +327,7 @@ void LapidamixAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     auto state = parameters.copyState();
     state.setProperty ("correctionIsApplied", correctionIsApplied.load(), nullptr);
     state.setProperty ("appliedIntensity", appliedIntensity.load(), nullptr);
+    state.setProperty ("analysisWasApplied", analysisWasApplied.load(), nullptr);
 
     {
         // As medidas são salvas com o projeto, sem guardar áudio (D76).
@@ -355,8 +358,10 @@ void LapidamixAudioProcessor::setStateInformation (const void* data, int sizeInB
 
             correctionIsApplied.store (state.getProperty ("correctionIsApplied", false));
             appliedIntensity.store (state.getProperty ("appliedIntensity", 0.0f));
+            analysisWasApplied.store (state.getProperty ("analysisWasApplied", correctionIsApplied.load())); // Projetos antigos não têm.
             state.removeProperty ("correctionIsApplied", nullptr);
             state.removeProperty ("appliedIntensity", nullptr);
+            state.removeProperty ("analysisWasApplied", nullptr);
 
             parameters.replaceState (state);
             ++resultVersion;

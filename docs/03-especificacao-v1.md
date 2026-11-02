@@ -52,7 +52,7 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ Bypass, ganho de saída de ±12 dB e os controles de cada banda: liga/desliga, frequência, ganho e Q (D65). A passa-alta não tem ganho e tem Q fixo (D62).
 - ✅ Botão Analisar/Parar, indicador de status e resultados em texto (D69, D75).
 - ✅ Gráfico com o RTA simples e as duas médias; o RTA bonito fica para a interface final (D71, D74).
-- ✅ Lista de bandas pretendidas, explicação em texto, botão Aplicar e intensidade (Fase 4; D85, D92, D98, D99). Aplicar vira "Reaplicar análise"; botão Zerar; medidas atrás do botão Detalhes (D106, D107).
+- ✅ Lista de bandas pretendidas, explicação em texto, botão Aplicar e intensidade (Fase 4; D85, D92, D98, D99). Aplicar vira "Reaplicar análise" e só volta a "Aplicar" com uma análise nova; botão Zerar; medidas atrás do botão Detalhes (D106, D107, D109).
 - 🟡 Os parâmetros devem ser salvos com o projeto do DAW e automatizáveis. ✅ Exceção: a intensidade não é automatizável (D104).
 
 ## 5. Arquitetura técnica

@@ -16,6 +16,29 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fase 4: conferência no Reaper e fechamento
+
+**Fase:** 4 — Correção automática, concluída (D110)
+
+**O que foi feito:**
+- Resultados do usuário registrados em `08-plano-testes.md`: Ar de +1,5 dB no SM7dB, melhor que antes, sem incômodo com o chiado; LUFS certo; rolagem funcionando; "Não mexer" no SM57, em -38,3 dB.
+- SM57 registrado como caso de fronteira, a observar na Fase 5.
+- Botão corrigido: depois de aplicada a análise, continua "Reaplicar análise", mesmo depois de Zerar e ao reabrir; só volta a "Aplicar" com uma análise nova (D109).
+- Pendências revistas e Fase 4 fechada, como o usuário autorizou se não houvesse pendências.
+
+**Decisões tomadas:** D109, pedida pelo usuário; D110.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- A banda de ressonância não teve observação específica no A/B: ela deve agir só no SM57, com -2,2 dB, e o resultado foi "tudo certo". Não impede o critério da fase; ouvir um corte na Fase 5.
+- O texto corrigido do botão foi verificado sem DAW e ainda não foi visto no Reaper.
+- O Reaper estava aberto durante a compilação e prendeu o arquivo do plugin: a instalação falhou nessa tentativa.
+
+**Próximos passos:** o usuário autorizar a Fase 5.
+
+---
+
 ## 02/11/2026 — Fase 4: resultado do A/B, botões e simulação do Ar
 
 **Fase:** 4 — Correção automática (etapa c da D37, passo 6 de 6 da D99, com ajustes pedidos pelo usuário). A fase ainda não fechou.
@@ -33,7 +56,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D106 e D107, pedidas pelo usuário; D108, que confirma a P59 com o teto escolhido pelo usuário.
 
-**Commits:** `b64de41` e este commit.
+**Commits:** `b64de41`, `56855ec`.
 
 **Problemas / dúvidas:**
 - A primeira versão da medida de ruído dava um aviso falso de chiado no SM7dB. Foi corrigida antes do commit (`08-plano-testes.md`).

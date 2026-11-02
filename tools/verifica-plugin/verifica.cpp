@@ -351,14 +351,33 @@ static void testShortAnalysisAndState (const juce::AudioBuffer<float>& audio)
         juce::MessageManager::getInstance()->runDispatchLoopUntil (100);
         auto allOff = true;
         for (int band = 0; band < lapidamix::numEqBands; ++band) allOff = allOff && getValue (EqModule::getEnabledParameterId (band)) < 0.5f;
-        check (allOff && std::abs (getValue (LapidamixAudioProcessor::outputGainParameterId)) < 0.06f && applyButton->getButtonText() == "Aplicar",
-               "Botoes: Zerar desliga as 5 bandas, poe a Saida em 0 dB e o botao volta a Aplicar");
+        check (allOff && std::abs (getValue (LapidamixAudioProcessor::outputGainParameterId)) < 0.06f,
+               "Botoes: Zerar desliga as 5 bandas e poe a Saida em 0 dB");
+        check (applyButton->getButtonText() == juce::String::fromUTF8 ("Reaplicar análise"), "Botoes: depois de Zerar, o botao continua Reaplicar analise (D109)");
+
+        // O projeto reabre com o mesmo botão.
+        juce::MemoryBlock zeroedState;
+        processor->getStateInformation (zeroedState);
+        LapidamixAudioProcessor reopened;
+        reopened.setStateInformation (zeroedState.getData(), (int) zeroedState.getSize());
+        check (reopened.wasAnalysisApplied(), "Botoes: zerado e reaberto, o botao continua Reaplicar analise");
         processor->handleIntensityChange();
         setParameter (*processor, LapidamixAudioProcessor::intensityParameterId, 50.0f);
         processor->handleIntensityChange();
         check (getValue (EqModule::getEnabledParameterId (1)) < 0.5f, "Botoes: depois de Zerar, mover a intensidade nao religa as bandas");
         setParameter (*processor, LapidamixAudioProcessor::intensityParameterId, 100.0f);
         processor->handleIntensityChange();
+
+        // Reaplicar depois de Zerar traz a proposta de volta.
+        applyButton->triggerClick();
+        juce::MessageManager::getInstance()->runDispatchLoopUntil (100);
+        check (getValue (EqModule::getEnabledParameterId (1)) > 0.5f && std::abs (getValue (LapidamixAudioProcessor::outputGainParameterId) - compensation) < 0.06f,
+               "Botoes: Reaplicar depois de Zerar traz a proposta de volta");
+
+        // Só uma análise nova, ainda não aplicada, faz o botão voltar a "Aplicar".
+        analyseExactly (*processor, audio, (int) (60.0 * kRate));
+        juce::MessageManager::getInstance()->runDispatchLoopUntil (200);
+        check (applyButton->getButtonText() == "Aplicar", "Botoes: com uma analise nova, ainda nao aplicada, o botao volta a Aplicar (D109)");
     }
 
     editor.reset();

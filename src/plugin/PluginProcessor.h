@@ -75,7 +75,7 @@ public:
 
     // Desliga todas as bandas e volta a Saída a 0 dB. A análise continua guardada (D106).
     void clearCorrection();
-    bool isCorrectionApplied() const noexcept { return correctionIsApplied.load(); }
+    bool wasAnalysisApplied() const noexcept { return analysisWasApplied.load(); }
 
 private:
     void storeAnalysisResult (const lapidamix::AnalysisResult& result);
@@ -102,6 +102,9 @@ private:
     // A correção aplicada corresponde à última análise? Mover a intensidade só a refaz nesse caso.
     std::atomic<bool> correctionIsApplied { false };
     std::atomic<float> appliedIntensity { 0.0f };
+
+    // A última análise já foi aplicada alguma vez? Zerar não muda isso: só uma análise nova (D109).
+    std::atomic<bool> analysisWasApplied { false };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LapidamixAudioProcessor)
 };

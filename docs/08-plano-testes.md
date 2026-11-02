@@ -10,8 +10,8 @@
 | 1 — Plugin vazio | ✅ Os 5 passos da D53 passaram no Reaper | Nada |
 | 2 — EQ manual | ✅ Os 5 passos da D66 passaram no Reaper | Nada |
 | 3 — Análise | ✅ Fechada com exceções (D90): 39 de 42 medidas dentro da tolerância contra o Praat. Estalos, CPU no DAW e teste de ouvido em 4,8 kHz dispensados (D89) | Nada para fechar. Fica sem confirmação a causa do primeiro resultado do SM57 no Reaper |
-| 4 — Correção automática | 🔵 O A/B no Reaper passou nas duas gravações. Depois dele, Ar automático, botões e Detalhes passaram na verificação sem DAW (0 falhas) | O usuário conferir no Reaper o Ar, os botões e os Detalhes |
-| 5 — Várias vozes | ⚪ Não iniciada | Pelo menos 20 vozes diferentes (D38) e calibrar a faixa do Ar (D108) |
+| 4 — Correção automática | ✅ Concluída (D110): o A/B no Reaper passou nas duas gravações, e o Ar, os botões e os Detalhes foram conferidos no Reaper | Nada para fechar. O que ficou para ouvir passou para a Fase 5 |
+| 5 — Várias vozes | ⚪ Não iniciada | Pelo menos 20 vozes diferentes (D38); calibrar a faixa do Ar (D108); observar o SM57 na fronteira de -38 dB; ouvir a atenuação do Ar, o realce de +3 dB, a regra de chiado e um corte da banda de ressonância |
 | 6 — Fechamento da v1.0 | ⚪ Não iniciada | Critérios de "v1.0 pronta" em `03-especificacao-v1.md` |
 
 ## Material de teste
@@ -60,15 +60,49 @@
 | 02/11/2026 | SM7dB, com `verifica` e uma imagem da janela, sem DAW | 0.1.0 (passo 5 da Fase 4) | Dicionário da voz e explicações de cada banda | ✅ Todos os itens passaram; só as duas primeiras bandas aparecem sem rolar o texto | Feito por Claude. Rolagem não testada. Ver "Explicações das correções" |
 | 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, no Reaper | 0.1.0 (passo 5 da Fase 4) | A/B contra o bypass (passo 6 da D99) | ✅ Melhorou no SM7dB, a 100%; tudo certo no SM57. ⚠️ Faltou Ar no SM7dB (detalhes abaixo) | Teste feito e informado pelo usuário |
 | 02/11/2026 | SM7dB, com `verifica` e uma imagem da janela, sem DAW | 0.1.0 (com a D106 e a D107) | Botões Reaplicar e Zerar, medidas atrás de Detalhes e aviso de pouca voz | ✅ 0 falhas | Feito por Claude. Falta o usuário conferir no Reaper. Ver "Botões e Detalhes" |
-| 02/11/2026 | SM7dB, SM57, 72 janelas do VocalSet, curvas conhecidas e chiado gerado, com `verifica` e `banco ar`, sem DAW | 0.1.0 (com a D108) | Ar automático: quantidade, tetos, desconto do ruído, realce pela metade e avisos | ✅ 0 falhas. ⚠️ O realce pela metade só dispara em casos gerados | Feito por Claude. Falta o usuário conferir de ouvido no Reaper. Ver "Ar automático no plugin" e "Simulação do Ar automático" |
+| 02/11/2026 | SM7dB, SM57, 72 janelas do VocalSet, curvas conhecidas e chiado gerado, com `verifica` e `banco ar`, sem DAW | 0.1.0 (com a D108) | Ar automático: quantidade, tetos, desconto do ruído, realce pela metade e avisos | ✅ 0 falhas. ⚠️ O realce pela metade só dispara em casos gerados | Feito por Claude. Ver "Ar automático no plugin" e "Simulação do Ar automático" |
+| 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, no Reaper | 0.1.0 (com a D108) | Ar, LUFS, chiado, rolagem do texto e botões | ✅ Ar de +1,5 dB no SM7dB, melhor que antes; "Não mexer" no SM57. ⚠️ Botão depois de Zerar corrigido no registro seguinte | Teste feito e informado pelo usuário. Ver "Conferência no Reaper do Ar e dos botões" |
+| 02/11/2026 | SM7dB, com `verifica`, sem DAW | 0.1.0 (com a D109) | Texto do botão depois de Zerar, ao reabrir e com análise nova | ✅ 0 falhas | Feito por Claude. Não conferido no Reaper. Ver "Conferência no Reaper do Ar e dos botões" |
 
 ## Fase 4 — Correção automática
 
-Em andamento (D93).
+Concluída (D110).
+
+### Conferência no Reaper do Ar e dos botões (D108, D109, 02/11/2026)
+
+Feita e informada pelo usuário.
+
+| Item | SM7dB | SM57 |
+|---|---|---|
+| Proposta do Ar | +1,5 dB | "Não mexer": 38,3 dB abaixo da região média; o aceito vai de 54,0 a 38,0 dB abaixo |
+| Som | ✅ Bom, melhor que antes | Sem observação separada |
+| Chiado | ✅ Não incomodou | Sem observação separada |
+| LUFS com o plugin e com o Bypass | ✅ Tudo certo (valores não informados) | Sem observação separada |
+| Rolagem do texto | ✅ Funcionou | — |
+
+**Diferenças em relação à verificação sem DAW:** SM7dB, +1,5 dB em vez de +1,6 dB; SM57, -38,3 dB em vez de -38,4 dB. São diferenças de 0,1 dB, e a causa não foi investigada.
+
+**SM57, caso de fronteira, a observar na Fase 5:** a medida fica só 0,3 dB dentro do limite de -38 dB, que é provisório. Com a ação mínima de 1 dB, a atenuação só começa em -37 dB. Sem DAW, as janelas com pausa do SM57 variam de -38,4 a -38,8 dB. Um ajuste pequeno nesse limite mudaria a decisão nessa voz.
+
+**Botões:** tudo funcionou, com uma inconsistência: depois de Zerar, o botão voltava de "Reaplicar análise" para "Aplicar". **Corrigido (D109)** e verificado com `verifica`, sem DAW, com 0 falhas:
+
+| Item | Resultado |
+|---|---|
+| Depois de Zerar | ✅ Continua "Reaplicar análise" |
+| Zerado, salvo e reaberto | ✅ Continua "Reaplicar análise" |
+| Reaplicar depois de Zerar | ✅ A proposta e a compensação voltam |
+| Mover a intensidade depois de Zerar | ✅ Não religa as bandas |
+| Análise nova, ainda não aplicada | ✅ Volta a "Aplicar" |
+
+O texto corrigido do botão ainda não foi visto no Reaper.
+
+**O que passou para a Fase 5:**
+- A atenuação do Ar, o realce de +3 dB e a regra de chiado nunca foram ouvidos, e o limite de -50 dB continua sendo suposição.
+- **Banda de ressonância:** sem DAW, ela corta -2,2 dB em 4941 Hz na primeira janela do SM57 e nada no SM7dB. A validação de ouvido (D85, D88) ficou só no A/B geral do SM57, "tudo certo", sem observação específica sobre essa banda.
 
 ### Ar automático no plugin (D108, 02/11/2026)
 
-Verificado por Claude, sem DAW, com `verifica` (0 falhas) e `banco ar`, que agora usa a análise e a regra reais. **Falta o usuário conferir de ouvido no Reaper.** Limites de -54 e -38 dB provisórios, a calibrar na Fase 5.
+Verificado por Claude, sem DAW, com `verifica` (0 falhas) e `banco ar`, que agora usa a análise e a regra reais. Conferido depois pelo usuário: ver "Conferência no Reaper do Ar e dos botões". Limites de -54 e -38 dB provisórios, a calibrar na Fase 5.
 
 | Material, janelas de 30 s | O que o Ar faz | Chiado contra a voz |
 |---|---|---|
@@ -145,7 +179,7 @@ Feita com a primeira versão de `banco ar`, antes de mudar o plugin, em janelas 
 
 ### Botões e Detalhes (D106, D107, 02/11/2026)
 
-Verificado por Claude, sem DAW, com `verifica` (0 falhas) e uma imagem da janela (`captura`). Falta o usuário conferir no Reaper.
+Verificado por Claude, sem DAW, com `verifica` (0 falhas) e uma imagem da janela (`captura`). Conferido depois pelo usuário, e o texto do botão depois de Zerar mudou (D109): ver "Conferência no Reaper do Ar e dos botões".
 
 | Item | Resultado |
 |---|---|

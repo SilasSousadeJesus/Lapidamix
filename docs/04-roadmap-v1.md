@@ -8,7 +8,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 | 1 | Ambiente e plugin "vazio" | ✅ Concluída (02/11/2026) |
 | 2 | EQ manual | ✅ Concluída (02/11/2026) |
 | 3 | Análise (só medir) | ✅ Concluída (02/11/2026), com exceções registradas (D90) |
-| 4 | Correção automática | 🔵 Em andamento (autorizada em 02/11/2026 — D93): proposta aprovada (D94 a D102) e os 6 passos feitos, com A/B aprovado pelo usuário. Antes de fechar: conferir no Reaper botões e Detalhes (D106, D107) e o Ar automático (D108) |
+| 4 | Correção automática | ✅ Concluída (02/11/2026 — D110) |
 | 5 | Testes com várias vozes | ⚪ Não iniciada |
 | 6 | Fechamento da v1.0 | ⚪ Não iniciada |
 
@@ -40,7 +40,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** na minha voz, o resultado soa melhor que o original no teste A/B.
 
 ## Fase 5 — Testes com várias vozes
-- **Entregas:** testes com vozes graves, agudas, masculinas, femininas e microfones diferentes; ajuste fino das regras.
+- **Entregas:** testes com vozes graves, agudas, masculinas, femininas e microfones diferentes; ajuste fino das regras. Calibrar a faixa do Ar (-54 e -38 dB) e observar o SM57, que ficou na fronteira, em -38,3 dB (D108, D110).
 - **Pronto quando:** os critérios de `08-plano-testes.md` forem atendidos.
 
 ## Fase 6 — Fechamento da v1.0

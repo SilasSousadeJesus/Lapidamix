@@ -306,7 +306,8 @@ void LapidamixAudioProcessorEditor::updatePlanText()
 void LapidamixAudioProcessorEditor::updateApplyButton()
 {
     // Depois de aplicar, o mesmo botão desfaz os ajustes à mão e volta à proposta (D106).
-    applyButton.setButtonText (audioProcessor.isCorrectionApplied() ? utf8 ("Reaplicar análise") : utf8 ("Aplicar"));
+    // Continua assim depois de Zerar; só uma análise nova o faz voltar a "Aplicar" (D109).
+    applyButton.setButtonText (audioProcessor.wasAnalysisApplied() ? utf8 ("Reaplicar análise") : utf8 ("Aplicar"));
 }
 
 void LapidamixAudioProcessorEditor::setUpLabel (juce::Label& label, const char* text)
