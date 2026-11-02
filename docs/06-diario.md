@@ -26,12 +26,13 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** nenhuma nova.
 
-**Commits:** nenhum até aqui nesta fase; as mudanças aguardam commit.
+**Commits:** `e4adbce` (Fase 2 completa) e "Fase 2: registra o commit no diário e no estado atual (D57)", que traz esta correção.
 
-**Problemas / dúvidas:** o resultado em 44,1 e 96 kHz foi avaliado no analisador, sem medição numérica da diferença entre as taxas.
+**Problemas / dúvidas:**
+- O resultado em 44,1 e 96 kHz foi avaliado no analisador, sem medição numérica da diferença entre as taxas.
+- O commit `e4adbce` levou o estado atual e o diário ainda dizendo "sem commit", contra a D57; o commit seguinte corrige isso.
 
 **Próximos passos:**
-- Fazer o commit da Fase 2.
 - A Fase 3 só começa quando o usuário autorizar, pela etapa de estudo da análise (D37, D38).
 
 ---

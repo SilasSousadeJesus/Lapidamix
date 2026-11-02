@@ -26,6 +26,7 @@ Nenhum bloqueio técnico. A Fase 3 depende da autorização do usuário.
 
 | Commit | O que fez |
 |---|---|
+| `e4adbce` | EQ manual de 5 bandas e conclusão da Fase 2 (D58 a D66) |
 | `b0548ff` | Documentos evoluem junto com o trabalho (D57) |
 | `48724f0` | Regras movidas para o `AGENTS.md` (D56) |
 | `a7d04e9` | Contexto vivo do projeto (D54, D55) |
@@ -33,4 +34,4 @@ Nenhum bloqueio técnico. A Fase 3 depende da autorização do usuário.
 | `9b8b9cc` | Nome definitivo Lapidamix e README |
 | `ccf7d79` | Licença AGPLv3 e arquivo `LICENSE` |
 
-A Fase 2 (estudo, proposta, código e testes do EQ) ainda não tem commit; veja `git status`.
+O commit que traz esta versão do arquivo vem logo depois do `e4adbce`; veja `git log`.
