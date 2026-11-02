@@ -17,7 +17,7 @@ Código aberto de terceiros (bibliotecas, exemplos) pode ser usado se a licença
 
 | Referência | Uso | Observação |
 |---|---|---|
-| JUCE (C++) | Framework para construir o plugin (VST3/AU/AAX) | Uso aprovado (D26). Opções de licença: AGPLv3 (código aberto) ou licença comercial, conforme o [LICENSE.md do JUCE](https://raw.githubusercontent.com/juce-framework/JUCE/master/LICENSE.md), consultado em 01/11/2026. Confirmar termos ao decidir a A02 (D22) |
+| JUCE (C++) | Framework para construir o plugin (VST3/AU/AAX) | Uso aprovado (D26). Opções de licença: AGPLv3 (código aberto) ou licença comercial, conforme o [LICENSE.md do JUCE](https://raw.githubusercontent.com/juce-framework/JUCE/master/LICENSE.md), consultado em 01/11/2026. Confirmar termos ao decidir a A02 (D41) |
 | Matchering (Python) | Matemática de comparação de espectro com um alvo | Licença GPL. Estudar os princípios é permitido; usar o código só com licença compatível, crédito ao autor, aprovação do usuário e registro em `02-decisoes.md` (D39) |
 | VST3 SDK (Steinberg) | Formato do plugin | Usado através do JUCE |
 

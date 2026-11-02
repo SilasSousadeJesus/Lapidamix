@@ -6,13 +6,13 @@ Este arquivo orienta o Claude Code neste projeto. Leia-o inteiro antes de qualqu
 
 **Assistente de mixagem capaz de mixar qualquer instrumento**, em forma de plugin de insert para DAWs. **Não é um plugin de voz:** a voz é só o primeiro instrumento, por questão de escopo (D17, D18).
 
-A primeira versão (v1.0) analisa uma trilha de voz e aplica automaticamente um **EQ corretivo, estático e suave**, adaptado àquela voz. Uso pessoal primeiro; depois será um projeto aberto.
+A primeira versão (v1.0) analisa uma trilha de voz e aplica automaticamente um **EQ corretivo, estático e suave**, adaptado àquela voz. O repositório é público desde 02/11/2026 (D40); o plugin é para uso pessoal primeiro e, depois de testado, para qualquer pessoa usar.
 
 Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 0 — Planejamento: concluída.** A Fase 1 ainda não começou. Nenhum código de plugin deve ser escrito até o usuário pedir explicitamente o início da Fase 1. Veja `docs/04-roadmap-v1.md`.
+**Fase 0 — Planejamento: concluída.** A Fase 1 ainda não começou. Nenhum código de plugin deve ser escrito até o usuário pedir explicitamente o início da Fase 1. A licença (A02) precisa ser decidida antes do primeiro commit com código da Fase 1 (D41). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 

@@ -13,7 +13,7 @@ Um plugin de insert (como os da Waves) que, colocado na trilha, analisa o áudio
 ## Para quem
 
 1. **Agora:** uso pessoal.
-2. **Futuro próximo, depois de testado:** projeto aberto, para qualquer pessoa usar.
+2. **Futuro próximo, depois de testado:** plugin para qualquer pessoa usar. O repositório já é público desde 02/11/2026, antecipando a parte de "aberto" (D40).
 
 Não há objetivo comercial. O foco não é se diferenciar de produtos existentes, é fazer algo **bom e funcional**.
 

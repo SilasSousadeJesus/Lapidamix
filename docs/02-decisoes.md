@@ -17,7 +17,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D09 | 01/11/2026 | **Regra de ouro do tempo real:** nada dentro do `processBlock()` pode bloquear a thread de áudio (sem prints, sem alocação de memória, sem acesso a disco) | Evitar estalos e travamentos |
 | D10 | 01/11/2026 | Objetivo sonoro: tirar embolamento, trazer clareza e presença, **sem cortes agressivos** | Problema real: voz grave escura/embolada no SM7dB |
 | D11 | 01/11/2026 | Não haverá mixagem por estilo musical por enquanto | Foco na voz em si |
-| D12 | 01/11/2026 | Uso pessoal primeiro; depois de testado, **projeto aberto** para todos | Sem objetivo comercial |
+| D12 | 01/11/2026 | **Parte de "aberto" antecipada pela D40.** Uso pessoal primeiro; depois de testado, **projeto aberto** para todos | Sem objetivo comercial |
 | D13 | 01/11/2026 | O foco é ser **bom e funcional**, não se diferenciar. Usar outros projetos como referência é bem-vindo | Não reinventar a roda |
 | D14 | 01/11/2026 | O plugin **não usa uma voz como molde**: analisa a voz recebida e adapta a correção a ela | Precisa funcionar com qualquer voz |
 | D15 | 01/11/2026 | Plataforma de desenvolvimento: **Windows** | Meu computador |
@@ -27,7 +27,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D19 | 01/11/2026 | **Versões:** a v1.0 é o EQ da voz. As versões 1.1, 1.2 etc. adicionam um processador por vez até fechar a cadeia de sinal da voz | Validar cada processador antes de adicionar o próximo |
 | D20 | 01/11/2026 | **Requisito de arquitetura:** o projeto precisa de um padrão que permita adicionar instrumentos e processadores sem refazer o que existe. O modelo está na D30 | O projeto vai crescer por instrumento e por processador |
 | D21 | 01/11/2026 | O DAW de testes é o **Reaper** (responde A01) | Escolha do usuário |
-| D22 | 01/11/2026 | A escolha da licença (A02) **fica para o futuro e não impede o desenvolvimento** | Premissa real: não é um projeto comercial (D12) |
+| D22 | 01/11/2026 | **Substituída pela D41.** A escolha da licença (A02) **fica para o futuro e não impede o desenvolvimento** | Premissa real: não é um projeto comercial (D12) |
 | D23 | 01/11/2026 | A03 (explicar cada ajuste) sai das perguntas em aberto e fica só em `05-ideias-futuro.md` | Fora do escopo atual |
 | D24 | 01/11/2026 | A pasta `docs/` é a **fonte da verdade**; o Google Drive fica só com a versão original (confirma P10) | Evita duas versões divergentes |
 | D25 | 01/11/2026 | **As regras são fixas, mas o resultado se adapta à voz/instrumento analisado.** Substitui D06 | Deixa claro que regras fixas não contradizem a D14. Estilos musicais seguem de fora (D11) e faixa de referência segue fora do escopo (`03-especificacao-v1.md`, seção 6) |
@@ -37,7 +37,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D29 | 01/11/2026 | Versionar o projeto com **Git** desde o início (confirma P11) | Histórico e possibilidade de desfazer mudanças |
 | D30 | 01/11/2026 | **Modelo de arquitetura:** núcleo comum (análise, EQ, limites de segurança) + perfis de instrumento + processadores como módulos encaixáveis. Na v1 o usuário escolhe o instrumento numa lista que só tem "Voz" (confirma P13) | Forma de cumprir a D20 |
 | D31 | 01/11/2026 | As **propostas essenciais da Fase 0** eram P01, P02, P09, P11 e P13. As demais (P03 a P08, P12, P14) serão decididas nas fases em que forem usadas | Define o critério de "pronto" da Fase 0 |
-| D32 | 02/11/2026 | O repositório fica na conta do GitHub `SilasSousadeJesus`, como **privado** | O projeto só abre depois de testado (D12) |
+| D32 | 02/11/2026 | **Substituída pela D40.** O repositório fica na conta do GitHub `SilasSousadeJesus`, como **privado** | O projeto só abre depois de testado (D12) |
 | D33 | 02/11/2026 | A **gravação da voz de teste** sai da Fase 0 e entra nas entregas da Fase 3 | Ela só é usada na análise |
 | D34 | 02/11/2026 | A04 (segundos de análise) fica **adiada para a Fase 3** | A fase em que a análise é construída |
 | D35 | 02/11/2026 | **"Mixing Assistant" é o nome provisório**; o nome definitivo (A05) será decidido na abertura do projeto | Não precisa ser decidido agora |
@@ -45,6 +45,8 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D37 | 02/11/2026 | **Esclarecida pela D39 quanto a código.** **Método de trabalho:** antes de implementar cada módulo novo (processador, análise ou perfil de instrumento), seguir 4 etapas: **(a) Estudo:** pesquisar plugins de referência, manuais, documentação pública e princípios de DSP, e escrever uma nota curta em `07-referencias.md`, separando o que é fato do que é suposição sobre o funcionamento interno de produtos fechados. **(b) Proposta:** propor como será o nosso módulo com base no estudo e esperar a aprovação do usuário. **(c) Implementação própria**, dentro da arquitetura da D30. **(d) Teste no Reaper e ajuste.** **Limites:** estudar documentação pública e princípios é permitido; não copiar código, interface visual nem presets, não usar nomes de marcas no nosso produto e não desmontar plugins originais | Aprender com o que existe, mantendo uma implementação própria |
 | D38 | 02/11/2026 | **Ajustes no roadmap.** Fase 1: inclui a estrutura da arquitetura (núcleo comum, perfis e módulos, ainda vazios) e a lista de instrumentos só com "Voz". Fase 2: o EQ entra como o primeiro módulo da arquitetura, começando pela etapa de estudo, e pode usar qualquer gravação de voz que o usuário já tenha. Fase 3: começa pela etapa de estudo da análise e usa de 3 a 5 vozes bem diferentes; as 20 vozes continuam na Fase 5 | Resolve os pontos soltos encontrados na revisão do roadmap e aplica a D37 |
 | D39 | 02/11/2026 | **Esclarece a D37:** "não copiar código" vale para os plugins de referência (produtos fechados). **Código aberto de terceiros** (bibliotecas, exemplos) pode ser usado se a licença for compatível, com crédito ao autor; cada caso precisa da aprovação do usuário e de registro neste arquivo. O JUCE já está aprovado (D26) | Evita reescrever o que já existe em código aberto, mantendo controle sobre cada uso |
+| D40 | 02/11/2026 | O repositório no GitHub (https://github.com/SilasSousadeJesus/MixingAssistant) é **público desde 02/11/2026**. Isso antecipa a parte de "aberto" da D12. Substitui a D32 | Decisão do usuário |
+| D41 | 02/11/2026 | A licença (A02) **precisa ser decidida antes do primeiro commit com código da Fase 1**. Substitui a D22 | O repositório já é público (D40); a licença deixa de ser adiada sem prazo |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -76,7 +78,7 @@ Serão decididas nas fases em que forem usadas (D31).
 
 | # | Pergunta |
 |---|---|
-| A02 | Qual licença de código aberto usar? **Adiada (D22):** precisa ser decidida no futuro, mas não impede o desenvolvimento |
+| A02 | Qual licença de código aberto usar? **Prazo (D41):** precisa ser decidida antes do primeiro commit com código da Fase 1 |
 | A04 | Quantos segundos de análise são necessários? **Adiada para a Fase 3 (D34)** |
 | A05 | Nome definitivo do plugin. **"Mixing Assistant" é provisório; decidir na abertura do projeto (D35)** |
 

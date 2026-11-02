@@ -15,6 +15,26 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Repositório público e prazo da licença
+
+**Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Registrado que o repositório é público desde 02/11/2026; visibilidade conferida no GitHub.
+- A licença (A02) ganhou prazo: antes do primeiro commit com código da Fase 1.
+
+**Decisões tomadas:** D40 (substitui D32) e D41 (substitui D22).
+
+**Problemas / dúvidas:**
+- O repositório é público, mas ainda não tem licença.
+- A05 (nome) estava ligada à "abertura do projeto" (D35), que agora foi antecipada em parte; falta definir se isso muda o momento de decidir o nome.
+
+**Próximos passos:**
+- Decidir a licença (A02).
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
 ## 02/11/2026 — Esclarecimento sobre código de terceiros
 
 **Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
