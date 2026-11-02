@@ -23,6 +23,7 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **Voz seca** — gravação sem nenhum efeito aplicado.
 
 ## Plugins e software
+- **Lapidamix** — nome deste projeto: lapidar + mix, revelar o brilho que já existe no som, sem destruir o timbre (D45).
 - **DAW** — programa de gravação e mixagem (Reaper, Pro Tools etc.).
 - **Plugin de insert** — efeito colocado diretamente numa trilha, processando todo o áudio dela.
 - **VST3 / AU / AAX** — formatos de plugin. VST3: maioria dos DAWs no Windows. AU: Mac. AAX: Pro Tools.

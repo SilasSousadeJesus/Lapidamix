@@ -15,6 +15,61 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Nome definitivo: Lapidamix
+
+**Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Prumix descartado pela semelhança com o "ProMix Bundle".
+- Busca complementar por Lapidamix e nomes parecidos, sem conflito com a D43.
+- Nome Lapidamix aplicado aos documentos, ao `CLAUDE.md` e ao `README.md`. O histórico de decisões e do diário ficou como estava.
+- Repositório renomeado no GitHub pelo usuário e endereço atualizado no computador: https://github.com/SilasSousadeJesus/Lapidamix
+
+**Decisões tomadas:** D45 (substitui D44).
+
+**Problemas / dúvidas:** a pasta do Google Drive continua se chamando "Mixing Assistant".
+
+**Próximos passos:**
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
+## 02/11/2026 — Nome definitivo: Prumix
+
+**Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Nome Prumix registrado, A05 encerrada e documentos atualizados. O histórico de decisões e do diário ficou como estava.
+- Criado o `README.md`.
+
+**Decisões tomadas:** D44.
+
+**Problemas / dúvidas:**
+- A verificação complementar encontrou nomes de áudio parecidos, como "ProMix Bundle" e "pMix"; ver D44.
+- A pasta do Google Drive continua se chamando "Mixing Assistant".
+
+**Próximos passos:**
+- O usuário vai renomear o repositório no GitHub para Prumix; depois, atualizar o endereço no computador.
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
+## 02/11/2026 — Prazo e critério do nome
+
+**Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Definido quando e como escolher o nome definitivo, resolvendo a dúvida da entrada anterior; incluído nas entregas da Fase 6.
+
+**Decisões tomadas:** D43 (substitui D35).
+
+**Problemas / dúvidas:** nenhum no momento.
+
+**Próximos passos:**
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
 ## 02/11/2026 — Escolha da licença
 
 **Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.

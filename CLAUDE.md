@@ -1,10 +1,10 @@
-# CLAUDE.md — Mixing Assistant
+# CLAUDE.md — Lapidamix
 
 Este arquivo orienta o Claude Code neste projeto. Leia-o inteiro antes de qualquer tarefa.
 
 ## O projeto em uma frase
 
-**Assistente de mixagem capaz de mixar qualquer instrumento**, em forma de plugin de insert para DAWs. **Não é um plugin de voz:** a voz é só o primeiro instrumento, por questão de escopo (D17, D18).
+**Lapidamix** é um **assistente de mixagem capaz de mixar qualquer instrumento**, em forma de plugin de insert para DAWs. **Não é um plugin de voz:** a voz é só o primeiro instrumento, por questão de escopo (D17, D18).
 
 A primeira versão (v1.0) analisa uma trilha de voz e aplica automaticamente um **EQ corretivo, estático e suave**, adaptado àquela voz. O repositório é público desde 02/11/2026 (D40); o plugin é para uso pessoal primeiro e, depois de testado, para qualquer pessoa usar.
 

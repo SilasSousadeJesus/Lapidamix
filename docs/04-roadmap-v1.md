@@ -13,7 +13,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 | 6 | Fechamento da v1.0 | ⚪ Não iniciada |
 
 ## Fase 0 — Planejamento
-- **Entregas:** documentação do projeto (feito); pasta do projeto com `CLAUDE.md` e `docs/` (feito); decisões em aberto resolvidas ou adiadas (`02-decisoes.md`): licença A02 (D42), segundos de análise A04 (D34) e nome A05 (D35) (feito).
+- **Entregas:** documentação do projeto (feito); pasta do projeto com `CLAUDE.md` e `docs/` (feito); decisões em aberto resolvidas ou adiadas (`02-decisoes.md`): licença A02 (D42), segundos de análise A04 (D34) e nome A05 (D45) (feito).
 - **Propostas essenciais (D31):** P01 (JUCE), P02 (VST3), P09 (separação tempo real/análise), P11 (Git) e P13 (núcleo comum + perfis + módulos). ✅ Todas confirmadas (D26 a D30).
 - **Demais propostas:** P03 a P08, P12 e P14 serão decididas nas fases em que forem usadas; não impedem o fechamento da Fase 0.
 - **Pronto quando:** propostas essenciais confirmadas (feito). A gravação da voz de teste passou para a Fase 3 (D33).

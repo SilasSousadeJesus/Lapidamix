@@ -1,6 +1,6 @@
 # 03 - Especificação da v1.0
 
-**Resumo:** primeira versão do assistente de mixagem (D17, D19): plugin de insert para uma trilha de voz que analisa o áudio e aplica automaticamente um EQ corretivo, estático e suave, adaptado àquela voz. A voz é só o primeiro instrumento.
+**Resumo:** primeira versão do Lapidamix, o assistente de mixagem (D17, D19): plugin de insert para uma trilha de voz que analisa o áudio e aplica automaticamente um EQ corretivo, estático e suave, adaptado àquela voz. A voz é só o primeiro instrumento.
 
 Legenda: ✅ Decidido · 🟡 Proposta · ❓ Em aberto
 

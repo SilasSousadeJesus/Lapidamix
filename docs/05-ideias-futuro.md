@@ -33,7 +33,7 @@ Entram nas versões 1.1, 1.2 etc., até fechar a cadeia de sinal da voz (D19). A
 - Mac (AU).
 
 ## Abertura do projeto
-- Escolher o nome definitivo; "Mixing Assistant" é provisório (A05, D35).
+- Nome definitivo: Lapidamix (A05, D45).
 - Licença de código aberto: AGPLv3 (A02, D42).
 - Repositório já público no GitHub desde 02/11/2026 (D40).
 - Guia de instalação e uso para outras pessoas.

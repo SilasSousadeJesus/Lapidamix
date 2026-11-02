@@ -1,6 +1,6 @@
 # 00 - Índice do Projeto
 
-Assistente de mixagem capaz de mixar qualquer instrumento, em forma de plugin de insert para DAWs. A voz é só o primeiro instrumento, por questão de escopo (D17): a v1.0 é o EQ corretivo da voz, e o projeto cresce um processador e um instrumento por vez (D18, D19).
+**Lapidamix** é um assistente de mixagem capaz de mixar qualquer instrumento, em forma de plugin de insert para DAWs. A voz é só o primeiro instrumento, por questão de escopo (D17): a v1.0 é o EQ corretivo da voz, e o projeto cresce um processador e um instrumento por vez (D18, D19).
 
 **Status atual:** Fase 0 concluída; Fase 1 aguardando a autorização do usuário. Nenhum código de plugin escrito ainda. Repositório público desde 02/11/2026 (D40); licença AGPLv3 (D42).
 **Última atualização:** 02/11/2026
@@ -24,7 +24,7 @@ Assistente de mixagem capaz de mixar qualquer instrumento, em forma de plugin de
 | `08-plano-testes.md` | Como validar se o plugin funciona e soa bem | Ao definir testes e ao registrar resultados |
 | `09-glossario.md` | Termos técnicos explicados de forma simples | Sempre que surgir um termo novo |
 
-As regras de trabalho para o Claude Code estão em `CLAUDE.md`, na raiz do projeto.
+As regras de trabalho para o Claude Code estão em `CLAUDE.md`, e a apresentação do projeto está em `README.md`, ambos na raiz do projeto.
 
 ## Convenções
 

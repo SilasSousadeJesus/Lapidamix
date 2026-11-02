@@ -1,6 +1,6 @@
 # 01 - Visão do Projeto
 
-O Mixing Assistant é um **assistente de mixagem capaz de mixar qualquer instrumento**. **Não é um plugin de voz:** a voz é só o primeiro instrumento, por questão de escopo (D17).
+O Lapidamix é um **assistente de mixagem capaz de mixar qualquer instrumento**. **Não é um plugin de voz:** a voz é só o primeiro instrumento, por questão de escopo (D17).
 
 ## O problema
 

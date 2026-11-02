@@ -40,7 +40,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D32 | 02/11/2026 | **Substituída pela D40.** O repositório fica na conta do GitHub `SilasSousadeJesus`, como **privado** | O projeto só abre depois de testado (D12) |
 | D33 | 02/11/2026 | A **gravação da voz de teste** sai da Fase 0 e entra nas entregas da Fase 3 | Ela só é usada na análise |
 | D34 | 02/11/2026 | A04 (segundos de análise) fica **adiada para a Fase 3** | A fase em que a análise é construída |
-| D35 | 02/11/2026 | **"Mixing Assistant" é o nome provisório**; o nome definitivo (A05) será decidido na abertura do projeto | Não precisa ser decidido agora |
+| D35 | 02/11/2026 | **Substituída pela D43.** **"Mixing Assistant" é o nome provisório**; o nome definitivo (A05) será decidido na abertura do projeto | Não precisa ser decidido agora |
 | D36 | 02/11/2026 | **Roadmap da v1.0 confirmado** | Confirmado pelo usuário após a revisão das fases |
 | D37 | 02/11/2026 | **Esclarecida pela D39 quanto a código.** **Método de trabalho:** antes de implementar cada módulo novo (processador, análise ou perfil de instrumento), seguir 4 etapas: **(a) Estudo:** pesquisar plugins de referência, manuais, documentação pública e princípios de DSP, e escrever uma nota curta em `07-referencias.md`, separando o que é fato do que é suposição sobre o funcionamento interno de produtos fechados. **(b) Proposta:** propor como será o nosso módulo com base no estudo e esperar a aprovação do usuário. **(c) Implementação própria**, dentro da arquitetura da D30. **(d) Teste no Reaper e ajuste.** **Limites:** estudar documentação pública e princípios é permitido; não copiar código, interface visual nem presets, não usar nomes de marcas no nosso produto e não desmontar plugins originais | Aprender com o que existe, mantendo uma implementação própria |
 | D38 | 02/11/2026 | **Ajustes no roadmap.** Fase 1: inclui a estrutura da arquitetura (núcleo comum, perfis e módulos, ainda vazios) e a lista de instrumentos só com "Voz". Fase 2: o EQ entra como o primeiro módulo da arquitetura, começando pela etapa de estudo, e pode usar qualquer gravação de voz que o usuário já tenha. Fase 3: começa pela etapa de estudo da análise e usa de 3 a 5 vozes bem diferentes; as 20 vozes continuam na Fase 5 | Resolve os pontos soltos encontrados na revisão do roadmap e aplica a D37 |
@@ -48,6 +48,9 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D40 | 02/11/2026 | O repositório no GitHub (https://github.com/SilasSousadeJesus/MixingAssistant) é **público desde 02/11/2026**. Isso antecipa a parte de "aberto" da D12. Substitui a D32 | Decisão do usuário |
 | D41 | 02/11/2026 | A licença (A02) **precisa ser decidida antes do primeiro commit com código da Fase 1**. Substitui a D22 | O repositório já é público (D40); a licença deixa de ser adiada sem prazo |
 | D42 | 02/11/2026 | A licença do projeto é a **AGPLv3** (responde A02) | Escolha do usuário. É o caminho de código aberto do JUCE (D26) e combina com um projeto aberto e não comercial |
+| D43 | 02/11/2026 | **"Mixing Assistant" continua como nome provisório.** O nome definitivo (A05) deve ser decidido **antes do lançamento da v1.0** e **não pode lembrar nomes de produtos existentes** (ex.: "Mix Assistant", da iZotope). Substitui a D35 | A abertura do projeto foi antecipada (D40), e o nome precisa ser próprio |
+| D44 | 02/11/2026 | **Substituída pela D45.** O nome definitivo do projeto é **Prumix** (prumo + mix: a mix "no prumo", alinhada e equilibrada). Substitui o provisório "Mixing Assistant" e encerra a A05. **Busca feita pelo usuário:** não há produto de áudio com esse nome; o mais parecido é "Primix", fabricante de misturadores industriais, de outra categoria. **Nomes descartados:** "Mixo" (já existe um app de DJ) e "MixCraft" (já existe a DAW da Acoustica) | Nome próprio, de acordo com a D43. **Verificação complementar (Claude, 02/11/2026):** também não encontrou produto chamado exatamente "Prumix", mas encontrou nomes de áudio parecidos: "ProMix Bundle" (AyaicWare) e "pMix" (Oli Larkin) |
+| D45 | 02/11/2026 | O nome definitivo do projeto é **Lapidamix** (lapidar + mix: revelar o brilho que já existe no som, sem destruir o timbre). Substitui a D44 (Prumix), descartada pela semelhança com o "ProMix Bundle", da mesma categoria | Nome próprio, de acordo com a D43. **Busca complementar (Claude, 02/11/2026):** não encontrou produto nem repositório do GitHub com esse nome; os nomes de áudio mais próximos, "LAMA Mix" (Ross Video/HHB) e "LiquidMix", têm semelhança fraca. Não foi uma pesquisa de marca registrada |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -80,7 +83,6 @@ Serão decididas nas fases em que forem usadas (D31).
 | # | Pergunta |
 |---|---|
 | A04 | Quantos segundos de análise são necessários? **Adiada para a Fase 3 (D34)** |
-| A05 | Nome definitivo do plugin. **"Mixing Assistant" é provisório; decidir na abertura do projeto (D35)** |
 
 ## Perguntas encerradas
 
@@ -89,3 +91,4 @@ Serão decididas nas fases em que forem usadas (D31).
 | A01 | Qual DAW será usado nos testes principais? | Reaper: ver D21 |
 | A02 | Qual licença de código aberto usar? | AGPLv3: ver D42 |
 | A03 | O plugin deve explicar cada ajuste que fez (ex.: "cortei 3 dB em 250 Hz porque…")? | Movida para `05-ideias-futuro.md`: ver D23 |
+| A05 | Nome definitivo do plugin | Lapidamix: ver D45 |
