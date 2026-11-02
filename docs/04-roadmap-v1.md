@@ -1,10 +1,10 @@
 # 04 - Roadmap da v1.0
 
-Cada fase só começa quando a anterior atingir o critério de "pronto" **e o usuário autorizar**. 🟡 Roadmap proposto, a confirmar.
+Cada fase só começa quando a anterior atingir o critério de "pronto" **e o usuário autorizar**. ✅ Roadmap confirmado (D36).
 
 | Fase | Nome | Status |
 |---|---|---|
-| 0 | Planejamento | 🔵 Em andamento |
+| 0 | Planejamento | ✅ Concluída (02/11/2026) |
 | 1 | Ambiente e plugin "vazio" | ⚪ Não iniciada |
 | 2 | EQ manual | ⚪ Não iniciada |
 | 3 | Análise (só medir) | ⚪ Não iniciada |
@@ -13,10 +13,10 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 | 6 | Fechamento da v1.0 | ⚪ Não iniciada |
 
 ## Fase 0 — Planejamento
-- **Entregas:** documentação do projeto (feito); pasta do projeto com `CLAUDE.md` e `docs/` (feito); decisões em aberto resolvidas (`02-decisoes.md`), exceto a licença (A02), que foi adiada e não impede o desenvolvimento (D22); gravações de teste coletadas (voz seca, sem efeitos, ~30 s).
+- **Entregas:** documentação do projeto (feito); pasta do projeto com `CLAUDE.md` e `docs/` (feito); decisões em aberto resolvidas ou adiadas (`02-decisoes.md`): licença A02 (D22), segundos de análise A04 (D34) e nome A05 (D35) (feito).
 - **Propostas essenciais (D31):** P01 (JUCE), P02 (VST3), P09 (separação tempo real/análise), P11 (Git) e P13 (núcleo comum + perfis + módulos). ✅ Todas confirmadas (D26 a D30).
 - **Demais propostas:** P03 a P08, P12 e P14 serão decididas nas fases em que forem usadas; não impedem o fechamento da Fase 0.
-- **Pronto quando:** propostas essenciais confirmadas (feito) e material de teste disponível.
+- **Pronto quando:** propostas essenciais confirmadas (feito). A gravação da voz de teste passou para a Fase 3 (D33).
 
 ## Fase 1 — Ambiente e plugin "vazio"
 - **Entregas:** ferramentas instaladas no Windows; um plugin que só deixa o áudio passar, carregando no Reaper (D21).
@@ -27,7 +27,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** dá para mixar a voz "na mão" com o plugin, respeitando a regra de ouro do tempo real.
 
 ## Fase 3 — Análise (só medir)
-- **Entregas:** botão Analisar; detecção dos trechos cantados; espectro médio; detecção da fundamental e das ressonâncias. O plugin **mostra** as medidas, ainda sem aplicar nada. 🟡 RTA simples como ferramenta de diagnóstico (P14).
+- **Entregas:** gravação da voz de teste (voz seca no SM7dB, sem efeitos, ~30 s — D33); resposta à A04 (quantos segundos de análise são necessários — D34); botão Analisar; detecção dos trechos cantados; espectro médio; detecção da fundamental e das ressonâncias. O plugin **mostra** as medidas, ainda sem aplicar nada. 🟡 RTA simples como ferramenta de diagnóstico (P14).
 - **Pronto quando:** as medidas batem com o que se ouve/vê em outras ferramentas, em vozes diferentes.
 
 ## Fase 4 — Correção automática

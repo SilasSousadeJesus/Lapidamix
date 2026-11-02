@@ -33,6 +33,7 @@ Entram nas versões 1.1, 1.2 etc., até fechar a cadeia de sinal da voz (D19). A
 - Mac (AU).
 
 ## Abertura do projeto
+- Escolher o nome definitivo; "Mixing Assistant" é provisório (A05, D35).
 - Escolher a licença de código aberto: decisão necessária no futuro, que não impede o desenvolvimento, porque não é um projeto comercial (A02, D22).
 - Publicar o código (ex.: GitHub).
 - Guia de instalação e uso para outras pessoas.

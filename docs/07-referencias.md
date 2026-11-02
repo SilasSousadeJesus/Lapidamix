@@ -21,7 +21,7 @@ Projetos e materiais usados como inspiração. Funcionalidades e ideias podem se
 
 ## Material de teste
 
-- Minha voz seca no Shure SM7dB (a gravar).
+- Minha voz seca no Shure SM7dB (a gravar na Fase 3 — D33).
 - Bancos abertos de trilhas separadas (stems) com vozes variadas — a pesquisar e escolher na Fase 5. ❓
 
 ## Anotações de estudo

@@ -8,7 +8,7 @@ Quero focar no que gosto — cantar — e não ter que mixar. Meu caso concreto,
 
 ## O objetivo
 
-Um plugin de insert (como os da Waves) que, colocado na trilha, analisa o áudio e aplica sozinho uma boa mixagem: tira o embolamento, traz clareza e presença, **sem matar a voz com cortes agressivos**.
+Um plugin de insert (como os da Waves) que, colocado na trilha, analisa o áudio e aplica sozinho uma boa mixagem: tira o embolamento, traz clareza e presença, **sem destruir o timbre com cortes agressivos** — na voz, por exemplo, sem deixá-la fina ou sem vida.
 
 ## Para quem
 
@@ -20,7 +20,7 @@ Não há objetivo comercial. O foco não é se diferenciar de produtos existente
 ## Princípios
 
 - **Soar bem e funcionar** vale mais do que ser original. Podemos nos inspirar livremente em projetos existentes.
-- **Não matar a voz:** correções suaves e com limites. Na dúvida, corrigir menos.
+- **Não destruir o timbre:** correções suaves e com limites, para que uma voz, por exemplo, continue soando como ela mesma. Na dúvida, corrigir menos.
 - **Inteligente e adaptável:** as regras são fixas, mas o resultado se adapta à voz/instrumento analisado (D25). Nada de usar uma voz específica como molde, porque isso faria outras vozes não funcionarem.
 - **Começar pequeno:** uma coisa por vez. Primeiro só EQ; os outros processadores entram depois, um a um.
 - **Crescer sem refazer:** adicionar instrumentos e processadores não pode exigir refazer o que já existe (D20).

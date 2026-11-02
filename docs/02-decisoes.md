@@ -38,6 +38,10 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D30 | 01/11/2026 | **Modelo de arquitetura:** núcleo comum (análise, EQ, limites de segurança) + perfis de instrumento + processadores como módulos encaixáveis. Na v1 o usuário escolhe o instrumento numa lista que só tem "Voz" (confirma P13) | Forma de cumprir a D20 |
 | D31 | 01/11/2026 | As **propostas essenciais da Fase 0** eram P01, P02, P09, P11 e P13. As demais (P03 a P08, P12, P14) serão decididas nas fases em que forem usadas | Define o critério de "pronto" da Fase 0 |
 | D32 | 02/11/2026 | O repositório fica na conta do GitHub `SilasSousadeJesus`, como **privado** | O projeto só abre depois de testado (D12) |
+| D33 | 02/11/2026 | A **gravação da voz de teste** sai da Fase 0 e entra nas entregas da Fase 3 | Ela só é usada na análise |
+| D34 | 02/11/2026 | A04 (segundos de análise) fica **adiada para a Fase 3** | A fase em que a análise é construída |
+| D35 | 02/11/2026 | **"Mixing Assistant" é o nome provisório**; o nome definitivo (A05) será decidido na abertura do projeto | Não precisa ser decidido agora |
+| D36 | 02/11/2026 | **Roadmap da v1.0 confirmado** | Confirmado pelo usuário após a revisão das fases |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -70,8 +74,8 @@ Serão decididas nas fases em que forem usadas (D31).
 | # | Pergunta |
 |---|---|
 | A02 | Qual licença de código aberto usar? **Adiada (D22):** precisa ser decidida no futuro, mas não impede o desenvolvimento |
-| A04 | Quantos segundos de análise são necessários? |
-| A05 | Nome definitivo do plugin ("Mixing Assistant" é provisório?) |
+| A04 | Quantos segundos de análise são necessários? **Adiada para a Fase 3 (D34)** |
+| A05 | Nome definitivo do plugin. **"Mixing Assistant" é provisório; decidir na abertura do projeto (D35)** |
 
 ## Perguntas encerradas
 

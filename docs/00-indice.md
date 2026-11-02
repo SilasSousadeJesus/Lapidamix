@@ -2,7 +2,7 @@
 
 Assistente de mixagem capaz de mixar qualquer instrumento, em forma de plugin de insert para DAWs. A voz é só o primeiro instrumento, por questão de escopo (D17): a v1.0 é o EQ corretivo da voz, e o projeto cresce um processador e um instrumento por vez (D18, D19).
 
-**Status atual:** Fase 0 — Planejamento. Nenhum código de plugin escrito ainda.
+**Status atual:** Fase 0 concluída; Fase 1 aguardando a autorização do usuário. Nenhum código de plugin escrito ainda.
 **Última atualização:** 02/11/2026
 
 ## Fonte da verdade

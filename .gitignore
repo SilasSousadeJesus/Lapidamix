@@ -6,3 +6,18 @@
 *.aiff
 *.ogg
 *.m4a
+*.aac
+*.wma
+*.opus
+
+# Pastas de compilação
+build/
+builds/
+cmake-build-*/
+out/
+bin/
+obj/
+x64/
+Debug/
+Release/
+.vs/

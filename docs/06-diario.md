@@ -15,6 +15,29 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fechamento da Fase 0
+
+**Fase:** 0 — Planejamento (concluída nesta sessão)
+
+**O que foi feito:**
+- Gravação da voz de teste movida para as entregas da Fase 3.
+- A04 adiada para a Fase 3; "Mixing Assistant" mantido como nome provisório até a abertura do projeto.
+- `01-visao.md` passa a dizer "não destruir o timbre", com a voz como exemplo.
+- `.gitignore` completado com pastas de compilação e mais formatos de áudio.
+- Roadmap confirmado e status da Fase 0 atualizado para concluída.
+
+**Decisões tomadas:** D33 a D36.
+
+**Problemas / dúvidas:**
+- A Fase 2 pede mixar uma voz "na mão", antes de a gravação de teste existir (D33); pode ser preciso usar outro áudio.
+- A Fase 3 pede medidas "em vozes diferentes", mas só uma voz está prevista até lá.
+- O modelo de arquitetura (D30) ainda não aparece nas entregas de nenhuma fase.
+
+**Próximos passos:**
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
 ## 02/11/2026 — Repositório Git e GitHub
 
 **Fase:** 0 — Planejamento

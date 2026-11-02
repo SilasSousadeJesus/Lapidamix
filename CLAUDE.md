@@ -12,7 +12,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 0 — Planejamento.** Nenhum código de plugin deve ser escrito até o usuário pedir explicitamente o início da Fase 1. Veja `docs/04-roadmap-v1.md`.
+**Fase 0 — Planejamento: concluída.** A Fase 1 ainda não começou. Nenhum código de plugin deve ser escrito até o usuário pedir explicitamente o início da Fase 1. Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 
