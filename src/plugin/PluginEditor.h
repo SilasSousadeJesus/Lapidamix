@@ -37,6 +37,7 @@ private:
     void updateAnalysisStatus();
     void showAnalysisResult (const lapidamix::AnalysisResult& result);
     void updatePlanText();
+    void updateApplyButton();
 
     void setUpLabel (juce::Label& label, const char* text);
     void setUpSlider (juce::Slider& slider);
@@ -66,6 +67,8 @@ private:
     juce::TextEditor planText;
     lapidamix::RegionDictionary dictionary;
     juce::TextButton applyButton;
+    juce::TextButton clearButton;
+    juce::TextButton detailsButton;
     juce::Label intensityLabel;
     juce::Slider intensitySlider;
     std::unique_ptr<ParameterState::SliderAttachment> intensityAttachment;

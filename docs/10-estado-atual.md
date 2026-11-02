@@ -7,9 +7,9 @@
 ## Onde estamos
 
 - **Fase:** Fase 4 (Correção automática), em andamento (D93). Fase 3 concluída, com exceções registradas (D90).
-- **Etapa:** implementação (etapa c da D37), passos 1 a 5 de 6 da D99 concluídos.
-- **Último passo concluído:** explicações das correções, com o dicionário da voz (D92, D105). Verificação sem DAW sem falhas (`08-plano-testes.md`).
-- **Próximo passo:** passo 6: A/B no Reaper, pelo usuário, seguindo o roteiro em `08-plano-testes.md`.
+- **Etapa:** implementação (etapa c da D37). O A/B (passo 6 da D99) passou nas duas gravações; a fase só fecha depois dos ajustes pedidos pelo usuário.
+- **Último passo concluído:** Ar automático (D108), botões Reaplicar e Zerar (D106) e medidas atrás de Detalhes (D107), sem falhas na verificação sem DAW.
+- **Próximo passo:** o usuário confere Ar, botões e Detalhes no Reaper. Se aprovar, a Fase 4 pode fechar.
 
 ## Bloqueios
 
@@ -20,7 +20,8 @@ Nenhum bloqueio técnico.
 - **Banda de ressonância:** regra decidida (D87, D88), a implementar na Fase 4, com validação final de ouvido em A/B contra o bypass (D85). Melhorias na detecção estão em `05-ideias-futuro.md`.
 - **SM57 no Reaper:** o primeiro teste não correspondeu ao início da gravação, e a causa ficou sem confirmação (D89). Sem DAW, o plugin dá o esperado.
 - **Propostas a decidir nas fases em que forem usadas (D31):** P12.
-- **Faixas provisórias:** o embolado pode ser cortado demais em vozes graves (D95). Calibrar no A/B.
+- **Faixa do Ar:** -54 e -38 dB são provisórios, a calibrar em outras vozes na Fase 5 (D108). Sem pausa na captura, chiado forte ainda é lido como ar (`05-ideias-futuro.md`).
+- **Faixas provisórias:** no A/B, -5 dB no embolado não tirou corpo da voz do usuário; outras vozes graves seguem sem teste (D95).
 - **Limites herdados da Fase 3:** estalos, CPU no DAW e teste de ouvido em 4,8 kHz foram dispensados (D89); a aguda (95%) errou no male6; gravações de conhecidos não foram obtidas (D79). As 5 vozes do VocalSet cobriram o critério de 3 a 5 vozes.
 - **Depois da v1.0:** tratamento de plosivos e de sibilância registrados em `05-ideias-futuro.md`.
 - **Antes de distribuir o plugin:** analisar as licenças de terceiros em `external/JUCE/JUCE.spdx.json`.
@@ -29,7 +30,8 @@ Nenhum bloqueio técnico.
 
 | Commit | O que fez |
 |---|---|
-| este commit | Fase 4, passo 5: explicações das correções, dicionário da voz e roteiro do A/B (D105) |
+| este commit | Fase 4: resultado do A/B, Ar automático, botões Reaplicar e Zerar e medidas atrás de Detalhes (D106 a D108) |
+| `70a628d` | Fase 4, passo 5: explicações das correções, dicionário da voz e roteiro do A/B (D105) |
 | `5a5b038` | Fase 4, passos 3 e 4: lista, Aplicar, intensidade e compensação em LUFS (D102 a D104) |
 | `3162b6a` | Fase 4, passos 1 e 2: regras no código e dados novos na análise, ainda sem ligar ao som (D93 a D101) |
 | `0671ca7` | Explicação simples das correções decidida para a Fase 4 e A03 encerrada (D92) |

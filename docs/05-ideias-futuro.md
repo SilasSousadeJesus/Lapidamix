@@ -11,6 +11,11 @@ Entram nas versões 1.1, 1.2 etc., até fechar a cadeia de sinal da voz (D19). A
 - Nivelamento de ganho de saída.
 - Efeitos de ambiência (reverb, delay) — bem mais à frente.
 
+## Redução de ruído
+Limpar chiado não é papel da mixagem (pedido do usuário, 02/11/2026). Módulo separado, depois da v1.0, seguindo o método da D37. Referência: Waves NS1, a estudar só pela documentação pública.
+- **Ideia:** reduzir o chiado e o ruído de fundo da gravação antes das outras correções.
+- **Relação com o que já existe:** a análise já mede o ruído nas pausas (D108). Hoje, essa medida serve só para o Ar: descontar o ruído e avisar quando há chiado.
+
 ## Plosivos e sibilância
 Depois da v1.0, fora do escopo atual. Seguem o método da D37 (estudo, proposta, implementação, teste) e entram como módulos encaixáveis (D30), um por vez, na ordem das versões 1.1, 1.2 etc. A ordem entre elas será decidida depois.
 
@@ -26,6 +31,9 @@ Depois da v1.0, fora do escopo atual. Seguem o método da D37 (estudo, proposta,
 
 ## Embolado
 - Testar com mais vozes graves e avaliar uma faixa que leve em conta a fundamental. Em vozes graves, 200–500 Hz contém harmônicos fortes, que podem ser corpo legítimo, e as faixas atuais vieram de vozes mais agudas (D95).
+
+## Ar
+- **Chiado sem pausa:** sem pausa na captura, o ruído não é medido, e chiado forte ainda é lido como ar sobrando, o que pode causar atenuação indevida (D108). Avaliar outra forma de medir o ruído nesse caso.
 
 ## Ressonâncias
 Melhorias na detecção, fora da v1.0 (D88):

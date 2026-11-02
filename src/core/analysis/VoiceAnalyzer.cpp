@@ -39,6 +39,14 @@ namespace lapidamix
         constexpr float halvesMatchOctaves = 1.0f / 12.0f;
         constexpr float octaveJumpMargin = 0.1f;
 
+        // Ruído nas pausas (D108).
+        constexpr float digitalSilenceDb = -100.0f;
+        constexpr float noiseFloorShare = 0.02f; // O piso é o nível dos 2% de quadros mais fracos.
+        constexpr float noiseFloorMarginDb = 6.0f;
+        constexpr float minimumPauseDepthDb = 35.0f;
+        constexpr int minimumPauseFrames = 8;
+        constexpr int manyPauseFrames = 100; // Tanta pausa assim vale, mesmo com chiado forte encurtando a distância até a voz.
+
         // Limites em dB valem para potência: 10 dB, não 20 dB, multiplicam a potência por 10.
         float decibelsToPower (float decibels) noexcept
         {
@@ -226,6 +234,85 @@ namespace lapidamix
                        [] (const ResonanceCandidate& a, const ResonanceCandidate& b) { return a.prominenceDb > b.prominenceDb; });
 
             return resonances;
+        }
+
+        // Média dos quadros sem voz perto do piso. Fica vazia sem pausa de verdade: o quadro mais fraco
+        // de um canto contínuo ainda é voz ou consoante, não ruído.
+        template <typename Fft, typename Window>
+        std::vector<float> measureNoiseCurve (const float* samples, int numSamples, int frameSize, int hopSize, int blockSize,
+                                              const std::vector<char>& isVoice, Fft& fft, Window& window, float normalisation, double binWidth)
+        {
+            struct Frame
+            {
+                float levelDb;
+                int start;
+            };
+
+            std::vector<Frame> quietCandidates;
+            std::vector<float> allLevels;
+
+            for (int start = 0; start + frameSize <= numSamples; start += hopSize)
+            {
+                auto sum = 0.0f;
+
+                for (int index = 0; index < frameSize; ++index)
+                    sum += samples[start + index] * samples[start + index];
+
+                const auto levelDb = spectrum::powerToDb (sum / (float) frameSize);
+
+                if (levelDb <= digitalSilenceDb)
+                    continue;
+
+                allLevels.push_back (levelDb);
+
+                const auto firstBlock = start / blockSize;
+                const auto lastBlock = juce::jmin ((int) isVoice.size() - 1, (start + frameSize - 1) / blockSize);
+                auto hasVoice = false;
+
+                for (int block = firstBlock; block <= lastBlock; ++block)
+                    hasVoice = hasVoice || isVoice[(size_t) block] != 0;
+
+                if (! hasVoice)
+                    quietCandidates.push_back ({ levelDb, start });
+            }
+
+            if (quietCandidates.empty())
+                return {};
+
+            std::sort (quietCandidates.begin(), quietCandidates.end(), [] (const Frame& a, const Frame& b) { return a.levelDb < b.levelDb; });
+
+            // O piso vem de todos os quadros: só entre os sem voz, ele cairia, e um trecho sem pausa pareceria ter pausa.
+            const auto floorDb = getPercentile (allLevels, noiseFloorShare);
+            auto numFrames = 0;
+
+            for (const auto& frame : quietCandidates)
+                if (frame.levelDb <= floorDb + noiseFloorMarginDb)
+                    ++numFrames;
+
+            const auto isDeepEnough = getPercentile (std::move (allLevels), 0.5f) - floorDb >= minimumPauseDepthDb;
+
+            if (numFrames < manyPauseFrames && (numFrames < minimumPauseFrames || ! isDeepEnough))
+                return {};
+
+            const auto numBins = frameSize / 2 + 1;
+            std::vector<float> fftData ((size_t) frameSize * 2);
+            std::vector<float> power ((size_t) numBins, 0.0f);
+
+            for (int index = 0; index < numFrames; ++index)
+            {
+                const auto start = quietCandidates[(size_t) index].start;
+                std::fill (fftData.begin(), fftData.end(), 0.0f);
+                std::copy (samples + start, samples + start + frameSize, fftData.begin());
+                window.multiplyWithWindowingTable (fftData.data(), (size_t) frameSize);
+                fft.performFrequencyOnlyForwardTransform (fftData.data(), true);
+
+                for (int bin = 0; bin < numBins; ++bin)
+                    power[(size_t) bin] += fftData[(size_t) bin] * fftData[(size_t) bin] * normalisation / (float) numFrames;
+            }
+
+            std::vector<float> curve (spectrum::numDisplayPoints);
+            spectrum::fillDisplayCurve (power.data(), numBins, binWidth, curve);
+            return curve;
         }
 
         bool hasResonanceNear (const std::vector<ResonanceCandidate>& resonances, float frequency) noexcept
@@ -529,6 +616,7 @@ namespace lapidamix
 
         fillCurve (voicePower, numVoiceFrames, result.voiceCurve);
         fillCurve (soundPower, numSoundFrames, result.soundCurve);
+        result.noiseCurve = measureNoiseCurve (samples, numSamples, frameSize, hopSize, blockSize, isVoice, fft, window, normalisation, binWidth);
 
         result.numDistinctNotes = (int) allNotes.size();
 

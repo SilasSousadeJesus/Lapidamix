@@ -48,6 +48,7 @@ namespace lapidamix
         tree.setProperty ("numDistinctNotes", numDistinctNotes, nullptr);
         tree.setProperty ("voiceCurve", curveToString (voiceCurve), nullptr);
         tree.setProperty ("soundCurve", curveToString (soundCurve), nullptr);
+        tree.setProperty ("noiseCurve", curveToString (noiseCurve), nullptr);
 
         for (const auto& resonance : resonances)
         {
@@ -82,6 +83,7 @@ namespace lapidamix
         result.numDistinctNotes = tree.getProperty ("numDistinctNotes");
         result.voiceCurve = stringToCurve (tree.getProperty ("voiceCurve").toString());
         result.soundCurve = stringToCurve (tree.getProperty ("soundCurve").toString());
+        result.noiseCurve = stringToCurve (tree.getProperty ("noiseCurve").toString()); // Projetos antigos não têm: fica sem pausa medida.
 
         for (const auto& child : tree)
         {

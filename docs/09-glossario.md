@@ -4,6 +4,8 @@ Termos técnicos usados no projeto, em linguagem simples.
 
 ## Áudio e mixagem
 - **Ar** — agudos bem altos (acima de ~10 kHz) que dão sensação de abertura e brilho à voz.
+- **Chiado** — ruído contínuo e agudo da gravação, como um "sss" de fundo. Fica mais fácil de ouvir nas pausas, onde a voz não o cobre.
+- **Redutor de ruído** — processador que tira chiado e ruído de fundo da gravação. Não faz parte da mixagem do Lapidamix hoje (`05-ideias-futuro.md`).
 - **Bypass** — desliga o efeito temporariamente para comparar antes e depois.
 - **Biquad** — tipo comum de filtro digital, leve e sem latência, usado para construir cada banda de um EQ.
 - **Sino (bell)** — banda de EQ que aumenta ou reduz uma região em torno de uma frequência central.

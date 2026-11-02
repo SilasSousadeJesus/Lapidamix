@@ -33,6 +33,7 @@ namespace lapidamix
         // Em dB, na grade de `spectrum::getDisplayFrequency` (D71).
         std::vector<float> voiceCurve;
         std::vector<float> soundCurve;
+        std::vector<float> noiseCurve; // Ruído nas pausas. Vazia se não houve pausa para medir (D108).
 
         std::vector<ResonanceCandidate> resonances;
         int numDistinctNotes = 0;

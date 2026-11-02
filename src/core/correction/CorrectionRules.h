@@ -14,7 +14,8 @@ namespace lapidamix
         protectedFundamental,
         inconsistentFundamental,
         noEligiblePeak,
-        notAutomatic
+        reducedForHiss,
+        airNotMeasurable
     };
 
     struct BandCorrection
@@ -51,4 +52,8 @@ namespace lapidamix
 
     // Valor fixo que deixa o volume igual ao de antes do plano, calculado a partir da análise (D102).
     float estimateCompensationDb (const AnalysisResult& analysis, const CorrectionPlan& plan, double sampleRate);
+
+    // Chiado das pausas contra o volume da voz, em dB, com o plano e a compensação aplicados (D108).
+    // Sem pausa medida, devolve o valor de silêncio.
+    float estimateHissDb (const AnalysisResult& analysis, const CorrectionPlan& plan, const CorrectionSettings& settings);
 }

@@ -502,6 +502,69 @@ static void proposalTable (const juce::File& root, int firstWav, int argc, char*
     }
 }
 
+// Região do ar e chiado, com a regra e a medida de ruído reais do plugin (D108).
+static void airRow (const juce::String& name, const std::vector<float>& x)
+{
+    const auto& settings = voiceProfile.correction;
+    int index = 0;
+
+    for (const auto& run : windows (x, 30.0f))
+    {
+        const auto& r = run.result;
+        const auto plan = makeCorrectionPlan (r, settings);
+        const auto mids = spectrum::getCurveRegionDb (r.voiceCurve, settings.referenceLow, settings.referenceHigh);
+        const auto air = spectrum::getCurveRegionDb (r.voiceCurve, settings.air.regionLow, settings.air.regionHigh);
+        const auto hasNoise = ! r.noiseCurve.empty();
+
+        auto withoutAir = plan;
+        withoutAir.air.isEnabled = false;
+
+        printf ("%s; %d; %.1f; %.1f; %.1f; %s; %s; %.1f; %.1f; %.1f; %.1f\n", name.toRawUTF8(), index++, air - mids, plan.air.measuredDb, plan.air.gainDb,
+                plan.air.reason == CorrectionReason::reducedForHiss ? "METADE" : (plan.air.reason == CorrectionReason::airNotMeasurable ? "SEM MEDIDA" : (plan.air.isEnabled ? "age" : "-")),
+                hasNoise ? "sim" : "nao", hasNoise ? air - spectrum::getCurveRegionDb (r.noiseCurve, settings.air.regionLow, settings.air.regionHigh) : 0.0f,
+                hasNoise ? estimateHissDb (r, {}, settings) : 0.0f, hasNoise ? estimateHissDb (r, withoutAir, settings) : 0.0f, hasNoise ? estimateHissDb (r, plan, settings) : 0.0f);
+        fflush (stdout);
+    }
+}
+
+static void airTable (const juce::File& root, int argc, char** argv)
+{
+    printf ("voz; janela; ar-medios; sem ruido; ganho; decisao; pausa; ar sobre ruido; chiado original; com plano; com plano e ar\n");
+    auto folders = root.findChildFiles (juce::File::findDirectories, false);
+    folders.sort();
+    for (const auto& folder : folders) airRow (folder.getFileName(), loadSinger (root, folder.getFileName()));
+
+    for (int i = 3; i < argc; ++i)
+    {
+        std::vector<float> x;
+        const juce::File file (juce::String::fromUTF8 (argv[i]));
+        appendWav (file, x);
+        const auto name = file.getFileNameWithoutExtension();
+        airRow (name, x);
+
+        // Casos que o material real não cobre: gravação sem agudos e gravação com chiado forte.
+        auto dull = x;
+        for (int pass = 0; pass < 4; ++pass)
+        {
+            juce::dsp::IIR::Coefficients<float>::Ptr lowPass = new juce::dsp::IIR::Coefficients<float> (juce::dsp::IIR::ArrayCoefficients<float>::makeLowPass (kRate, 8000.0f));
+            juce::dsp::IIR::Filter<float> filter;
+            filter.coefficients = lowPass;
+            filter.prepare ({ kRate, 4096, 1 });
+            for (auto& v : dull) v = filter.processSample (v);
+        }
+        airRow (name + "+sem agudos", dull);
+
+        for (float hissDb : { -80.0f, -78.0f, -70.0f, -60.0f, -50.0f })
+        {
+            auto noisy = x;
+            juce::Random random (1234);
+            const auto amplitude = juce::Decibels::decibelsToGain (hissDb) * std::sqrt (3.0f);
+            for (auto& v : noisy) v += amplitude * (2.0f * random.nextFloat() - 1.0f);
+            airRow (name + "+chiado " + juce::String (hissDb, 0), noisy);
+        }
+    }
+}
+
 // Grava o trecho que o plugin analisa, para outra ferramenta medir exatamente o mesmo áudio.
 static void writeWav (const juce::File& file, const float* samples, int numSamples)
 {
@@ -588,6 +651,8 @@ int main (int argc, char** argv)
         proposalTable (juce::File (juce::String::fromUTF8 (argv[2])), 3, argc, argv);
     else if (mode == "equilibrio" && argc >= 3)
         balanceTable (juce::File (juce::String::fromUTF8 (argv[2])), argc, argv);
+    else if (mode == "ar" && argc >= 3)
+        airTable (juce::File (juce::String::fromUTF8 (argv[2])), argc, argv);
     else if (mode == "exportar" && argc >= 5)
         exportForComparison (juce::File (juce::String::fromUTF8 (argv[2])), juce::File (juce::String::fromUTF8 (argv[3])), argc, argv);
     else if (mode == "regra" && argc >= 3)

@@ -73,8 +73,13 @@ public:
     void applyCurrentCorrection();
     void handleIntensityChange();
 
+    // Desliga todas as bandas e volta a Saída a 0 dB. A análise continua guardada (D106).
+    void clearCorrection();
+    bool isCorrectionApplied() const noexcept { return correctionIsApplied.load(); }
+
 private:
     void storeAnalysisResult (const lapidamix::AnalysisResult& result);
+    void setParameterValue (const juce::String& id, float value);
 
     void render (juce::AudioBuffer<float>& buffer) noexcept;
     float getTargetOutputGain() const noexcept;

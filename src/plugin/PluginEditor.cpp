@@ -114,8 +114,18 @@ LapidamixAudioProcessorEditor::LapidamixAudioProcessorEditor (LapidamixAudioProc
     addAndMakeVisible (analyseButton);
     addAndMakeVisible (analysisStatus);
 
+    // As medidas ficam escondidas, para dar espaço às correções, e voltam com um clique (D107).
     analysisResults.setJustificationType (juce::Justification::topLeft);
-    addAndMakeVisible (analysisResults);
+    addChildComponent (analysisResults);
+
+    detailsButton.setButtonText ("Detalhes");
+    detailsButton.setClickingTogglesState (true);
+    detailsButton.onClick = [this]
+    {
+        analysisResults.setVisible (detailsButton.getToggleState());
+        resized();
+    };
+    addAndMakeVisible (detailsButton);
 
     // Texto longo demais para caber na janela: rola, sem aumentar a altura a cada explicação (D92).
     dictionary = lapidamix::loadRegionDictionary (lapidamix::voiceProfile);
@@ -134,8 +144,18 @@ LapidamixAudioProcessorEditor::LapidamixAudioProcessorEditor (LapidamixAudioProc
     {
         audioProcessor.applyCurrentCorrection();
         analysisStatus.setText (utf8 ("Correções aplicadas. Compare com o bypass e ajuste à mão, se quiser."), juce::dontSendNotification);
+        updateApplyButton();
     };
     addAndMakeVisible (applyButton);
+
+    clearButton.setButtonText ("Zerar");
+    clearButton.onClick = [this]
+    {
+        audioProcessor.clearCorrection();
+        analysisStatus.setText (utf8 ("Bandas desligadas e Saída em 0 dB."), juce::dontSendNotification);
+        updateApplyButton();
+    };
+    addAndMakeVisible (clearButton);
 
     setUpLabel (intensityLabel, "Intensidade (%)");
     setUpSlider (intensitySlider);
@@ -265,13 +285,13 @@ void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::Analysi
         text << "\n";
     }
 
-    if (! plan.isAvailable)
-        text << utf8 ("Pouca voz para propor correções. Cante mais ou repita o trecho em loop até chegar a 10 s.");
-
     analysisResults.setText (text, juce::dontSendNotification);
     spectrumPlot.setAnalysisCurves (result.voiceCurve, result.soundCurve);
 
-    analysisStatus.setText (utf8 ("Análise concluída. Nada foi alterado no som."), juce::dontSendNotification);
+    // O aviso fica fora das medidas, para aparecer mesmo com os detalhes escondidos (D101, D107).
+    analysisStatus.setText (plan.isAvailable ? utf8 ("Análise concluída. Nada foi alterado no som.")
+                                             : utf8 ("Pouca voz para propor correções. Cante mais ou repita o trecho em loop até chegar a 10 s."),
+                            juce::dontSendNotification);
 }
 
 void LapidamixAudioProcessorEditor::updatePlanText()
@@ -280,6 +300,13 @@ void LapidamixAudioProcessorEditor::updatePlanText()
     planText.setText (lapidamix::explainCorrectionPlan (plan, audioProcessor.getLastAnalysisResult(), audioProcessor.getCompensationDb (plan),
                                                         lapidamix::voiceProfile, dictionary), false);
     applyButton.setEnabled (plan.isAvailable);
+    updateApplyButton();
+}
+
+void LapidamixAudioProcessorEditor::updateApplyButton()
+{
+    // Depois de aplicar, o mesmo botão desfaz os ajustes à mão e volta à proposta (D106).
+    applyButton.setButtonText (audioProcessor.isCorrectionApplied() ? utf8 ("Reaplicar análise") : utf8 ("Aplicar"));
 }
 
 void LapidamixAudioProcessorEditor::setUpLabel (juce::Label& label, const char* text)
@@ -342,13 +369,20 @@ void LapidamixAudioProcessorEditor::resized()
     auto analysisRow = area.removeFromTop (rowHeight).reduced (0, 3);
     analyseButton.setBounds (analysisRow.removeFromLeft (nameWidth));
     analysisRow.removeFromLeft (columnGap);
+    detailsButton.setBounds (analysisRow.removeFromRight (80));
+    analysisRow.removeFromRight (columnGap);
     analysisStatus.setBounds (analysisRow);
 
-    analysisResults.setBounds (area.removeFromTop (resultsHeight));
+    // Escondidas, as medidas cedem o espaço ao texto das correções.
+    if (analysisResults.isVisible())
+        analysisResults.setBounds (area.removeFromTop (resultsHeight));
 
-    auto planArea = area.removeFromTop (planHeight);
+    auto planArea = area.removeFromTop (planHeight + (analysisResults.isVisible() ? 0 : resultsHeight));
     auto applyColumn = planArea.removeFromRight (applyColumnWidth);
-    applyButton.setBounds (applyColumn.removeFromTop (rowHeight - 6));
+    auto buttonsRow = applyColumn.removeFromTop (rowHeight - 6);
+    clearButton.setBounds (buttonsRow.removeFromRight (70));
+    buttonsRow.removeFromRight (columnGap);
+    applyButton.setBounds (buttonsRow);
     intensityLabel.setBounds (applyColumn.removeFromTop (rowHeight - 6));
     intensitySlider.setBounds (applyColumn.removeFromTop (rowHeight - 6));
     intensityNote.setBounds (applyColumn);

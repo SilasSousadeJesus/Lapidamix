@@ -191,18 +191,31 @@ void LapidamixAudioProcessor::handleIntensityChange()
         applyCurrentCorrection();
 }
 
+void LapidamixAudioProcessor::setParameterValue (const juce::String& id, float value)
+{
+    auto* parameter = parameters.getParameter (id);
+    parameter->beginChangeGesture();
+    parameter->setValueNotifyingHost (parameter->convertTo0to1 (value));
+    parameter->endChangeGesture();
+}
+
+void LapidamixAudioProcessor::clearCorrection()
+{
+    for (int bandIndex = 0; bandIndex < lapidamix::numEqBands; ++bandIndex)
+        setParameterValue (lapidamix::EqModule::getEnabledParameterId (bandIndex), 0.0f);
+
+    setParameterValue (outputGainParameterId, 0.0f);
+
+    // Sem correção aplicada, mover a intensidade não pode religar as bandas (D104).
+    correctionIsApplied.store (false);
+}
+
 void LapidamixAudioProcessor::applyCorrectionPlan (const lapidamix::CorrectionPlan& plan)
 {
     if (! plan.isAvailable)
         return;
 
-    const auto setValue = [this] (const juce::String& id, float value)
-    {
-        auto* parameter = parameters.getParameter (id);
-        parameter->beginChangeGesture();
-        parameter->setValueNotifyingHost (parameter->convertTo0to1 (value));
-        parameter->endChangeGesture();
-    };
+    const auto setValue = [this] (const juce::String& id, float value) { setParameterValue (id, value); };
 
     const auto applyBand = [&] (int bandIndex, const lapidamix::BandCorrection& band)
     {
@@ -221,11 +234,12 @@ void LapidamixAudioProcessor::applyCorrectionPlan (const lapidamix::CorrectionPl
         setValue (Module::getEnabledParameterId (bandIndex), band.isEnabled ? 1.0f : 0.0f);
     };
 
-    // Índices na ordem do perfil da voz. A banda de ar fica como o usuário deixou (D97).
+    // Índices na ordem do perfil da voz.
     applyBand (0, plan.highPass);
     applyBand (1, plan.mud);
     applyBand (2, plan.resonance);
     applyBand (3, plan.presence);
+    applyBand (4, plan.air);
 
     // Valor fixo: não muda durante a reprodução, senão seria um compressor (D04, D102).
     setValue (outputGainParameterId, getCompensationDb (plan));

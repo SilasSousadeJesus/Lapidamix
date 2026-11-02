@@ -43,10 +43,11 @@
 | 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, no Reaper | 0.1.0 (com a D83) | Análise com o plugin, olhando medidas e curvas | ✅ Análise funcionou nas duas; ⚠️ o resultado do SM57 não corresponde ao início da gravação (detalhes abaixo) | Teste feito e informado pelo usuário. Mostrou os problemas de texto corrigidos no registro seguinte |
 | 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
 | 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
+| 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, no Reaper | 0.1.0 (passo 5 da Fase 4) | A/B contra o bypass (passo 6 da D99) | ✅ Melhorou no SM7dB, a 100%; tudo certo no SM57. ⚠️ Faltou Ar no SM7dB (detalhes abaixo) | Teste feito e informado pelo usuário |
 
 ## Roteiro do A/B (passo 6 da Fase 4)
 
-Feito pelo usuário, no Reaper (D99). Critério da fase: na voz do usuário, o resultado soa melhor que o original (`04-roadmap-v1.md`). Resultados: a preencher.
+Feito pelo usuário, no Reaper (D99). Critério da fase: na voz do usuário, o resultado soa melhor que o original (`04-roadmap-v1.md`). Resultados na seção seguinte.
 
 **Preparação:** trilha com a gravação do SM7dB; Lapidamix como primeiro efeito; depois dele, um medidor de LUFS; sem outros efeitos. Volume de monitoração fixo e confortável, sem mexer durante o teste. Repetir depois com o SM57, em outro dia ou depois de uma pausa, se possível.
 
@@ -62,6 +63,110 @@ Feito pelo usuário, no Reaper (D99). Critério da fase: na voz do usuário, o r
 **O que anotar em cada gravação:** correções propostas; LUFS com plugin e com Bypass; veredito do item 4; banda que incomodou, em que trecho e por quê; melhor intensidade.
 
 **Como decidir:** se soar melhor a 100%, a fase pode fechar. Se só soar melhor com intensidade menor, ou se uma banda atrapalhar, os limites provisórios (D95, D96, D98) precisam de ajuste. Nesse caso, Claude propõe a mudança antes de implementar (D81).
+
+## Resultado do A/B (passo 6, 02/11/2026)
+
+Feito e informado pelo usuário, no Reaper. **O critério da fase passou nas duas gravações.** A Fase 4 ainda não fechou: o usuário pediu ajustes antes (D106, D107, P59).
+
+| Item | SM7dB | SM57 |
+|---|---|---|
+| A/B geral | ✅ Melhorou | ✅ Tudo certo, com menos diferença que no SM7dB. Esperado: esse microfone já capta uma voz mais aberta |
+| Volume com e sem o plugin | ✅ Praticamente igual (valores de LUFS não informados) | Sem observação separada |
+| Melhor intensidade | 100% | Não informada |
+| Embolado, -5 dB em 316 Hz | ✅ Não tirou corpo (o risco da D95 não apareceu nessa voz) | Sem observação separada |
+| Ar | ⚠️ Fez falta. +1 dB à mão soou bem, e +2 dB também soaria; o chiado não incomodou | Sem falta relatada |
+| Textos | ✅ Bons | Sem observação separada |
+| Estalos; salvar e reabrir | ✅ Sem estalos; funcionou | Sem observação separada |
+
+## Botões e Detalhes (D106, D107, 02/11/2026)
+
+Verificado por Claude, sem DAW, com `verifica` (0 falhas) e uma imagem da janela (`captura`). Falta o usuário conferir no Reaper.
+
+| Item | Resultado |
+|---|---|
+| Aplicar vira "Reaplicar análise" | ✅ |
+| Ajuste à mão continua até clicar; Reaplicar volta à proposta e à compensação | ✅ |
+| Zerar desliga as 5 bandas, inclusive o Ar, e põe a Saída em 0 dB | ✅ O botão volta a "Aplicar" |
+| Mover a intensidade depois de Zerar | ✅ Não religa as bandas |
+| Medidas escondidas; "Detalhes" mostra e esconde | ✅ O texto das correções ganha 76 pixels |
+| Aviso de pouca voz com as medidas escondidas | ✅ Aparece na linha de status |
+
+## Ar automático no plugin (D108, 02/11/2026)
+
+Verificado por Claude, sem DAW, com `verifica` (0 falhas) e `banco ar`, que agora usa a análise e a regra reais. **Falta o usuário conferir de ouvido no Reaper.** Limites de -54 e -38 dB provisórios, a calibrar na Fase 5.
+
+| Material, janelas de 30 s | O que o Ar faz | Chiado contra a voz |
+|---|---|---|
+| SM7dB, janelas 1, 2 e 3 | +1,6, +3,0 e +1,5 dB | Janela 1: -58,1 no original, -55,7 com o plano, -55,1 com o Ar |
+| SM57 | Nada: dentro da faixa | Janela 1: -61,6 no original, -59,9 com o plano |
+| VocalSet, 72 janelas de 20 vozes | Realça em 3 (male6), de +1,2 a +3,0 dB; atenua em 1 (female5), -2,3 dB | Em todo o material real com pausa, a maior subida pelo Ar é +1,2 dB, e pelo plano sem o Ar, +2,4 dB |
+
+**Diferenças em relação à simulação:** terceira janela do SM7dB, +1,5 dB em vez de +2,1 dB (a simulação descontava ruído onde não havia pausa); male10 deixou de agir, por ficar no limite de 1 dB de ação.
+
+**Erro achado e corrigido ao implementar:** ao procurar o piso de ruído só entre os quadros sem voz, o piso caía, e trechos sem pausa pareciam ter pausa: a terceira janela do SM7dB recebia um aviso falso de chiado, e as janelas com "pausa" subiam de 41 para 56 no VocalSet. O piso voltou a vir de todos os quadros, como na simulação. Os quadros com voz continuam fora da média do ruído, para um canto contínuo nunca ser lido como ruído.
+
+**Realce pela metade, que nenhum material real dispara.** Teste próprio em `verifica`:
+
+| Caso | Resultado |
+|---|---|
+| Curvas conhecidas, com pouco chiado | ✅ Realce inteiro, +3,0 dB (-56,7 dB de chiado) |
+| Curvas conhecidas, com chiado alto | ✅ Metade, +1,5 dB, sem deixar de agir |
+| Fronteira, chiado subindo de 1 em 1 dB, 79 casos | ✅ Só dispara acima de -50 dB (21 inteiros, 58 pela metade) |
+| Atenuar com chiado alto | ✅ Não passa pela regra |
+| Intensidade de 50% | ✅ Escala o realce já reduzido: +0,75 dB |
+| Texto | ✅ Aviso só nesse caso, com a sugestão do redutor de ruído |
+| Voz real do SM7dB, 60 s, com chiado gerado de -78 dB, análise e plugin de verdade | ✅ Chiado de -49,2 dB com o realce inteiro: +1,1 dB em vez de cerca de +2,2 dB; Aplicar escreve esse valor na banda |
+
+**Outros itens verificados:** quantidade calculada e tetos de +3 e -5 dB; desconto do ruído; ar a menos de 1 dB do ruído não age e avisa; sem pausa, com tom constante, o ruído não é medido; com pausas, é medido, salvo no projeto e ausente em projetos antigos; Aplicar substitui um Ar ajustado à mão; a compensação conta o Ar. LUFS integrado com o plugin de verdade: SM7dB -21,09 antes e -21,17 depois; SM57 -23,29 e -23,36.
+
+**Limites:**
+- O limite de -50 dB é suposição. A única referência de ouvido é o SM7dB, perto de -55 dB, sem incômodo.
+- Sem pausa, o ruído não é medido: 31 das 72 janelas do VocalSet e a terceira das gravações do usuário. Nesse caso, chiado forte ainda é lido como ar: com chiado gerado de -60 dB, o SM57 recebe -5 dB nessa janela (`05-ideias-futuro.md`).
+- A atenuação nunca foi ouvida, e +3 dB também não.
+- O realce muda entre janelas do SM7dB (+1,5 a +3,0 dB). Nas duas com pausa, o ar dessa voz fica só de 3,5 a 4,7 dB acima do ruído, e o desconto pesa.
+- O Reaper não foi usado nesta verificação. A janela foi conferida em imagem, mas a linha do Ar fica abaixo da área visível do texto e exige rolar; a rolagem não foi testada.
+
+## Simulação do Ar automático (P59, 02/11/2026)
+
+Feita com a primeira versão de `banco ar`, antes de mudar o plugin, em janelas de 30 s de voz válida: 72 janelas de 20 vozes do VocalSet e 3 janelas de cada gravação do usuário. **Aprovada (D108), com o teto de +3 e -5 dB.** Os números do plugin estão na seção anterior.
+
+**Por que os médios como referência:** é a referência das outras bandas e a única que acompanhou o ouvido. Contra a presença, o SM7dB fica no meio do VocalSet (cerca de -30 dB), o que não explica a falta sentida. Contra os médios, o SM7dB fica entre os mais baixos.
+
+| Medida: ar contra médios, sem ruído (dB) | VocalSet | SM7dB | SM57 |
+|---|---|---|---|
+| Faixa | -57,5 a -35,7 (mediana -48,1) | -57,0 a -55,6 | -38,8 a -38,4 |
+
+**O que a regra faria:**
+
+| Material | Sem teto | Teto de +3 e -5 dB |
+|---|---|---|
+| SM7dB, janelas 1, 2 e 3 | +1,6, +3,0 e +2,1 dB | Igual |
+| SM57 | Nada | Igual |
+| VocalSet | Realça em 4 janelas (male6 e male10), de +1,1 a +3,5 dB; atenua em 1 (female5), -2,3 dB | Muda só uma janela: +3,5 vira +3,0 dB |
+| Gravação sem agudos, em trecho sem pausa | +17,4 a +20,5 dB | +3,0 dB |
+
+**Mínimo testado:** -52 dB realçaria em 10 janelas do VocalSet (6 vozes), -54 dB em 4 (2 vozes) e -56 dB em 1. O -54 dB foi escolhido porque dá +1,6 dB no início do SM7dB, o valor que o usuário aprovou de ouvido. **Essa é uma calibração com uma voz só:** é provisória e não deve virar regra sem testar outras vozes (regra técnica 4).
+
+**O realce piora muito o chiado? Nas gravações testadas, não.** "Chiado" aqui é o ruído das pausas, entre 5 e 16 kHz, com a ponderação K, contra o volume da voz, já com a compensação de volume.
+
+| Medida | Resultado |
+|---|---|
+| SM7dB: original → plano atual → plano + Ar | -58,1 → -55,7 → -55,1 dB |
+| Maior subida causada pelo Ar, em material real | +1,1 dB |
+| Maior subida causada pelo plano atual, sem o Ar | +2,4 dB |
+| Maior chiado no VocalSet, sem correção | -47,3 dB |
+
+**Casos gerados (gravações do usuário com ruído ou sem agudos):**
+- **Chiado somado, medida simples:** o chiado é lido como ar. Com -70 dB, a medida do SM7dB sobe de -53,8 para -45,4 dB, e o plugin deixaria de realçar. Com -60 dB, atenuaria. Por isso a regra desconta o ruído das pausas.
+- **Ar a menos de 1 dB do ruído:** a voz não pode ser medida ali. A regra não age e só avisa.
+- **Sem pausa:** não dá para medir o ruído. Isso aconteceu em 31 das 72 janelas do VocalSet e na terceira janela das duas gravações. A regra usa a medida simples, e o chiado forte ainda seria lido como ar: o erro continua nesse caso (por exemplo, -5 dB com chiado de -50 dB).
+
+**Limites:**
+- O caminho "metade do realce e aviso" **nunca disparou**, em nenhum material; o mais perto foi -50,5 dB. Precisará de um caso de teste próprio. O limite de -50 dB é suposição: a única referência de ouvido é o SM7dB, perto de -55 dB, sem incômodo.
+- O SM7dB tem o ar só de 3,5 a 4,7 dB acima do ruído. O desconto pesa nessa voz: a medida cai até 2,6 dB e faz o realce variar de +1,6 a +3,0 dB entre as janelas.
+- +3 dB não foi ouvido; o usuário avaliou +1 dB à mão e estimou +2 dB.
+- Um realce em prateleira de 12 kHz dá cerca de metade do ganho em 12 kHz: +3 dB no controle sobem a região de 10 a 14 kHz em cerca de 1,4 dB. O realce não leva a voz até a faixa; é suave de propósito.
+- A atenuação foi vista em uma janela só, e nunca nas gravações do usuário: não foi avaliada de ouvido.
 
 ## Explicações das correções (passo 5, 02/11/2026)
 

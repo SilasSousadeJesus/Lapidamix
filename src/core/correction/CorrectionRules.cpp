@@ -114,6 +114,9 @@ namespace lapidamix
             return band;
         }
 
+        // A decisão do chiado não depende da taxa do projeto: a mesma análise dá sempre o mesmo plano.
+        constexpr double hissSampleRate = 48000.0;
+
         // A grade é logarítmica: cada ponto representa uma faixa proporcional à frequência.
         template <typename GetPower>
         float sumPerceivedDb (const std::vector<float>& curve, GetPower getBandPower)
@@ -127,6 +130,97 @@ namespace lapidamix
             }
 
             return 10.0f * (float) std::log10 (sum + 1.0e-20);
+        }
+
+        std::vector<juce::dsp::IIR::Coefficients<float>> makePlanFilters (const CorrectionPlan& plan, double sampleRate)
+        {
+            using ArrayCoefficients = juce::dsp::IIR::ArrayCoefficients<float>;
+
+            std::vector<juce::dsp::IIR::Coefficients<float>> filters;
+
+            if (plan.highPass.isEnabled)
+                filters.emplace_back (ArrayCoefficients::makeHighPass (sampleRate, plan.highPass.frequency, 0.707f));
+
+            for (const auto* band : { &plan.mud, &plan.resonance, &plan.presence })
+                if (band->isEnabled)
+                    filters.emplace_back (ArrayCoefficients::makePeakFilter (sampleRate, band->frequency, band->q, juce::Decibels::decibelsToGain (band->gainDb)));
+
+            if (plan.air.isEnabled)
+                filters.emplace_back (ArrayCoefficients::makeHighShelf (sampleRate, plan.air.frequency, plan.air.q, juce::Decibels::decibelsToGain (plan.air.gainDb)));
+
+            return filters;
+        }
+
+        double getFiltersPower (const std::vector<juce::dsp::IIR::Coefficients<float>>& filters, float frequency, double sampleRate)
+        {
+            auto power = 1.0;
+
+            for (const auto& filter : filters)
+            {
+                const auto magnitude = filter.getMagnitudeForFrequency ((double) frequency, sampleRate);
+                power *= magnitude * magnitude;
+            }
+
+            return power;
+        }
+
+        // Depende das outras bandas: o chiado é medido com o plano inteiro (D108).
+        BandCorrection makeAir (const AnalysisResult& analysis, const CorrectionPlan& plan, const CorrectionSettings& settings, float referenceDb)
+        {
+            const auto& air = settings.air;
+            const auto hasNoise = (int) analysis.noiseCurve.size() == spectrum::numDisplayPoints;
+            auto airDb = spectrum::getCurveRegionDb (analysis.voiceCurve, air.regionLow, air.regionHigh);
+
+            BandCorrection band;
+            band.frequency = air.frequency;
+            band.q = air.q;
+            band.measuredDb = airDb - referenceDb;
+
+            if (hasNoise)
+            {
+                const auto noiseDb = spectrum::getCurveRegionDb (analysis.noiseCurve, air.regionLow, air.regionHigh);
+
+                // O ruído soma na medida: sem descontar, chiado seria lido como ar sobrando.
+                if (airDb - noiseDb < air.minimumAboveNoiseDb)
+                {
+                    band.reason = CorrectionReason::airNotMeasurable;
+                    return band;
+                }
+
+                airDb = 10.0f * std::log10 (std::pow (10.0f, airDb / 10.0f) - std::pow (10.0f, noiseDb / 10.0f));
+                band.measuredDb = airDb - referenceDb;
+            }
+
+            const auto missingDb = air.minimumLevelDb - band.measuredDb;
+            const auto excessDb = band.measuredDb - air.maximumLevelDb;
+
+            if (missingDb >= settings.minimumActionDb)
+            {
+                band.isEnabled = true;
+                band.gainDb = juce::jmin (air.maximumBoostDb, missingDb);
+                band.reason = CorrectionReason::applied;
+
+                auto withAir = plan;
+                withAir.air = band;
+
+                if (hasNoise && estimateHissDb (analysis, withAir, settings) > air.maximumHissDb)
+                {
+                    band.gainDb *= air.hissCautionRatio;
+                    band.reason = CorrectionReason::reducedForHiss;
+                }
+            }
+            else if (excessDb >= settings.minimumActionDb)
+            {
+                band.isEnabled = true;
+                band.gainDb = -juce::jmin (air.maximumCutDb, excessDb);
+                band.reason = CorrectionReason::applied;
+            }
+            else
+            {
+                band.reason = CorrectionReason::withinRange;
+            }
+
+            return band;
         }
     }
 
@@ -144,6 +238,7 @@ namespace lapidamix
         scaleGain (scaled.mud);
         scaleGain (scaled.resonance);
         scaleGain (scaled.presence);
+        scaleGain (scaled.air);
 
         const auto lowest = settings.highPass.minimumFrequency;
 
@@ -167,34 +262,28 @@ namespace lapidamix
         if (! plan.isAvailable || (int) analysis.soundCurve.size() != spectrum::numDisplayPoints)
             return 0.0f;
 
-        using Filter = juce::dsp::IIR::Coefficients<float>;
-        using ArrayCoefficients = juce::dsp::IIR::ArrayCoefficients<float>;
-
-        std::vector<Filter> filters;
-
-        // A banda de ar não entra: o plano não mexe nela (D97).
-        if (plan.highPass.isEnabled)
-            filters.emplace_back (ArrayCoefficients::makeHighPass (sampleRate, plan.highPass.frequency, 0.707f));
-
-        for (const auto* band : { &plan.mud, &plan.resonance, &plan.presence })
-            if (band->isEnabled)
-                filters.emplace_back (ArrayCoefficients::makePeakFilter (sampleRate, band->frequency, band->q, juce::Decibels::decibelsToGain (band->gainDb)));
-
+        const auto filters = makePlanFilters (plan, sampleRate);
         const auto before = getPerceivedLevelDb (analysis.soundCurve);
-        const auto after = sumPerceivedDb (analysis.soundCurve, [&] (float frequency)
-        {
-            auto power = 1.0;
-
-            for (const auto& filter : filters)
-            {
-                const auto magnitude = filter.getMagnitudeForFrequency ((double) frequency, sampleRate);
-                power *= magnitude * magnitude;
-            }
-
-            return power;
-        });
+        const auto after = sumPerceivedDb (analysis.soundCurve, [&] (float frequency) { return getFiltersPower (filters, frequency, sampleRate); });
 
         return before - after;
+    }
+
+    float estimateHissDb (const AnalysisResult& analysis, const CorrectionPlan& plan, const CorrectionSettings& settings)
+    {
+        if ((int) analysis.noiseCurve.size() != spectrum::numDisplayPoints || (int) analysis.soundCurve.size() != spectrum::numDisplayPoints)
+            return spectrum::silenceDb;
+
+        const auto filters = makePlanFilters (plan, hissSampleRate);
+
+        const auto voice = sumPerceivedDb (analysis.soundCurve, [&] (float frequency) { return getFiltersPower (filters, frequency, hissSampleRate); });
+        const auto hiss = sumPerceivedDb (analysis.noiseCurve, [&] (float frequency)
+        {
+            return frequency >= settings.air.hissLow && frequency < settings.air.hissHigh ? getFiltersPower (filters, frequency, hissSampleRate) : 0.0;
+        });
+
+        // A compensação iguala o volume da voz, então só a diferença importa.
+        return hiss - voice;
     }
 
     CorrectionPlan makeCorrectionPlan (const AnalysisResult& analysis, const CorrectionSettings& settings)
@@ -213,7 +302,7 @@ namespace lapidamix
         plan.mud = makeMud (analysis, settings.mud, referenceDb, settings.minimumActionDb);
         plan.resonance = makeResonance (analysis, settings.resonance);
         plan.presence = makePresence (analysis, settings.presence, referenceDb, settings.minimumActionDb);
-        plan.air.reason = CorrectionReason::notAutomatic; // D97.
+        plan.air = makeAir (analysis, plan, settings, referenceDb);
 
         return plan;
     }

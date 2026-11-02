@@ -50,6 +50,9 @@ $banco = 'tools\medidor-voz\build\banco_artefacts\Release\banco.exe'
 & $banco equilibrio 'test-audio\vocalset\data_by_singer' 'voz.wav'
 & $banco proposta 'test-audio\vocalset\data_by_singer' 'voz.wav'
 
+# Região do ar e chiado: quanto falta de ar e quanto o chiado sobe com cada realce.
+& $banco ar 'test-audio\vocalset\data_by_singer' 'voz.wav'
+
 $origem = 'tools\medidor-voz\build\origem_artefacts\Release\origem.exe'
 & $origem vogais 'test-audio\vocalset\data_by_singer' 5500 8500
 & $origem fora-da-voz 'test-audio\vocalset\data_by_singer' 5500 8500 'voz.wav'

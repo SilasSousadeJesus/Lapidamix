@@ -285,6 +285,33 @@ static void testShortAnalysisAndState (const juce::AudioBuffer<float>& audio)
     check (applyButton != nullptr && ! applyButton->isEnabled() && ! labels.contains (juce::String::fromUTF8 ("Correções propostas")),
            "Com pouca voz, nada e proposto e Aplicar fica desligado (D101)");
     check (labels.contains ("Fundamental: mediana"), "Com pouca voz, as medidas continuam na janela");
+
+    // As medidas começam escondidas e voltam com o botão Detalhes (D107).
+    const auto findTextButton = [] (juce::Component& parent, const juce::String& text) -> juce::Button*
+    {
+        for (auto* child : parent.getChildren())
+            if (auto* button = dynamic_cast<juce::TextButton*> (child))
+                if (button->getButtonText() == text)
+                    return button;
+        return nullptr;
+    };
+    const auto findMeasures = [] (juce::Component& parent) -> juce::Component*
+    {
+        for (auto* child : parent.getChildren())
+            if (auto* label = dynamic_cast<juce::Label*> (child))
+                if (label->getText().contains ("Fundamental: mediana"))
+                    return label;
+        return nullptr;
+    };
+    auto* measures = findMeasures (*editor);
+    auto* detailsButton = findTextButton (*editor, "Detalhes");
+    check (measures != nullptr && ! measures->isVisible() && detailsButton != nullptr, "Detalhes: as medidas comecam escondidas (D107)");
+    if (detailsButton != nullptr) detailsButton->triggerClick();
+    juce::MessageManager::getInstance()->runDispatchLoopUntil (100);
+    check (measures != nullptr && measures->isVisible(), "Detalhes: um clique mostra as medidas");
+    if (detailsButton != nullptr) detailsButton->triggerClick();
+    juce::MessageManager::getInstance()->runDispatchLoopUntil (100);
+    check (measures != nullptr && ! measures->isVisible(), "Detalhes: outro clique esconde as medidas");
     editor.reset();
 
     // Análise completa, sem aviso, para testar salvar e restaurar.
@@ -296,6 +323,44 @@ static void testShortAnalysisAndState (const juce::AudioBuffer<float>& audio)
     check (! labels.contains (warningText), "Sem aviso com " + juce::String (full.voiceSeconds, 1) + " s de voz");
     check (labels.contains (juce::String::fromUTF8 ("Correções propostas")) && applyButton != nullptr && applyButton->isEnabled(),
            "Com voz suficiente, a lista aparece e Aplicar fica ligado");
+
+    // Os botões da D106, clicados na janela.
+    {
+        using lapidamix::EqModule;
+        const auto getValue = [&] (const juce::String& id) { return processor->getParameters().getRawParameterValue (id)->load(); };
+        auto* clearButton = findTextButton (*editor, "Zerar");
+        applyButton->triggerClick();
+        juce::MessageManager::getInstance()->runDispatchLoopUntil (100);
+        const auto plan = processor->getCorrectionPlan();
+        const auto compensation = getValue (LapidamixAudioProcessor::outputGainParameterId);
+        check (applyButton->getButtonText() == juce::String::fromUTF8 ("Reaplicar análise"), "Botoes: depois de aplicar, vira Reaplicar analise (D106)");
+
+        // Ajuste à mão: os controles continuam agindo, e Reaplicar volta à proposta.
+        setParameter (*processor, EqModule::getGainParameterId (1), -1.0f);
+        setParameter (*processor, LapidamixAudioProcessor::outputGainParameterId, 4.0f);
+        check (std::abs (getValue (EqModule::getGainParameterId (1)) + 1.0f) < 0.06f, "Botoes: o ajuste a mao continua valendo ate clicar");
+        applyButton->triggerClick();
+        juce::MessageManager::getInstance()->runDispatchLoopUntil (100);
+        check (std::abs (getValue (EqModule::getGainParameterId (1)) - plan.mud.gainDb) < 0.06f && std::abs (getValue (LapidamixAudioProcessor::outputGainParameterId) - compensation) < 0.06f,
+               "Botoes: Reaplicar volta a proposta e a compensacao");
+
+        // Zerar: tudo desligado, Saída em 0 dB, e mover a intensidade não religa nada.
+        setParameter (*processor, EqModule::getEnabledParameterId (4), 1.0f);
+        check (clearButton != nullptr, "Botoes: Zerar existe");
+        if (clearButton != nullptr) clearButton->triggerClick();
+        juce::MessageManager::getInstance()->runDispatchLoopUntil (100);
+        auto allOff = true;
+        for (int band = 0; band < lapidamix::numEqBands; ++band) allOff = allOff && getValue (EqModule::getEnabledParameterId (band)) < 0.5f;
+        check (allOff && std::abs (getValue (LapidamixAudioProcessor::outputGainParameterId)) < 0.06f && applyButton->getButtonText() == "Aplicar",
+               "Botoes: Zerar desliga as 5 bandas, poe a Saida em 0 dB e o botao volta a Aplicar");
+        processor->handleIntensityChange();
+        setParameter (*processor, LapidamixAudioProcessor::intensityParameterId, 50.0f);
+        processor->handleIntensityChange();
+        check (getValue (EqModule::getEnabledParameterId (1)) < 0.5f, "Botoes: depois de Zerar, mover a intensidade nao religa as bandas");
+        setParameter (*processor, LapidamixAudioProcessor::intensityParameterId, 100.0f);
+        processor->handleIntensityChange();
+    }
+
     editor.reset();
 
     juce::MemoryBlock state;
@@ -403,6 +468,146 @@ static lapidamix::AnalysisResult makeKnownAnalysis (float midsDb, float mudDb, f
     return analysis;
 }
 
+// Curva conhecida com o ar no nível pedido. Sem `noiseAirDb`, a análise não encontrou pausa.
+static lapidamix::AnalysisResult makeAirAnalysis (float airDb, float noiseAirDb = 0.0f, float hissDb = 0.0f)
+{
+    using namespace lapidamix;
+    auto analysis = makeKnownAnalysis (-40.0f, -40.0f, -55.0f);
+
+    if (noiseAirDb < 0.0f)
+        analysis.noiseCurve.assign (spectrum::numDisplayPoints, -119.0f);
+
+    for (int point = 0; point < spectrum::numDisplayPoints; ++point)
+    {
+        const auto frequency = spectrum::getDisplayFrequency (point);
+
+        if (frequency >= 10000.0f && frequency < 14000.0f)
+        {
+            analysis.voiceCurve[(size_t) point] = airDb;
+
+            if (noiseAirDb < 0.0f)
+                analysis.noiseCurve[(size_t) point] = noiseAirDb;
+        }
+        else if (noiseAirDb < 0.0f && hissDb < 0.0f && frequency >= 5000.0f && frequency < 10000.0f)
+        {
+            analysis.noiseCurve[(size_t) point] = hissDb;
+        }
+    }
+
+    analysis.soundCurve = analysis.voiceCurve;
+    return analysis;
+}
+
+// O Ar: quantidade calculada, teto, desconto do ruído e os dois casos de chiado (D108).
+static void testAirRules()
+{
+    using namespace lapidamix;
+    const auto& settings = voiceProfile.correction;
+    const auto near = [] (float a, float b) { return std::abs (a - b) < 0.06f; };
+    const auto plan = [&] (const AnalysisResult& analysis) { return makeCorrectionPlan (analysis, settings).air; };
+
+    // Os médios ficam em -40 dB, então -94 dB no ar medem -54 dB.
+    check (near (plan (makeAirAnalysis (-95.5f)).gainDb, 1.5f) && plan (makeAirAnalysis (-95.5f)).reason == CorrectionReason::applied, "Ar: 1,5 dB abaixo do minimo realca 1,5 dB");
+    check (! plan (makeAirAnalysis (-94.5f)).isEnabled, "Ar: falta menor que 1 dB nao age");
+    check (near (plan (makeAirAnalysis (-110.0f)).gainDb, 3.0f), "Ar: o realce para no teto de +3 dB");
+    check (! plan (makeAirAnalysis (-80.0f)).isEnabled, "Ar: dentro da faixa nao age");
+    check (near (plan (makeAirAnalysis (-76.0f)).gainDb, -2.0f), "Ar: 2 dB acima do maximo atenua 2 dB");
+    check (near (plan (makeAirAnalysis (-60.0f)).gainDb, -5.0f), "Ar: a atenuacao para no teto de -5 dB");
+
+    // O ruído é descontado: -94 dB com ruído a -100 dB valem cerca de -95,25 dB de voz.
+    const auto discounted = plan (makeAirAnalysis (-94.0f, -100.0f));
+    check (near (discounted.measuredDb, -55.25f) && near (discounted.gainDb, 1.25f), "Ar: o ruido das pausas sai da medida: " + juce::String (discounted.measuredDb, 2) + " dB");
+
+    const auto unreadable = plan (makeAirAnalysis (-70.0f, -70.5f));
+    check (! unreadable.isEnabled && near (unreadable.gainDb, 0.0f) && unreadable.reason == CorrectionReason::airNotMeasurable, "Ar: a menos de 1 dB do ruido, nao mexe e avisa");
+
+    // --- O realce pela metade, que nenhum material real disparou. ---
+    // Ar a -100 dB e ruído a -104 dB: a voz mede cerca de -62 dB, e o realce pedido bate no teto.
+    const auto quiet = makeAirAnalysis (-100.0f, -104.0f);
+    const auto quietPlan = makeCorrectionPlan (quiet, settings);
+    check (near (quietPlan.air.gainDb, 3.0f) && quietPlan.air.reason == CorrectionReason::applied, "Metade: com pouco chiado, o realce fica inteiro: " + juce::String (estimateHissDb (quiet, quietPlan, settings), 1) + " dB de chiado");
+
+    const auto noisy = makeAirAnalysis (-100.0f, -104.0f, -60.0f);
+    const auto noisyPlan = makeCorrectionPlan (noisy, settings);
+    check (near (noisyPlan.air.gainDb, 1.5f) && noisyPlan.air.isEnabled && noisyPlan.air.reason == CorrectionReason::reducedForHiss,
+           "Metade: com chiado alto, realca a metade, sem deixar de agir: +" + juce::String (noisyPlan.air.gainDb, 1) + " dB");
+
+    // A fronteira: subindo o chiado, a regra dispara exatamente quando o chiado com o realce inteiro passa do limite.
+    auto boundaryIsExact = true;
+    auto numFull = 0, numHalf = 0;
+
+    for (auto hissDb = -119.0f; hissDb < -40.0f; hissDb += 1.0f)
+    {
+        const auto analysis = makeAirAnalysis (-100.0f, -104.0f, hissDb);
+        const auto result = makeCorrectionPlan (analysis, settings);
+        auto full = result;
+        full.air.isEnabled = true;
+        full.air.gainDb = 3.0f;
+        const auto isHalf = result.air.reason == CorrectionReason::reducedForHiss;
+        boundaryIsExact = boundaryIsExact && isHalf == (estimateHissDb (analysis, full, settings) > settings.air.maximumHissDb);
+        boundaryIsExact = boundaryIsExact && near (result.air.gainDb, isHalf ? 1.5f : 3.0f);
+        ++(isHalf ? numHalf : numFull);
+    }
+
+    check (boundaryIsExact && numFull > 0 && numHalf > 0, "Metade: dispara so acima de -50 dB de chiado (" + juce::String (numFull) + " casos inteiros, " + juce::String (numHalf) + " pela metade)");
+
+    // Só o realce leva a regra: atenuar não aumenta o chiado.
+    const auto bright = makeCorrectionPlan (makeAirAnalysis (-70.0f, -80.0f, -40.0f), settings);
+    check (bright.air.gainDb < 0.0f && bright.air.reason == CorrectionReason::applied, "Metade: atenuar nao passa pela regra do chiado");
+
+    // A intensidade escala o ganho já reduzido.
+    check (near (scaleCorrectionPlan (noisyPlan, 0.5f, settings).air.gainDb, 0.75f), "Metade: a intensidade de 50% escala o realce ja reduzido");
+
+    // O texto mostra o aviso só nesse caso.
+    const auto dictionary = loadRegionDictionary (voiceProfile);
+    const auto warning = juce::String::fromUTF8 ("O realce fica menor do que a medida pede, porque há chiado nessa região. Se incomodar, considere um redutor de ruído.");
+    check (explainCorrectionPlan (noisyPlan, noisy, 0.0f, voiceProfile, dictionary).contains (warning), "Metade: o texto avisa e sugere o redutor de ruido");
+    check (! explainCorrectionPlan (quietPlan, quiet, 0.0f, voiceProfile, dictionary).contains ("redutor"), "Metade: sem chiado alto, nada de aviso");
+
+    const auto unreadablePlan = makeCorrectionPlan (makeAirAnalysis (-70.0f, -70.5f), settings);
+    check (explainCorrectionPlan (unreadablePlan, makeAirAnalysis (-70.0f, -70.5f), 0.0f, voiceProfile, dictionary).contains (juce::String::fromUTF8 ("não dá para medir")), "Ar: o texto explica quando nao da para medir");
+}
+
+// O mesmo caminho do realce pela metade, com a voz real, a análise real e o plugin de verdade.
+static void testAirHissWithRealVoice (const juce::AudioBuffer<float>& audio)
+{
+    using namespace lapidamix;
+    const auto& settings = voiceProfile.correction;
+
+    // Ruído branco gerado, com semente fixa, somado à gravação.
+    juce::AudioBuffer<float> noisy (2, (int) (60.0 * kRate));
+    juce::Random random (1234);
+    const auto amplitude = juce::Decibels::decibelsToGain (-78.0f) * std::sqrt (3.0f);
+
+    for (int channel = 0; channel < 2; ++channel)
+        noisy.copyFrom (channel, 0, audio, channel, 0, noisy.getNumSamples());
+
+    for (int sample = 0; sample < noisy.getNumSamples(); ++sample)
+    {
+        const auto hiss = amplitude * (2.0f * random.nextFloat() - 1.0f);
+        noisy.addSample (0, sample, hiss);
+        noisy.addSample (1, sample, hiss);
+    }
+
+    LapidamixAudioProcessor processor;
+    prepare (processor);
+    analyseExactly (processor, noisy, noisy.getNumSamples());
+    const auto analysis = processor.getLastAnalysisResult();
+    const auto plan = processor.getCorrectionPlan();
+
+    auto full = plan;
+    full.air.gainDb = plan.air.gainDb / settings.air.hissCautionRatio;
+
+    check (! analysis.noiseCurve.empty() && plan.air.reason == CorrectionReason::reducedForHiss,
+           "Metade, voz real com chiado de -78 dB: medida " + juce::String (plan.air.measuredDb, 1) + " dB; chiado " + juce::String (estimateHissDb (analysis, full, settings), 1)
+               + " dB com o realce inteiro; realce final +" + juce::String (plan.air.gainDb, 1) + " dB");
+
+    processor.applyCurrentCorrection();
+    const auto written = processor.getParameters().getRawParameterValue (EqModule::getGainParameterId (4))->load();
+    check (std::abs (written - plan.air.gainDb) < 0.06f && processor.getParameters().getRawParameterValue (EqModule::getEnabledParameterId (4))->load() > 0.5f,
+           "Metade, voz real: Aplicar escreve o realce reduzido na banda de Ar");
+}
+
 static void testRules()
 {
     using namespace lapidamix;
@@ -426,7 +631,7 @@ static void testRules()
         check (near (plan.highPass.frequency, 70.7f) && plan.highPass.reason == CorrectionReason::applied, "Regras: passa-alta meia oitava abaixo do grave de 100 Hz: " + juce::String (plan.highPass.frequency, 1) + " Hz");
         check (! plan.mud.isEnabled && plan.mud.reason == CorrectionReason::withinRange, "Regras: embolado dentro da faixa nao age");
         check (! plan.presence.isEnabled && plan.presence.reason == CorrectionReason::withinRange, "Regras: presenca dentro da faixa nao age");
-        check (! plan.air.isEnabled && plan.air.reason == CorrectionReason::notAutomatic, "Regras: ar nao age sozinho (D97)");
+        check (! plan.air.isEnabled && plan.air.reason == CorrectionReason::withinRange, "Regras: ar dentro da faixa nao age (D108)");
     }
 
     {
@@ -534,9 +739,9 @@ static void testApply (const juce::AudioBuffer<float>& audio)
     LapidamixAudioProcessor processor;
     prepare (processor);
 
-    // A banda de ar é do usuário: Aplicar não pode mexer nela (D97).
+    // Um ajuste à mão no Ar, que Aplicar deve substituir pela proposta (D108).
     setParameter (processor, EqModule::getEnabledParameterId (4), 1.0f);
-    setParameter (processor, EqModule::getGainParameterId (4), 2.0f);
+    setParameter (processor, EqModule::getGainParameterId (4), 5.0f);
 
     const auto getValue = [&] (const juce::String& id) { return processor.getParameters().getRawParameterValue (id)->load(); };
     const auto near = [] (float a, float b, float tolerance) { return std::abs (a - b) <= tolerance; };
@@ -560,7 +765,13 @@ static void testApply (const juce::AudioBuffer<float>& audio)
                && near (getValue (EqModule::getQParameterId (3)), plan.presence.q, 0.01f) && getValue (EqModule::getEnabledParameterId (3)) > 0.5f,
            "Aplicar: os parametros recebem o plano (passa-alta " + juce::String (plan.highPass.frequency, 0) + " Hz, embolado " + juce::String (plan.mud.gainDb, 1)
                + " dB, presenca +" + juce::String (plan.presence.gainDb, 1) + " dB)");
-    check (getValue (EqModule::getEnabledParameterId (4)) > 0.5f && near (getValue (EqModule::getGainParameterId (4)), 2.0f, 0.06f), "Aplicar: a banda de ar fica como o usuario deixou (D97)");
+    check (plan.air.isEnabled && plan.air.gainDb > 0.0f && getValue (EqModule::getEnabledParameterId (4)) > 0.5f && near (getValue (EqModule::getGainParameterId (4)), plan.air.gainDb, 0.06f)
+               && near (getValue (EqModule::getFrequencyParameterId (4)), 12000.0f, 0.5f) && near (getValue (EqModule::getQParameterId (4)), 0.7f, 0.01f),
+           "Aplicar: a banda de ar recebe a proposta: +" + juce::String (plan.air.gainDb, 1) + " dB (D108)");
+
+    auto withoutAir = plan;
+    withoutAir.air.isEnabled = false;
+    check (processor.getCompensationDb (plan) < processor.getCompensationDb (withoutAir), "Aplicar: a compensacao de volume conta o realce do Ar");
 
     // Os tons passam também pela compensação escrita na Saída.
     const auto compensation = getValue (LapidamixAudioProcessor::outputGainParameterId);
@@ -877,14 +1088,15 @@ static void testExplanations (const juce::AudioBuffer<float>& audio)
     plan.mud = { true, 316.0f, -5.0f, 1.0f, 8.0f, CorrectionReason::applied };
     plan.resonance = { true, 1000.0f, -2.0f, 4.0f, 6.0f, CorrectionReason::applied };
     plan.presence = { true, 3500.0f, 3.0f, 0.7f, -22.0f, CorrectionReason::applied };
-    plan.air.reason = CorrectionReason::notAutomatic;
+    plan.air = { true, 12000.0f, 1.6f, 0.7f, -55.6f, CorrectionReason::applied };
 
     const auto acting = explainCorrectionPlan (plan, analysis, 1.7f, profile, dictionary);
     check (juce::StringArray::fromLines (acting).size() > 0 && acting.contains ("Filtrar abaixo de 70 Hz.") && acting.contains ("Atenuar 5,0 dB em 316 Hz, Q 1,0.")
                && acting.contains (utf8 ("Realçar 3,0 dB em 3500 Hz")) && acting.contains ("Somar 1,7 dB."),
            "Explicacao: o que sera feito, com a mesma frase antes e depois do Aplicar");
     check (! acting.contains ("Atenuei") && ! acting.contains (utf8 ("Realcei")), "Explicacao: sem verbo no passado (D92, regra 1)");
-    check (acting.contains (utf8 ("Se realçar à mão, tende a abrir")), "Explicacao: banda de ar diz o efeito se for realcada a mao");
+    check (acting.contains (utf8 ("Realçar 1,6 dB em 12000 Hz")) && acting.contains (utf8 ("região de 10 kHz a 14 kHz está 55,6 dB abaixo")) && acting.contains (dictionary.findRegion (12000.0f)->boostEffect),
+           "Explicacao: banda de ar diz o que faz, por que e o efeito (D108)");
     check (acting.contains (utf8 ("está 8,0 dB acima da região média da voz (500 Hz a 2 kHz)")) && acting.contains (utf8 ("região de 2 kHz a 5 kHz está 22,0 dB abaixo")),
            "Explicacao: compara com a regiao media em linguagem simples");
 
@@ -912,9 +1124,10 @@ static void testExplanations (const juce::AudioBuffer<float>& audio)
     idle.mud = { false, 316.0f, 0.0f, 1.0f, 1.0f, CorrectionReason::withinRange };
     idle.resonance = { false, 0.0f, 0.0f, 4.0f, 0.0f, CorrectionReason::noEligiblePeak };
     idle.presence = { false, 3500.0f, 0.0f, 0.7f, -15.0f, CorrectionReason::withinRange };
+    idle.air = { false, 12000.0f, 0.0f, 0.7f, -45.0f, CorrectionReason::withinRange };
 
     const auto notActing = explainCorrectionPlan (idle, analysis, 0.0f, profile, dictionary);
-    check (count (notActing, utf8 ("Não mexer.")) == 3 && notActing.contains ("1,0 dB acima") && notActing.contains ("15,0 dB abaixo") && notActing.contains (utf8 ("Nenhuma frequência")),
+    check (count (notActing, utf8 ("Não mexer.")) == 4 && notActing.contains ("1,0 dB acima") && notActing.contains ("15,0 dB abaixo") && notActing.contains (utf8 ("Nenhuma frequência")),
            "Explicacao: tambem diz por que a banda nao age, com o valor medido (D92, regra 3)");
     check (notActing.contains ("Filtrar abaixo de 40 Hz.") && notActing.contains (utf8 ("em dúvida")) && notActing.contains ("70%") && notActing.contains ("12%"),
            "Explicacao: passa-alta conservador mostra a medida que causou a escolha");
@@ -925,7 +1138,7 @@ static void testExplanations (const juce::AudioBuffer<float>& audio)
     check (explainCorrectionPlan (highVoice, analysis, 0.0f, profile, dictionary).contains (utf8 ("atingiria as notas cantadas")), "Explicacao: regiao protegida pela fundamental");
 
     const auto off = explainCorrectionPlan (scaleCorrectionPlan (plan, 0.0f, profile.correction), analysis, 0.0f, profile, dictionary);
-    check (off.contains (utf8 ("Não filtrar: intensidade em 0%.")) && count (off, utf8 ("Não mexer: intensidade em 0%.")) == 3, "Explicacao: intensidade em 0%");
+    check (off.contains (utf8 ("Não filtrar: intensidade em 0%.")) && count (off, utf8 ("Não mexer: intensidade em 0%.")) == 4, "Explicacao: intensidade em 0%");
 
     check (explainCorrectionPlan (plan, analysis, -0.8f, profile, dictionary).contains ("Reduzir 0,8 dB."), "Explicacao: compensacao negativa reduz a Saida");
 
@@ -966,6 +1179,23 @@ static void testAnalysisData (const juce::AudioBuffer<float>& audio)
            "Analise: tom que salta uma oitava, " + juce::String (jumping.octaveJumpShare * 100.0f, 1) + "% de saltos");
     check (makeCorrectionPlan (jumping, voiceProfile.correction).highPass.reason == CorrectionReason::inconsistentFundamental,
            "Analise e regras juntas: saltos reais deixam o passa-alta em 40 Hz (D91)");
+
+    // Ruído nas pausas (D108): canto contínuo não tem pausa; com pausas de ruído, a curva aparece.
+    check (steady.noiseCurve.empty(), "Analise: sem pausa, o ruido nao e medido, mesmo com um tom constante");
+
+    auto withPauses = makeTone (false);
+    juce::Random random (99);
+    for (size_t i = 0; i < withPauses.size(); ++i)
+        if (((int) ((double) i / kRate) % 4) == 3)
+            withPauses[i] = 1.0e-4f * (2.0f * random.nextFloat() - 1.0f);
+
+    const auto paused = analyseMono (withPauses);
+    check ((int) paused.noiseCurve.size() == spectrum::numDisplayPoints, "Analise: com pausas, o ruido e medido");
+
+    const auto restoredNoise = AnalysisResult::fromValueTree (paused.toValueTree());
+    auto oldProject = paused.toValueTree();
+    oldProject.removeProperty ("noiseCurve", nullptr);
+    check (restoredNoise.noiseCurve.size() == paused.noiseCurve.size() && AnalysisResult::fromValueTree (oldProject).noiseCurve.empty(), "Analise: o ruido volta ao reabrir; projeto antigo fica sem pausa medida");
 
     // Um pico inserido em toda a gravação × só na primeira metade da voz.
     std::vector<float> mono ((size_t) (60.0 * kRate));
@@ -1017,11 +1247,13 @@ int main()
 {
     const juce::ScopedJuceInitialiser_GUI gui;
     testRules();
+    testAirRules();
 
     const auto sm7 = loadStereo ("VOZ-CANTADA-SHURE-SM7DB.wav");
     const auto sm57 = loadStereo ("VOZ-CANTADA-SHURE-SM57.wav");
 
     testAnalysisData (sm7);
+    testAirHissWithRealVoice (sm7);
     testApply (sm7);
     testExplanations (sm7);
     testLufsMeter();

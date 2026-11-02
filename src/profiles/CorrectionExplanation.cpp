@@ -155,6 +155,34 @@ namespace lapidamix
                 addBand (text, name, band.reason == CorrectionReason::applied ? utf8 ("Não mexer: intensidade em 0%.") : utf8 ("Não mexer."), why, unchangedEffect());
         }
 
+        void addAir (juce::String& text, const CorrectionPlan& plan, const AnalysisResult& analysis, const CorrectionSettings& settings,
+                     const char* name, const RegionDictionary& dictionary)
+        {
+            const auto& band = plan.air;
+            const auto noiseAdvice = utf8 ("considere um redutor de ruído.");
+
+            if (band.reason == CorrectionReason::airNotMeasurable)
+            {
+                addBand (text, name, utf8 ("Não mexer."),
+                         utf8 ("Nessa região, a voz quase não aparece acima do ruído da gravação, então não dá para medir. Se o chiado incomodar, ") + noiseAdvice,
+                         unchangedEffect());
+                return;
+            }
+
+            auto why = utf8 ("A região de ") + shortFrequency (settings.air.regionLow) + " a " + shortFrequency (settings.air.regionHigh)
+                     + utf8 (" está ") + aboveOrBelow (band.measuredDb) + " " + middleRegion (settings)
+                     + (analysis.noiseCurve.empty() ? juce::String() : utf8 (", sem contar o chiado das pausas"))
+                     + ". O aceito vai de " + aboveOrBelow (settings.air.minimumLevelDb) + " a " + aboveOrBelow (settings.air.maximumLevelDb) + ".";
+
+            if (band.reason == CorrectionReason::reducedForHiss)
+                why << utf8 (" O realce fica menor do que a medida pede, porque há chiado nessa região. Se incomodar, ") << noiseAdvice;
+
+            if (band.isEnabled)
+                addBand (text, name, describeGain (band), why, getEffect (dictionary, band.frequency, band.gainDb > 0.0f));
+            else
+                addBand (text, name, band.reason == CorrectionReason::withinRange ? utf8 ("Não mexer.") : utf8 ("Não mexer: intensidade em 0%."), why, unchangedEffect());
+        }
+
         void addOutput (juce::String& text, float compensationDb)
         {
             const auto rounded = juce::roundToInt (compensationDb * 10.0f);
@@ -225,9 +253,7 @@ namespace lapidamix
         addResonance (text, plan, bands[resonanceBand].name, dictionary);
         addPresence (text, plan, profile.correction, bands[presenceBand].name, dictionary);
 
-        addBand (text, bands[airBand].name, utf8 ("Não age sozinha; ajuste à mão, se quiser."),
-                 utf8 ("Esses agudos muito altos ficam perto do chiado da gravação, por isso o plugin não mexe neles sozinho."),
-                 utf8 ("Se realçar à mão, ") + getEffect (dictionary, bands[airBand].frequency, true).replaceSection (0, 1, "t"));
+        addAir (text, plan, analysis, profile.correction, bands[airBand].name, dictionary);
 
         addOutput (text, compensationDb);
         return text;

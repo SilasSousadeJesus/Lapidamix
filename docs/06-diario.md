@@ -16,6 +16,35 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fase 4: resultado do A/B, botões e simulação do Ar
+
+**Fase:** 4 — Correção automática (etapa c da D37, passo 6 de 6 da D99, com ajustes pedidos pelo usuário). A fase ainda não fechou.
+
+**O que foi feito:**
+- Resultado do A/B registrado em `08-plano-testes.md`: melhorou no SM7dB, a 100%; tudo certo no SM57; faltou Ar no SM7dB.
+- Botão Aplicar vira "Reaplicar análise" e novo botão Zerar (D106).
+- Medidas escondidas, com o botão Detalhes; aviso de pouca voz na linha de status (D107).
+- Modo `ar` no `banco`, que simula o Ar automático nas gravações do usuário, no VocalSet e em casos gerados.
+- Redutor de ruído registrado em `05-ideias-futuro.md`.
+- Ar automático aprovado e implementado (D108): a análise mede o ruído nas pausas, e a regra age caso a caso, com teto de +3 e -5 dB.
+- Teste próprio do realce pela metade, com curvas conhecidas e com a voz real somada a chiado gerado, porque nenhum material real dispara essa regra.
+- `banco ar` passou a usar a análise e a regra reais.
+
+**Decisões tomadas:** D106 e D107, pedidas pelo usuário; D108, que confirma a P59 com o teto escolhido pelo usuário.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- A primeira versão da medida de ruído dava um aviso falso de chiado no SM7dB. Foi corrigida antes do commit (`08-plano-testes.md`).
+- O aviso de chiado foi escrito sem verbo no passado, porque o texto aparece antes do Aplicar (regra 1 da D92): "O realce fica menor do que a medida pede...".
+- A faixa do Ar foi posta com o ouvido de uma voz só, e a Fase 5 deve calibrá-la.
+- Sem pausa na captura, chiado forte ainda é lido como ar.
+- Ar, botões e Detalhes ainda não foram conferidos no Reaper.
+
+**Próximos passos:** o usuário confere no Reaper. Se aprovar, a Fase 4 pode fechar.
+
+---
+
 ## 02/11/2026 — Fase 4: explicações das correções
 
 **Fase:** 4 — Correção automática (etapa c da D37, passo 5 de 6 da D99)
@@ -30,7 +59,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D105, que confirma a P58.
 
-**Commits:** este commit.
+**Commits:** `70a628d`.
 
 **Problemas / dúvidas:**
 - Só as duas primeiras bandas aparecem sem rolar o texto.

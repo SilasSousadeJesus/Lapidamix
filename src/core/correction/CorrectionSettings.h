@@ -49,6 +49,23 @@ namespace lapidamix
             float q;
         };
 
+        struct Air
+        {
+            float regionLow;
+            float regionHigh;
+            float frequency;
+            float q;
+            float minimumLevelDb;
+            float maximumLevelDb;
+            float maximumBoostDb;
+            float maximumCutDb;
+            float minimumAboveNoiseDb;
+            float hissLow;
+            float hissHigh;
+            float maximumHissDb;
+            float hissCautionRatio;
+        };
+
         float referenceLow;
         float referenceHigh;
         float minimumActionDb;
@@ -58,5 +75,6 @@ namespace lapidamix
         Mud mud;
         Presence presence;
         Resonance resonance;
+        Air air;
     };
 }

@@ -35,7 +35,7 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
   - **Embolado** — reduz o acúmulo de graves/médio-graves: até -5 dB, com Q 1,0 (D95).
   - **Ressonância** — atenua um pico, só se cumprir a regra abaixo (D87, D88).
   - **Presença** — realce suave onde falta clareza: até +3 dB em 3,5 kHz, com Q 0,7 (D96).
-  - **Ar** — não age sozinha na v1.0; continua disponível à mão (D97).
+  - **Ar** — mede 10 a 14 kHz contra os médios, sem o ruído das pausas; realça abaixo de -54 dB e atenua acima de -38 dB, até +3 e -5 dB. Com chiado alto, realça a metade e avisa; com o ar a menos de 1 dB do ruído, não age e avisa. Faixa provisória, a calibrar na Fase 5 (D108).
 - ✅ Limites da correção automática: cortes até -5 dB, realces até +3 dB (D98).
 - ✅ Intensidade 0–100% escala os ganhos das correções (D98). No passa-alta, 0% desliga a banda, e a frequência sobe de 40 Hz até o valor calculado, em proporção de oitavas (D100).
 - ✅ O plugin mostra as bandas que pretende usar antes de aplicá-las, com um botão Aplicar (D85), e explica cada uma em texto simples: o que será feito, por que e o efeito, inclusive quando a banda não age (D92).
@@ -52,7 +52,7 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ Bypass, ganho de saída de ±12 dB e os controles de cada banda: liga/desliga, frequência, ganho e Q (D65). A passa-alta não tem ganho e tem Q fixo (D62).
 - ✅ Botão Analisar/Parar, indicador de status e resultados em texto (D69, D75).
 - ✅ Gráfico com o RTA simples e as duas médias; o RTA bonito fica para a interface final (D71, D74).
-- ✅ Lista de bandas pretendidas, explicação em texto, botão Aplicar e intensidade (Fase 4; D85, D92, D98, D99).
+- ✅ Lista de bandas pretendidas, explicação em texto, botão Aplicar e intensidade (Fase 4; D85, D92, D98, D99). Aplicar vira "Reaplicar análise"; botão Zerar; medidas atrás do botão Detalhes (D106, D107).
 - 🟡 Os parâmetros devem ser salvos com o projeto do DAW e automatizáveis. ✅ Exceção: a intensidade não é automatizável (D104).
 
 ## 5. Arquitetura técnica
