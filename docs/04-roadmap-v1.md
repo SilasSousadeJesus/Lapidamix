@@ -7,7 +7,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 | 0 | Planejamento | ✅ Concluída (02/11/2026) |
 | 1 | Ambiente e plugin "vazio" | ✅ Concluída (02/11/2026) |
 | 2 | EQ manual | ✅ Concluída (02/11/2026) |
-| 3 | Análise (só medir) | ⚪ Não iniciada |
+| 3 | Análise (só medir) | 🔵 Em andamento (autorizada em 02/11/2026 — D67) |
 | 4 | Correção automática | ⚪ Não iniciada |
 | 5 | Testes com várias vozes | ⚪ Não iniciada |
 | 6 | Fechamento da v1.0 | ⚪ Não iniciada |
@@ -31,7 +31,8 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** dá para mixar a voz "na mão" com o plugin, respeitando a regra de ouro do tempo real.
 
 ## Fase 3 — Análise (só medir)
-- **Entregas:** etapa de estudo da análise, por onde a fase começa (D37); gravação da voz de teste (voz seca no SM7dB, sem efeitos, ~30 s — D33); resposta à A04 (quantos segundos de análise são necessários — D34); botão Analisar; detecção dos trechos cantados; espectro médio; detecção da fundamental e das ressonâncias. O plugin **mostra** as medidas, ainda sem aplicar nada. 🟡 RTA simples como ferramenta de diagnóstico (P14).
+- **Andamento (D37):** estudo concluído (`07-referencias.md`); proposta aprovada (D69 a D79); implementação concluída e verificada com voz sintética; teste com voz real aguardando o usuário (D77).
+- **Entregas:** etapa de estudo da análise, por onde a fase começa (D37); gravação da voz de teste (voz seca no SM7dB, sem efeitos, ~30 s — D33); resposta à A04 (quantos segundos de análise são necessários — D34); botão Analisar; detecção dos trechos cantados; espectro médio; detecção da fundamental e das ressonâncias. O plugin **mostra** as medidas, ainda sem aplicar nada. RTA simples como ferramenta de diagnóstico (D74).
 - **Pronto quando:** as medidas batem com o que se ouve/vê em outras ferramentas, em 3 a 5 vozes bem diferentes (as 20 vozes ficam para a Fase 5).
 
 ## Fase 4 — Correção automática

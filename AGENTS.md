@@ -17,7 +17,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 2 — EQ manual: concluída.** A Fase 3 ainda não começou. Não escrever código da Fase 3 até o usuário pedir explicitamente o início dela. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
+**Fase 3 — Análise (só medir): em andamento** (D67). A análise e o RTA estão implementados (D69 a D76), e o teste com voz real (D77) aguarda o usuário. Nada corrige o som sozinho até a Fase 4. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 
@@ -70,13 +70,14 @@ A pasta `docs/` é a **fonte da verdade** do projeto (✅ D24). O Google Drive g
 | `docs/08-plano-testes.md` | Como validar o plugin |
 | `docs/09-glossario.md` | Termos técnicos explicados |
 | `docs/10-estado-atual.md` | Fase e etapa atuais, próximo passo e pendências. É o primeiro arquivo a ser lido |
+| `docs/11-bancos-de-vozes.md` | Bancos de vozes para teste, com licenças e créditos. Áudios em `test-audio/`, fora do Git |
 
 ### Manutenção dos documentos
 
 **Tudo o que for feito no projeto precisa ser refletido nos documentos, para que eles evoluam junto com o trabalho (D57):**
 
 - **A cada mudança relevante:** atualizar `docs/10-estado-atual.md`, sem esperar o fim da sessão.
-- **Antes de cada commit:** o diário (entrada da sessão) e o estado atual devem estar atualizados com o que o commit leva.
+- **Antes de cada commit:** o diário (entrada da sessão) e o estado atual devem estar atualizados com o que o commit leva. Onde o hash ainda não existir, escrever "este commit" e trocar pelo hash real na próxima mudança, sem criar commit só para isso (D68).
 - **No mesmo commit:** atualizar qualquer outro documento afetado pela mudança (decisões, roadmap, especificação, glossário etc.).
 
 - **Decisão nova:** registrar primeiro em `docs/02-decisoes.md` (próximo número Dxx, com data e motivo), depois ajustar os documentos afetados. Só registre como decisão (✅) o que eu confirmei.

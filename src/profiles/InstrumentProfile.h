@@ -23,12 +23,16 @@ namespace lapidamix
     struct InstrumentProfile
     {
         const char* name;
+        float minimumFundamental;
+        float maximumFundamental;
         std::array<EqBandProfile, numEqBands> eqBands;
     };
 
     // Valores iniciais de partida para a voz, a ajustar nos testes (D62).
     inline constexpr InstrumentProfile voiceProfile {
         "Voz",
+        60.0f,
+        1100.0f,
         { {
             { "Passa-alta",   EqBandType::highPass,  80.0f,    0.707f, 0.707f, 0.707f, false, false },
             { "Embolado",     EqBandType::bell,      300.0f,   1.0f,   0.3f,   10.0f,  true,  true },

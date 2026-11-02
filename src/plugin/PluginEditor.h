@@ -3,9 +3,11 @@
 #include <array>
 
 #include "plugin/PluginProcessor.h"
+#include "plugin/SpectrumPlot.h"
 
-// Interface simples (D08, D65): lista de instrumento, bypass, ganho de saída e bandas.
-class LapidamixAudioProcessorEditor final : public juce::AudioProcessorEditor
+// Interface simples (D08, D65): instrumento, bypass, ganho de saída, bandas, análise e RTA.
+class LapidamixAudioProcessorEditor final : public juce::AudioProcessorEditor,
+                                            private juce::Timer
 {
 public:
     explicit LapidamixAudioProcessorEditor (LapidamixAudioProcessor& processor);
@@ -30,8 +32,14 @@ private:
         std::unique_ptr<ParameterState::SliderAttachment> qAttachment;
     };
 
+    void timerCallback() override;
+    void updateAnalysisStatus();
+    void showAnalysisResult (const lapidamix::AnalysisResult& result);
+
     void setUpLabel (juce::Label& label, const char* text);
     void setUpSlider (juce::Slider& slider);
+
+    LapidamixAudioProcessor& audioProcessor;
 
     juce::Label instrumentLabel;
     juce::ComboBox instrumentBox;
@@ -49,6 +57,12 @@ private:
     juce::Label qHeader;
 
     std::array<BandControls, lapidamix::numEqBands> bands;
+
+    juce::TextButton analyseButton;
+    juce::Label analysisStatus;
+    juce::Label analysisResults;
+    SpectrumPlot spectrumPlot;
+    int shownResultVersion = -1;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LapidamixAudioProcessorEditor)
 };

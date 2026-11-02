@@ -10,6 +10,9 @@
 *.wma
 *.opus
 
+# Bancos de vozes baixados (ver docs/11-bancos-de-vozes.md)
+test-audio/
+
 # Pastas de compilação
 build/
 builds/

@@ -4,7 +4,9 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include "core/analysis/AnalysisController.h"
 #include "modules/EqModule.h"
+#include "plugin/RtaAnalyzer.h"
 
 // Ligação com o DAW: parâmetros, salvamento e a cadeia de processamento.
 class LapidamixAudioProcessor final : public juce::AudioProcessor
@@ -51,7 +53,16 @@ public:
 
     juce::AudioProcessorValueTreeState& getParameters() noexcept { return parameters; }
 
+    lapidamix::AnalysisController& getAnalysis() noexcept { return analysis; }
+    RtaAnalyzer& getRta() noexcept { return rta; }
+
+    void startAnalysis();
+    lapidamix::AnalysisResult getLastAnalysisResult();
+    int getResultVersion() const noexcept { return resultVersion.load(); }
+
 private:
+    void storeAnalysisResult (const lapidamix::AnalysisResult& result);
+
     void render (juce::AudioBuffer<float>& buffer) noexcept;
     float getTargetOutputGain() const noexcept;
 
@@ -61,6 +72,14 @@ private:
     std::atomic<float>* bypassValue = nullptr;
     std::atomic<float>* outputGainDbValue = nullptr;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> outputGain;
+
+    lapidamix::AnalysisController analysis;
+    RtaAnalyzer rta;
+    std::atomic<double> currentSampleRate { 0.0 };
+    std::atomic<int> resultVersion { 0 };
+
+    juce::CriticalSection resultLock; // Nunca usado na thread de áudio.
+    lapidamix::AnalysisResult lastResult;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LapidamixAudioProcessor)
 };

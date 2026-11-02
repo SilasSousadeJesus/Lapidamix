@@ -44,12 +44,20 @@ LapidamixAudioProcessor::LapidamixAudioProcessor()
       bypassValue (parameters.getRawParameterValue (bypassParameterId)),
       outputGainDbValue (parameters.getRawParameterValue (outputGainParameterId))
 {
+    analysis.onResult = [this] (const lapidamix::AnalysisResult& result) { storeAnalysisResult (result); };
 }
 
 LapidamixAudioProcessor::~LapidamixAudioProcessor() = default;
 
 void LapidamixAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    // Uma captura em andamento usaria a taxa de amostragem antiga.
+    if (! juce::exactlyEqual (currentSampleRate.load(), sampleRate))
+        analysis.abort();
+
+    currentSampleRate.store (sampleRate);
+    rta.setSampleRate (sampleRate);
+
     const juce::dsp::ProcessSpec spec { sampleRate,
                                         (juce::uint32) samplesPerBlock,
                                         (juce::uint32) getTotalNumOutputChannels() };
@@ -94,6 +102,9 @@ void LapidamixAudioProcessor::render (juce::AudioBuffer<float>& buffer) noexcept
     // Regra de ouro do tempo real (D09): nada aqui pode bloquear a thread de áudio.
     const juce::ScopedNoDenormals noDenormals;
 
+    // A análise mede a entrada, antes do EQ, para não medir a própria correção (D69).
+    analysis.pushInput (buffer);
+
     eq.setBypassed (bypassValue->load (std::memory_order_relaxed) >= 0.5f);
     eq.process (buffer);
 
@@ -101,6 +112,34 @@ void LapidamixAudioProcessor::render (juce::AudioBuffer<float>& buffer) noexcept
 
     if (outputGain.isSmoothing() || ! juce::exactlyEqual (outputGain.getTargetValue(), 1.0f))
         outputGain.applyGain (buffer, buffer.getNumSamples());
+
+    rta.push (buffer);
+}
+
+void LapidamixAudioProcessor::startAnalysis()
+{
+    const auto sampleRate = currentSampleRate.load();
+
+    if (sampleRate <= 0.0)
+        return;
+
+    analysis.start ({ sampleRate, lapidamix::voiceProfile.minimumFundamental, lapidamix::voiceProfile.maximumFundamental });
+}
+
+void LapidamixAudioProcessor::storeAnalysisResult (const lapidamix::AnalysisResult& result)
+{
+    {
+        const juce::ScopedLock lock (resultLock);
+        lastResult = result;
+    }
+
+    ++resultVersion;
+}
+
+lapidamix::AnalysisResult LapidamixAudioProcessor::getLastAnalysisResult()
+{
+    const juce::ScopedLock lock (resultLock);
+    return lastResult;
 }
 
 float LapidamixAudioProcessor::getTargetOutputGain() const noexcept
@@ -180,7 +219,15 @@ void LapidamixAudioProcessor::changeProgramName (int index, const juce::String& 
 
 void LapidamixAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    const auto state = parameters.copyState();
+    auto state = parameters.copyState();
+
+    {
+        // As medidas são salvas com o projeto, sem guardar áudio (D76).
+        const juce::ScopedLock lock (resultLock);
+
+        if (lastResult.isValid)
+            state.appendChild (lastResult.toValueTree(), nullptr);
+    }
 
     if (const auto xml = state.createXml())
         copyXmlToBinary (*xml, destData);
@@ -190,7 +237,19 @@ void LapidamixAudioProcessor::setStateInformation (const void* data, int sizeInB
 {
     if (const auto xml = getXmlFromBinary (data, sizeInBytes))
         if (xml->hasTagName (parameters.state.getType()))
-            parameters.replaceState (juce::ValueTree::fromXml (*xml));
+        {
+            auto state = juce::ValueTree::fromXml (*xml);
+            const auto savedResult = state.getChildWithName (lapidamix::AnalysisResult::getTreeType());
+
+            {
+                const juce::ScopedLock lock (resultLock);
+                lastResult = lapidamix::AnalysisResult::fromValueTree (savedResult);
+            }
+
+            state.removeChild (savedResult, nullptr);
+            parameters.replaceState (state);
+            ++resultVersion;
+        }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

@@ -22,6 +22,15 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **EQ corretivo** — EQ usado para resolver problemas, não para criar um som estilizado.
 - **EQ estático** — a correção é fixa durante toda a música.
 - **EQ dinâmico** — a correção só age quando o problema aparece.
+- **Espectro médio (LTAS)** — média do espectro ao longo de um trecho; mostra o que permanece no som e perde o que muda rapidamente.
+- **FFT** — cálculo que transforma um pedaço de áudio no seu espectro.
+- **Formante** — pico largo de energia causado pelo formato do trato vocal; muda com a vogal.
+- **Harmônicos** — frequências múltiplas da fundamental que acompanham cada nota.
+- **Janela (em análise de áudio)** — curva aplicada a um pedaço de áudio antes da FFT, para reduzir erros nas bordas.
+- **Periodicidade** — o quanto um som se repete com regularidade: a voz cantada tem muita; respiração e ruído, pouca.
+- **Planicidade espectral** — medida de quanto um som se parece com ruído (perto de 1) ou com um tom (perto de 0).
+- **Proeminência** — quanto um pico se destaca da própria vizinhança no espectro.
+- **YIN** — método publicado para detectar a fundamental, baseado na repetição do sinal.
 - **Espectro** — o "mapa" de quanta energia o som tem em cada frequência.
 - **Fundamental** — a frequência mais grave de uma nota cantada; define o "peso" da voz. Cortá-la deixa a voz fina.
 - **Passa-alta** — filtro que remove os graves abaixo de certa frequência.

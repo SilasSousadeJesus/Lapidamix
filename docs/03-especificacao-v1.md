@@ -16,10 +16,13 @@ Legenda: ✅ Decidido · 🟡 Proposta · ❓ Em aberto
 
 Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à voz/instrumento analisado, sem usar uma voz como molde.
 
-- 🟡 **Só trechos cantados:** ignorar silêncio, respiração e ruído.
-- 🟡 **Espectro médio** da voz: quanto de energia há em cada faixa de frequência.
-- 🟡 **Detectar a fundamental** (a nota grave característica de quem canta) e posicionar as correções a partir dela. "Embolado" fica em lugares diferentes numa voz grave masculina e numa voz feminina aguda.
-- 🟡 **Ressonâncias** detectadas de forma relativa: picos que se destacam dos vizinhos no espectro da própria voz.
+- ✅ **Mede a entrada, antes do EQ**, numa thread separada; nesta fase só mostra os resultados (D69).
+- ✅ **Duas classes de trecho:** voz válida e todo o som; silêncio é ignorado, e respiração e ruído ficam fora da voz válida (D70).
+- ✅ **Duas médias do espectro**, feitas em potência: voz cantada (principal) e todo o som, incluindo consoantes como "s" (D71).
+- ✅ **Fundamental:** mediana, percentis de 5% e 95% e confiança (D72). Na Fase 4, o passa-alta se baseia nas notas mais graves (D78).
+- ✅ **Ressonâncias candidatas**, sempre relativas ao espectro da própria voz e presentes em notas diferentes (D73; ajuste na P40).
+- ✅ **Duração:** 30 s de voz válida ou até clicar Parar, com aviso abaixo de 10 s (D75). A meta ainda será confirmada com medições (A04).
+- 🟡 **Posicionar as correções** a partir da fundamental: "embolado" fica em lugares diferentes numa voz grave masculina e numa voz feminina aguda (Fase 4).
 - 🟡 **Curva-alvo como faixa saudável:** o equilíbrio entre graves, médios e agudos deve ficar dentro de uma faixa. O plugin só corrige o que estiver fora, e só o quanto precisa.
 
 ## 3. Correção (o EQ)
@@ -41,8 +44,9 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ Bem simples, mas com todos os parâmetros já conectados (D08), para a interface bonita ser só "trocar a casca" depois.
 - ✅ Lista de instrumento, só com "Voz" (D30).
 - ✅ Bypass, ganho de saída de ±12 dB e os controles de cada banda: liga/desliga, frequência, ganho e Q (D65). A passa-alta não tem ganho e tem Q fixo (D62).
-- 🟡 Outros elementos mínimos (Fases 3 e 4): botão Analisar, indicador de status (analisando / pronto) e intensidade.
-- 🟡 RTA simples como ferramenta de diagnóstico, a partir da Fase 3; o RTA bonito fica para a interface final (P14).
+- ✅ Botão Analisar/Parar, indicador de status e resultados em texto (D69, D75).
+- ✅ Gráfico com o RTA simples e as duas médias; o RTA bonito fica para a interface final (D71, D74).
+- 🟡 Intensidade (Fase 4).
 - 🟡 Os parâmetros devem ser salvos com o projeto do DAW e automatizáveis.
 
 ## 5. Arquitetura técnica

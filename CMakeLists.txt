@@ -30,10 +30,17 @@ juce_add_plugin(Lapidamix
 
 target_sources(Lapidamix
     PRIVATE
+        src/core/analysis/AnalysisController.cpp
+        src/core/analysis/AnalysisResult.cpp
+        src/core/analysis/AudioCapture.cpp
+        src/core/analysis/VoiceAnalyzer.cpp
+        src/core/analysis/YinPitchDetector.cpp
         src/core/eq/EqBandFilter.cpp
         src/modules/EqModule.cpp
         src/plugin/PluginEditor.cpp
-        src/plugin/PluginProcessor.cpp)
+        src/plugin/PluginProcessor.cpp
+        src/plugin/RtaAnalyzer.cpp
+        src/plugin/SpectrumPlot.cpp)
 
 target_include_directories(Lapidamix
     PRIVATE

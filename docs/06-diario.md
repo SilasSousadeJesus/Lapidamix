@@ -9,10 +9,80 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 **Fase:** …
 **O que foi feito:** …
 **Decisões tomadas:** (referência ao 02, ex.: D17)
-**Commits:** (hashes dos commits da sessão; o commit que traz a própria entrada é citado pela mensagem)
+**Commits:** (hashes dos commits da sessão; onde o hash ainda não existir, "este commit", trocado pelo hash real na próxima mudança — D68)
 **Problemas / dúvidas:** …
 **Próximos passos:** …
 ```
+
+---
+
+## 02/11/2026 — Banco de vozes VocalSet
+
+**Fase:** 3 — Análise, só medir (preparação do teste com vozes reais)
+
+**O que foi feito:**
+- `test-audio/` adicionada ao `.gitignore`, com a confirmação do Git antes do download.
+- VocalSet 1.2 baixado e conferido pelo MD5 publicado. Extraído com o 7-Zip em `test-audio/vocalset/` (7,5 GB, 10.687 arquivos WAV com cabeçalho válido). O zip foi apagado depois.
+- Criado `11-bancos-de-vozes.md`, com a tabela de bancos, o crédito da licença CC BY 4.0 e o que já foi baixado; crédito também no `README.md`.
+
+**Decisões tomadas:** D80.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- O `tar` do Windows e o .NET não leram o zip, por ter mais de 4 GB sem zip64. O 7-Zip extraiu com um aviso sobre isso, e sem erros de CRC.
+- A soma dos arquivos dá 25,4 horas porque as 3 pastas repetem as gravações; a página do banco informa cerca de 10,1 horas. A conta exata por pasta não foi conferida.
+
+**Próximos passos:**
+- O usuário termina a gravação e faz o teste com voz real (D77).
+
+---
+
+## 02/11/2026 — Fase 3: análise e RTA implementados
+
+**Fase:** 3 — Análise, só medir (etapa c concluída; etapa d aguardando o usuário)
+
+**O que foi feito:**
+- Proposta aprovada, com média em potência, duas médias, meta em segundos de voz válida e proteção da fundamental pelas notas graves na Fase 4.
+- A06 respondida (gravações de conhecidos e banco de trilhas), com licenças pesquisadas em `07-referencias.md`.
+- Criados `AudioCapture`, `YinPitchDetector`, `VoiceAnalyzer`, `AnalysisController`, `AnalysisResult`, `RtaAnalyzer` e `SpectrumPlot`; plugin compilado em Release, com 0 erros e 0 avisos.
+- Verificação com tons e voz sintética, em programa temporário apagado depois: todas as verificações passaram em 3 rodadas, sem pedidos de memória na thread de áudio.
+
+**Decisões tomadas:** D69 a D79. Proposta nova: P40.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- A verificação encontrou dois erros meus: limites de silêncio calculados como amplitude em vez de potência, e falsas ressonâncias vindas de harmônicos coincidentes. Ambos foram corrigidos.
+- A correção das ressonâncias mudou o método aprovado na D73 e o limite de 4 para 3 dB, registrados na P40 para decisão do usuário.
+- Picos perto de 4 kHz foram subestimados; os limites foram calibrados só em voz sintética.
+- A FAQ da Cambridge-MT foi lida só pelo trecho da busca, porque a página bloqueou o acesso direto.
+
+**Próximos passos:**
+- O usuário faz o teste com voz real (D77).
+
+---
+
+## 02/11/2026 — Fase 3: estudo e proposta da análise
+
+**Fase:** 3 — Análise, só medir (etapas a e b da D37)
+
+**O que foi feito:**
+- Fase 3 autorizada e status atualizado.
+- Ajustada a citação de commits no `AGENTS.md` e no modelo deste diário (D68).
+- Estudo feito, com a nota em `07-referencias.md`, separando fatos e suposições.
+- Proposta registrada (P31 a P39), e A06 aberta. Nenhum código foi escrito.
+
+**Decisões tomadas:** D67 e D68. Propostas novas: P31 a P39.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- O PDF do artigo do YIN não pôde ser lido; o valor do limite citado na nota é de memória e está marcado como suposição.
+- Não há fonte com tempo de análise para canto, nem algoritmo padrão de detecção de ressonâncias; a proposta deixa isso para medição.
+
+**Próximos passos:**
+- Aprovação ou ajuste da proposta e resposta à A06 pelo usuário.
 
 ---
 
@@ -49,7 +119,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D59 a D66.
 
-**Commits:** nenhum até aqui nesta etapa; as mudanças aguardam commit.
+**Commits:** este commit.
 
 **Problemas / dúvidas:**
 - A faixa de frequência dos parâmetros continua de 20 Hz a 20 kHz, porque o DAW precisa de uma faixa fixa; o limite de 45% é aplicado no processamento, e a janela pode mostrar um valor acima do aplicado em taxas de amostragem baixas.
@@ -73,7 +143,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D58. Propostas novas: P23 a P30.
 
-**Commits:** nenhum até aqui nesta etapa; as mudanças aguardam commit.
+**Commits:** este commit.
 
 **Problemas / dúvidas:**
 - A página do ReaEQ não abriu e o artigo de Vicanek só pôde ser lido em parte, como indicado na nota.

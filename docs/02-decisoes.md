@@ -72,6 +72,20 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D64 | 02/11/2026 | **Transparência:** bandas começam desligadas e com 0 dB; banda desligada não processa o áudio; ligar, desligar e o bypass geral fazem transição curta (cerca de 20 ms), e o bypass é informado ao DAW (confirma P28) | O plugin recém-aberto não altera o som, e ligar ou desligar não causa estalo |
 | D65 | 02/11/2026 | **Interface simples:** lista de instrumento, bypass, ganho de saída de ±12 dB e, para cada banda, liga/desliga, frequência, ganho e Q; sem gráfico nem RTA nesta fase (confirma P29, com ajuste) | O ganho de saída permite comparar com o bypass no mesmo volume, porque um som mais alto tende a parecer melhor. O bypass também ignora o ganho de saída |
 | D66 | 02/11/2026 | **Teste da Fase 2 no Reaper:** repetir o cancelamento com tudo desligado; conferir cada banda com ruído rosa e analisador de espectro, em 44,1 e 96 kHz; mexer nos controles durante a reprodução; salvar e reabrir; mixar uma gravação de voz à mão (confirma P30) | Cobre os critérios da Fase 2 e as suposições do estudo |
+| D67 | 02/11/2026 | **Início da Fase 3 autorizado**, começando pela etapa de estudo da análise (D37). Nenhum código antes da aprovação da proposta | Autorização do usuário |
+| D68 | 02/11/2026 | **Citação de commits:** no estado atual e no diário, escrever "este commit" quando o hash ainda não existir, e atualizar com o hash real na próxima mudança. Ajusta a D55 e a D57 | Evita commits só de correção |
+| D69 | 02/11/2026 | **Fluxo da análise:** botão Analisar/Parar. O áudio de entrada, antes do EQ e somado em mono, é copiado para memória reservada ao clicar, e uma thread separada analisa; o plugin só mostra resultados (confirma P31) | Medir antes do EQ evita medir a própria correção; cumpre D09 e D28 |
+| D70 | 02/11/2026 | **Trechos analisados:** blocos de 25 ms em duas classes. **Com som:** acima de -60 dBFS e no máximo 20 dB abaixo da média da gravação. **Voz válida:** com som e periódico pelo YIN, o que rejeita respiração e ruído (confirma P05 e P32, com ajuste) | Valores iniciais a calibrar nos testes |
+| D71 | 02/11/2026 | **Espectro médio:** método de Welch com janela de Hann, cerca de 186 ms e 75% de sobreposição; **a média é feita em potência e só depois convertida para dB**. Duas curvas, ambas mostradas: **voz cantada** (principal) e **todos os trechos com som**, incluindo consoantes como "s". Suavização de 1/6 de oitava (confirma P33, com ajustes) | Média em dB distorceria o resultado; as duas curvas dão à Fase 4 a informação para decidir sobre o ar, e ajudam o de-esser no futuro |
+| D72 | 02/11/2026 | **Fundamental:** YIN escrito por nós a partir do artigo, de 60 a 1100 Hz, com mediana, percentis de 5% e 95% e confiança; faixa no perfil de instrumento (confirma P34) | Percentis são menos sensíveis a erros isolados |
+| D73 | 02/11/2026 | **Ressonâncias candidatas:** picos de 150 Hz a 8 kHz pelo menos 4 dB acima da vizinhança, comparando 1/24 e 1/1 oitava, presentes em notas diferentes; até 3 candidatas (confirma P35) | Sempre relativo à própria voz (D14); nada é corrigido nesta fase. Valores a calibrar |
+| D74 | 02/11/2026 | **RTA simples:** saída do plugin, de 20 Hz a 20 kHz, FFT de 4096 pontos com janela de Hann, cerca de 30 quadros por segundo, com `AbstractFifo`; só calcula com a janela aberta. O RTA bonito fica para a interface final (confirma P14 e P36) | Ferramenta de diagnóstico |
+| D75 | 02/11/2026 | **Duração da análise:** concluir ao atingir **30 s de voz válida** (não de tempo total) ou ao clicar Parar, com aviso se houver menos de 10 s de voz; limite de 120 s de captura. Confirmar a meta medindo a estabilidade com 10, 20, 30 e 45 s (confirma P37, com ajuste) | Pausas e respirações não contam como voz. As fontes só cobrem fala; a resposta final à A04 depende das medições |
+| D76 | 02/11/2026 | **Arquitetura e salvamento:** análise em `src/core/analysis/`, sem depender da interface; RTA em `src/plugin/`; resultados salvos com o projeto, sem guardar áudio (confirma P38) | Segue D28 e D30, e permite testar a análise sem DAW |
+| D77 | 02/11/2026 | **Teste da Fase 3:** sinais com resposta conhecida; ressonância artificial inserida com o ReaEQ; comparação de f0 e espectro com outras ferramentas em 3 a 5 vozes (f0 dentro de ±3%); repetir o cancelamento com análise e RTA ligados (confirma P39) | Cobre o critério da Fase 3 e prova que medir não altera o som |
+| D78 | 02/11/2026 | **Proteção da fundamental na Fase 4:** o passa-alta se baseia nas notas mais graves (ex.: percentil de 5%), não na mediana, e nunca fica acima delas (confirma P04, com ajuste) | O passa-alta precisa ficar abaixo das notas mais baixas cantadas |
+| D79 | 02/11/2026 | **Vozes de teste (responde A06):** gravações de conhecidos, com permissão, e um banco de trilhas separadas. Os áudios ficam fora do Git. Opções e licenças em `11-bancos-de-vozes.md` | Combina microfones e salas comuns com material de referência |
+| D80 | 02/11/2026 | **VocalSet aprovado como banco de vozes**, baixado na pasta `test-audio/vocalset/`, ignorada pelo Git. O crédito da licença CC BY 4.0 fica em `11-bancos-de-vozes.md` e no `README.md`. Os bancos são registrados em `11-bancos-de-vozes.md` | Licença mais clara entre as opções; o documento próprio mostra onde achar mais vozes no futuro |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -80,12 +94,10 @@ Serão decididas nas fases em que forem usadas (D31).
 | # | Proposta | Observação |
 |---|---|---|
 | P03 | Limites de segurança: cortes de no máximo ~-5 dB, realces de no máximo ~+3 dB, bandas largas (Q baixo) | Valores a calibrar nos testes |
-| P04 | **Proteger a fundamental**: detectar a nota grave da voz e nunca colocar o passa-alta acima dela | Preserva o peso de vozes graves |
-| P05 | Analisar **só os trechos cantados** (ignorar silêncio, respiração, ruído) | Evita distorcer a média |
 | P06 | Controle de **intensidade** (0–100%) e **bypass** | Ajuste fino e comparação antes/depois |
 | P08 | Curva-alvo como **faixa saudável de equilíbrio**, não como linha exata | Forma de cumprir a D14 |
 | P12 | **Numeração seguinte:** v2 = violão | Continua a lógica da D19, seguindo a ordem da D18 |
-| P14 | **RTA:** um RTA simples na Fase 3 como ferramenta de diagnóstico, e o RTA bonito na interface final | Ajuda a conferir as medidas da análise |
+| P40 | **Ajuste na medida de ressonâncias (detalha a D73):** medir cada pico só nos harmônicos das notas cantadas, em relação à mediana dos harmônicos dos dois lados, numa vizinhança de 1 oitava; o pico precisa ficar acima dos dois lados e ser mais estreito que um formante; limite de 3 dB nessa nova medida, em vez de 4 dB | Já implementado, porque a comparação de resoluções da D73 gerava falsas candidatas nos testes sintéticos (harmônicos que coincidem entre notas). O limite foi calibrado só em voz sintética e precisa de validação com voz real |
 
 ## Propostas encerradas
 
@@ -114,12 +126,24 @@ Serão decididas nas fases em que forem usadas (D31).
 | P28 | Transparência das bandas e do bypass | Confirmada: ver D64 |
 | P29 | Interface simples | Confirmada com ajuste: ver D65 |
 | P30 | Teste da Fase 2 no Reaper | Confirmada: ver D66 |
+| P04 | Proteger a fundamental: nunca colocar o passa-alta acima da nota grave da voz | Confirmada com ajuste: ver D78 |
+| P05 | Analisar só os trechos cantados | Confirmada com ajuste: ver D70 e D71 |
+| P14 | RTA simples na Fase 3 e RTA bonito na interface final | Confirmada: ver D74 |
+| P31 | Fluxo da análise | Confirmada: ver D69 |
+| P32 | Trechos com voz | Confirmada com ajuste: ver D70 |
+| P33 | Espectro médio | Confirmada com ajustes: ver D71 |
+| P34 | Fundamental com YIN | Confirmada: ver D72 |
+| P35 | Ressonâncias candidatas | Confirmada: ver D73 |
+| P36 | RTA simples | Confirmada: ver D74 |
+| P37 | Duração da análise | Confirmada com ajuste: ver D75 |
+| P38 | Arquitetura e salvamento | Confirmada: ver D76 |
+| P39 | Teste da Fase 3 | Confirmada: ver D77 |
 
 ## ❓ Em aberto
 
 | # | Pergunta |
 |---|---|
-| A04 | Quantos segundos de análise são necessários? **Adiada para a Fase 3 (D34)** |
+| A04 | Quantos segundos de análise são necessários? **Meta inicial de 30 s de voz válida (D75), a confirmar com medições** |
 
 ## Perguntas encerradas
 
@@ -129,3 +153,4 @@ Serão decididas nas fases em que forem usadas (D31).
 | A02 | Qual licença de código aberto usar? | AGPLv3: ver D42 |
 | A03 | O plugin deve explicar cada ajuste que fez (ex.: "cortei 3 dB em 250 Hz porque…")? | Movida para `05-ideias-futuro.md`: ver D23 |
 | A05 | Nome definitivo do plugin | Lapidamix: ver D45 |
+| A06 | De onde virão as outras vozes do teste da Fase 3? | Gravações de conhecidos e banco de trilhas: ver D79 |

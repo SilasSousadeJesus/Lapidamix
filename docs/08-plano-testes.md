@@ -5,7 +5,7 @@
 ## Material de teste
 - **Voz principal:** minha voz seca no SM7dB, sem nenhum efeito, ~30 s cantados.
 - **Variedade:** vozes graves e agudas, masculinas e femininas, microfones diferentes (dinâmicos e condensadores), gravações boas e problemáticas. Meta: de 3 a 5 vozes bem diferentes na Fase 3 e pelo menos 20 vozes diferentes na Fase 5 (D38).
-- Arquivos de áudio de teste ficam fora do Git (são grandes); registrar aqui de onde vieram.
+- Arquivos de áudio de teste ficam fora do Git, na pasta `test-audio/`; a origem e os créditos ficam em `11-bancos-de-vozes.md`.
 
 ## O que verificar
 
@@ -34,3 +34,4 @@
 | 02/11/2026 | Voz do usuário, no Reaper | 0.1.0 (plugin vazio) | Os 5 passos da D53: carregar, conferir a lista, ouvir com e sem o plugin, teste de cancelamento, salvar e reabrir | ✅ Todos passaram | Teste feito e informado pelo usuário. Encerra a Fase 1 |
 | 02/11/2026 | Sinais gerados por programa temporário, sem DAW | 0.1.0 (com EQ) | Transparência bit a bit, curvas das 5 bandas, bypass, ganho de saída, extremos de 22,05 a 192 kHz, denormais, mono, salvamento e pedidos de memória na thread de áudio | ✅ Todas as verificações passaram | Feito por Claude, em compilação Debug. Não substitui o teste no Reaper (D66) |
 | 02/11/2026 | Voz do usuário e ruído, no Reaper, em 44,1 e 96 kHz | 0.1.0 (com EQ) | Os 5 passos da D66: transparência, curva de cada banda, mexer durante a reprodução, salvar e reabrir, mixar a voz à mão | ✅ Todos passaram | Teste feito e informado pelo usuário. Encerra a Fase 2 |
+| 02/11/2026 | Tons e voz sintética, gerados por programa temporário, sem DAW | 0.1.0 (com análise) | Fundamental de 65 a 1047 Hz em 3 taxas; voz válida contra todo o som; média em potência; ressonâncias inseridas e falsas candidatas; ruído e silêncio; captura e RTA sem alterar o som nem pedir memória; meta de 30 s; salvar e reabrir | ✅ Todas as verificações passaram | Feito por Claude, em compilação Debug. Não substitui o teste com voz real (D77), que ainda não foi feito |

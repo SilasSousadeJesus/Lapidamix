@@ -24,7 +24,8 @@ Código aberto de terceiros (bibliotecas, exemplos) pode ser usado se a licença
 ## Material de teste
 
 - Minha voz seca no Shure SM7dB (a gravar na Fase 3 — D33).
-- Bancos abertos de trilhas separadas (stems) com vozes variadas — a pesquisar e escolher na Fase 5. ❓
+- Gravações de conhecidos, sempre com permissão (D79).
+- Bancos de vozes, com licenças e créditos: ver `11-bancos-de-vozes.md` (D79, D80).
 
 ## Anotações de estudo
 
@@ -69,3 +70,39 @@ Uma nota curta por módulo, escrita na etapa de estudo (D37). **Modelo de nota:*
 **Resultado do teste no Reaper (02/11/2026):** o usuário informou que os 5 passos da D66 passaram, inclusive a curva das bandas em 44,1 e 96 kHz e a mudança dos controles durante a reprodução, sem medição numérica da diferença entre as taxas.
 
 **O que levar para a proposta:** biquads de ordem fixa, sem latência; `ArrayCoefficients` para não pedir memória na thread de áudio; parâmetros suavizados; bandas e valores iniciais vindos do perfil de instrumento, sem copiar presets nem interface de nenhum produto.
+
+### 02/11/2026 — Módulo de análise e RTA
+
+**Fontes consultadas:**
+- Espectro médio: [método de Welch](https://en.wikipedia.org/wiki/Welch%27s_method), [LTAS no VoceVista](https://www.vocevista.com/en/doc/theory-long-term-average/), [estudo sobre LTAS e idioma](https://www.researchgate.net/publication/308843972_The_Impact_of_Language_on_Voice_An_LTAS_Study) e [relatório sobre LTAS e intensidade vocal (KTH)](https://scispace.com/pdf/effect-on-ltas-of-vocal-loudness-variation-5g9vn08xsl.pdf) (estes dois últimos, só pelo trecho da busca), e [artigo sobre duração de amostras de voz](https://www.researchgate.net/publication/397898434_On_Acoustic_Voice_Quality_Index_measurement_reliability_in_digital_health_applications_a_narrative_review_and_empirical_evaluation_of_speech_sample_length_requirements) (idem).
+- Trechos com som: [planicidade espectral](https://en.wikipedia.org/wiki/Spectral_flatness), [detecção de respiração no canto (Nakano et al., AIST)](https://staff.aist.go.jp/t.nakano/Breath/) e [resumo do gating de loudness da EBU R 128](https://en.wikipedia.org/wiki/EBU_R_128).
+- Fundamental: [YIN (de Cheveigné e Kawahara, 2002)](https://sonicfield.org/library/yin-a-fundamental-frequency-estimator-for-speech-and-music) e [nota da LabROSA](https://www.ee.columbia.edu/~dpwe/LabROSA/doc/yin.html), [pYIN](https://code.soundsoftware.ac.uk/projects/pyin), [estudo comparativo em canto](https://arxiv.org/abs/1912.12609), [comparação com CREPE](https://arxiv.org/pdf/2206.14357) e [faixas de canto (DPA)](https://www.dpamicrophones.com/dict/singing-voices-and-frequencies/). O PDF do artigo do YIN não pôde ser lido.
+- Ressonâncias: [artigo da CEDAR](https://www.cedaraudio.com/article/000010/removing-audio-resonances), [Sound On Sound](https://www.soundonsound.com/sound-advice/q-how-do-pinpoint-nasty-resonances), [equalização de ressonâncias com redes neurais](https://arxiv.org/abs/1807.08636), [TarsosDSP](https://0110.be/releases/TarsosDSP/TarsosDSP-latest/TarsosDSP-latest-Documentation/be/tarsos/dsp/SpectralPeakProcessor.html) e [formantes](https://en.wikipedia.org/wiki/Formant).
+- RTA e captura: [tutorial de analisador do JUCE](https://juce.com/tutorials/tutorial_spectrum_analyser/), [Voxengo SPAN](https://www.voxengo.com/product/span) e o código do JUCE 9.0.4 (`juce_FFT.h`, `juce_AbstractFifo.h`).
+
+**Fatos (documentados):**
+- O método de Welch divide o sinal em trechos sobrepostos, aplica uma janela, calcula o espectro de potência de cada um e tira a média. Isso reduz a variação da medida, ao custo de resolução em frequência.
+- O LTAS mostra o que permanece na voz e perde o que muda, como vibrato. O VoceVista recomenda material uniforme, porque silêncio na média eleva o piso de ruído.
+- Faixas citadas para LTAS de fala: estabiliza depois de cerca de 40 s (Fritzell et al., 1974, citado por outro autor) e estudos usam de 20 a 90 s. **Não encontrei medição para canto nem só para trechos vozeados.**
+- A planicidade espectral vai de perto de 0 (som tonal) a perto de 1 (som parecido com ruído).
+- O gating de loudness usa dois estágios: um limite absoluto (-70 LUFS) e um relativo à média do material (-10 LU). É uma norma de loudness, não de voz.
+- Em canto sem acompanhamento, Nakano et al. mediram 1.488 respirações. O espectro médio delas tem um pico perto de 1,6 kHz em homens e 1,7 kHz em mulheres, e o detector deles usa um modelo estatístico treinado (HMM), com 97,5% de recall e 77,7% de precisão.
+- O YIN parte da autocorrelação, com modificações que reduzem erros; os autores relatam erro cerca de 3 vezes menor que o dos melhores concorrentes, em fala. O limite dele define a proporção de potência não periódica: subir evita alguns erros, baixar evita outros (LabROSA).
+- O pYIN é um YIN com vários candidatos e um modelo estatístico que escolhe o caminho mais provável. Uma revisão relata resultados parecidos entre pYIN e CREPE em canto, e uma comparação relata precisão fina parecida entre YIN e CREPE.
+- Faixa de canto, segundo a DPA: baixo de 73 a 330 Hz; soprano de 247 a 1047 Hz. Cantores treinados podem ir além.
+- Formantes são picos largos, causados pelo trato vocal, e mudam com a vogal (F1 de cerca de 240 a 850 Hz, em voz masculina). O formante do cantor fica perto de 3 kHz.
+- A CEDAR descreve ressonâncias como picos estreitos, tipo agulha, e elevações largas como timbre da voz. A Sound On Sound cita picos esporádicos de 1 a 4 kHz em voz, avisa que o pico mais alto nem sempre é o culpado e manda decidir de ouvido. **Não encontrei um algoritmo padrão de detecção.** O TarsosDSP estima um piso com filtro de mediana e guarda picos acima dele por um fator.
+- O tutorial do JUCE usa FFT de 2048 pontos, janela de Hann e atualização de 30 vezes por segundo, mas sincroniza as threads com um `bool` comum. O `AbstractFifo` do JUCE é a alternativa sem trava para um escritor e um leitor.
+
+**Suposições (a confirmar nos testes):**
+- Os produtos fechados citados (como soothe2, Slick EQ e Blade EQ) não revelam o algoritmo; nada aqui sabe como funcionam por dentro.
+- De memória, sem ter lido o artigo: o YIN usa um limite absoluto de cerca de 0,1. Precisa de calibração em canto.
+- Periodicidade baixa deve separar a maior parte das respirações sem um modelo treinado. Nenhuma fonte testou isso em canto.
+- Comparar o espectro em duas resoluções deve separar ressonâncias estreitas de formantes largos. Essa regra é minha, inspirada na CEDAR e no TarsosDSP.
+- Em nota longa, harmônicos parecem ressonâncias. Exigir que o pico persista em notas diferentes deve evitar esse erro, mas nenhuma fonte validou essa regra.
+- Excluir consoantes como "s" da média deve reduzir o peso dos agudos. O efeito ainda precisa ser medido.
+- Os tempos de análise da fala podem não valer para canto.
+
+**Resultado da verificação com voz sintética (02/11/2026):** a comparação direta de resoluções gerou falsas candidatas, por causa de harmônicos que coincidem entre notas. A medida passou a usar só os harmônicos (P40). Limites observados: picos perto de 4 kHz foram subestimados (+9 dB inseridos apareceram como +3,3 dB) e localizados com 2% de erro; na região grave, a detecção depende de haver notas suficientes. Isso ainda precisa ser confirmado com voz real.
+
+**O que levar para a proposta:** captura sem bloquear o áudio e análise fora da thread de áudio; média de Welch só com trechos vozeados; YIN e estatísticas robustas (mediana e percentis), em vez de um único valor; ressonâncias apresentadas como candidatas, sempre relativas ao espectro da própria voz; RTA com `AbstractFifo`; duração da análise medida com vozes reais.

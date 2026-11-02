@@ -10,10 +10,19 @@ namespace
     constexpr int nameWidth = 110;
     constexpr int toggleWidth = 36;
     constexpr int columnGap = 8;
+    constexpr int resultsHeight = 96;
+    constexpr int plotHeight = 220;
+    constexpr int refreshRateHz = 30;
+
+    juce::String utf8 (const char* text)
+    {
+        return juce::String::fromUTF8 (text);
+    }
 }
 
 LapidamixAudioProcessorEditor::LapidamixAudioProcessorEditor (LapidamixAudioProcessor& processor)
-    : AudioProcessorEditor (&processor)
+    : AudioProcessorEditor (&processor),
+      audioProcessor (processor)
 {
     using Module = lapidamix::EqModule;
     auto& parameters = processor.getParameters();
@@ -70,10 +79,135 @@ LapidamixAudioProcessorEditor::LapidamixAudioProcessorEditor (LapidamixAudioProc
         }
     }
 
-    setSize (windowWidth, 2 * margin + rowHeight * (lapidamix::numEqBands + 2));
+    analyseButton.onClick = [this]
+    {
+        auto& analysis = audioProcessor.getAnalysis();
+
+        if (analysis.getState() == lapidamix::AnalysisController::State::idle)
+            audioProcessor.startAnalysis();
+        else
+            analysis.requestStop();
+
+        updateAnalysisStatus();
+    };
+
+    addAndMakeVisible (analyseButton);
+    addAndMakeVisible (analysisStatus);
+
+    analysisResults.setJustificationType (juce::Justification::topLeft);
+    addAndMakeVisible (analysisResults);
+    addAndMakeVisible (spectrumPlot);
+
+    setSize (windowWidth, 2 * margin + rowHeight * (lapidamix::numEqBands + 3) + resultsHeight + plotHeight);
+
+    // O RTA só calcula com a janela aberta (D74).
+    audioProcessor.getRta().setActive (true);
+    updateAnalysisStatus();
+    startTimerHz (refreshRateHz);
 }
 
-LapidamixAudioProcessorEditor::~LapidamixAudioProcessorEditor() = default;
+LapidamixAudioProcessorEditor::~LapidamixAudioProcessorEditor()
+{
+    stopTimer();
+    audioProcessor.getRta().setActive (false);
+}
+
+void LapidamixAudioProcessorEditor::timerCallback()
+{
+    spectrumPlot.setRtaCurve (audioProcessor.getRta().update());
+    updateAnalysisStatus();
+
+    const auto version = audioProcessor.getResultVersion();
+
+    if (version != shownResultVersion)
+    {
+        shownResultVersion = version;
+        showAnalysisResult (audioProcessor.getLastAnalysisResult());
+    }
+}
+
+void LapidamixAudioProcessorEditor::updateAnalysisStatus()
+{
+    using Controller = lapidamix::AnalysisController;
+    const auto& analysis = audioProcessor.getAnalysis();
+
+    switch (analysis.getState())
+    {
+        case Controller::State::capturing:
+            analyseButton.setButtonText ("Parar");
+            analyseButton.setEnabled (true);
+            analysisStatus.setText (utf8 ("Ouvindo: ") + juce::String (analysis.getVoiceSeconds(), 1) + " de "
+                                        + juce::String (Controller::targetVoiceSeconds, 0) + utf8 (" s de voz válida (")
+                                        + juce::String (analysis.getCapturedSeconds(), 1) + " s de captura)",
+                                    juce::dontSendNotification);
+            break;
+
+        case Controller::State::analysing:
+            analyseButton.setEnabled (false);
+            analysisStatus.setText (utf8 ("Calculando..."), juce::dontSendNotification);
+            break;
+
+        case Controller::State::idle:
+            analyseButton.setButtonText ("Analisar");
+            analyseButton.setEnabled (true);
+
+            if (shownResultVersion <= 0)
+                analysisStatus.setText (utf8 ("Clique em Analisar e toque a voz. A análise só mede: não altera o som."),
+                                        juce::dontSendNotification);
+            break;
+    }
+}
+
+void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::AnalysisResult& result)
+{
+    if (! result.isValid)
+    {
+        analysisResults.setText ({}, juce::dontSendNotification);
+        spectrumPlot.setAnalysisCurves ({}, {});
+        return;
+    }
+
+    const auto hertz = [] (float value) { return juce::String (value, 0) + " Hz"; };
+
+    auto text = utf8 ("Voz válida: ") + juce::String (result.voiceSeconds, 1) + " s | Com som: "
+              + juce::String (result.soundSeconds, 1) + " s | Captura: " + juce::String (result.capturedSeconds, 1) + " s\n";
+
+    if (result.voiceSeconds > 0.0f)
+        text << "Fundamental: mediana " << hertz (result.fundamentalMedian)
+             << " | grave (5%) " << hertz (result.fundamentalLow)
+             << " | aguda (95%) " << hertz (result.fundamentalHigh)
+             << utf8 (" | confiança ") << juce::String (result.confidence * 100.0f, 0) << "%\n";
+    else
+        text << utf8 ("Nenhuma voz válida encontrada.\n");
+
+    if (result.resonances.empty())
+    {
+        text << utf8 ("Ressonâncias candidatas: nenhuma");
+
+        if (result.numDistinctNotes < 3)
+            text << utf8 (" (poucas notas diferentes para avaliar)");
+
+        text << "\n";
+    }
+    else
+    {
+        text << utf8 ("Ressonâncias candidatas:");
+
+        for (const auto& resonance : result.resonances)
+            text << " " << hertz (resonance.frequency) << " (+" << juce::String (resonance.prominenceDb, 1)
+                 << " dB, " << juce::String (resonance.presence * 100.0f, 0) << "% do tempo)";
+
+        text << "\n";
+    }
+
+    if (result.voiceSeconds < lapidamix::AnalysisController::minimumVoiceSeconds)
+        text << utf8 ("Atenção: menos de 10 s de voz válida; as medidas podem variar.");
+
+    analysisResults.setText (text, juce::dontSendNotification);
+    spectrumPlot.setAnalysisCurves (result.voiceCurve, result.soundCurve);
+
+    analysisStatus.setText (utf8 ("Análise concluída. Nada foi alterado no som."), juce::dontSendNotification);
+}
 
 void LapidamixAudioProcessorEditor::setUpLabel (juce::Label& label, const char* text)
 {
@@ -131,4 +265,12 @@ void LapidamixAudioProcessorEditor::resized()
         row.removeFromLeft (columnGap);
         layOutColumns (row, band.frequency, band.gain, band.q);
     }
+
+    auto analysisRow = area.removeFromTop (rowHeight).reduced (0, 3);
+    analyseButton.setBounds (analysisRow.removeFromLeft (nameWidth));
+    analysisRow.removeFromLeft (columnGap);
+    analysisStatus.setBounds (analysisRow);
+
+    analysisResults.setBounds (area.removeFromTop (resultsHeight));
+    spectrumPlot.setBounds (area);
 }
