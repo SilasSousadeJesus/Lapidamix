@@ -29,10 +29,11 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 - Ar automático aprovado e implementado (D108): a análise mede o ruído nas pausas, e a regra age caso a caso, com teto de +3 e -5 dB.
 - Teste próprio do realce pela metade, com curvas conhecidas e com a voz real somada a chiado gerado, porque nenhum material real dispara essa regra.
 - `banco ar` passou a usar a análise e a regra reais.
+- `08-plano-testes.md` reorganizado: registros de volta à tabela, status por fase no topo e seções por fase, da mais recente para a mais antiga. Só mudaram de texto o aviso do topo e duas referências à ordem antiga; a tabela de registros mantém a ordem cronológica e ganhou as verificações da Fase 4 (passos 1 a 5, botões e Detalhes, Ar automático), apontando para as seções.
 
 **Decisões tomadas:** D106 e D107, pedidas pelo usuário; D108, que confirma a P59 com o teto escolhido pelo usuário.
 
-**Commits:** este commit.
+**Commits:** `b64de41` e este commit.
 
 **Problemas / dúvidas:**
 - A primeira versão da medida de ruído dava um aviso falso de chiado no SM7dB. Foi corrigida antes do commit (`08-plano-testes.md`).

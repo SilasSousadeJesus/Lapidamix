@@ -10,7 +10,6 @@
 - **Etapa:** implementação (etapa c da D37). O A/B (passo 6 da D99) passou nas duas gravações; a fase só fecha depois dos ajustes pedidos pelo usuário.
 - **Último passo concluído:** Ar automático (D108), botões Reaplicar e Zerar (D106) e medidas atrás de Detalhes (D107), sem falhas na verificação sem DAW.
 - **Próximo passo:** o usuário confere Ar, botões e Detalhes no Reaper. Se aprovar, a Fase 4 pode fechar.
-
 ## Bloqueios
 
 Nenhum bloqueio técnico.
@@ -30,7 +29,8 @@ Nenhum bloqueio técnico.
 
 | Commit | O que fez |
 |---|---|
-| este commit | Fase 4: resultado do A/B, Ar automático, botões Reaplicar e Zerar e medidas atrás de Detalhes (D106 a D108) |
+| este commit | `08-plano-testes.md` reorganizado por fase, com o status de cada uma e os registros da Fase 4 |
+| `b64de41` | Fase 4: resultado do A/B, Ar automático, botões Reaplicar e Zerar e medidas atrás de Detalhes (D106 a D108) |
 | `70a628d` | Fase 4, passo 5: explicações das correções, dicionário da voz e roteiro do A/B (D105) |
 | `5a5b038` | Fase 4, passos 3 e 4: lista, Aplicar, intensidade e compensação em LUFS (D102 a D104) |
 | `3162b6a` | Fase 4, passos 1 e 2: regras no código e dados novos na análise, ainda sem ligar ao som (D93 a D101) |

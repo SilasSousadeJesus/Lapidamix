@@ -1,6 +1,18 @@
 # 08 - Plano de Testes
 
-🟡 Proposta inicial, a refinar ao longo do projeto.
+## Status por fase
+
+Última atualização: 02/11/2026. As seções de cada fase vêm depois das listas gerais, da fase mais recente para a mais antiga e, dentro de cada uma, do teste mais recente para o mais antigo.
+
+| Fase | Status dos testes | O que falta |
+|---|---|---|
+| 0 — Planejamento | Sem testes | Nada |
+| 1 — Plugin vazio | ✅ Os 5 passos da D53 passaram no Reaper | Nada |
+| 2 — EQ manual | ✅ Os 5 passos da D66 passaram no Reaper | Nada |
+| 3 — Análise | ✅ Fechada com exceções (D90): 39 de 42 medidas dentro da tolerância contra o Praat. Estalos, CPU no DAW e teste de ouvido em 4,8 kHz dispensados (D89) | Nada para fechar. Fica sem confirmação a causa do primeiro resultado do SM57 no Reaper |
+| 4 — Correção automática | 🔵 O A/B no Reaper passou nas duas gravações. Depois dele, Ar automático, botões e Detalhes passaram na verificação sem DAW (0 falhas) | O usuário conferir no Reaper o Ar, os botões e os Detalhes |
+| 5 — Várias vozes | ⚪ Não iniciada | Pelo menos 20 vozes diferentes (D38) e calibrar a faixa do Ar (D108) |
+| 6 — Fechamento da v1.0 | ⚪ Não iniciada | Critérios de "v1.0 pronta" em `03-especificacao-v1.md` |
 
 ## Material de teste
 - **Voz principal:** minha voz seca no SM7dB, sem nenhum efeito, ~30 s cantados.
@@ -37,61 +49,24 @@
 | 02/11/2026 | Voz do usuário e ruído, no Reaper, em 44,1 e 96 kHz | 0.1.0 (com EQ) | Os 5 passos da D66: transparência, curva de cada banda, mexer durante a reprodução, salvar e reabrir, mixar a voz à mão | ✅ Todos passaram | Teste feito e informado pelo usuário. Encerra a Fase 2 |
 | 02/11/2026 | Tons e voz sintética, gerados por programa temporário, sem DAW | 0.1.0 (com análise) | Fundamental de 65 a 1047 Hz em 3 taxas; voz válida contra todo o som; média em potência; ressonâncias inseridas e falsas candidatas; ruído e silêncio; captura e RTA sem alterar o som nem pedir memória; meta de 30 s; salvar e reabrir | ✅ Todas as verificações passaram | Feito por Claude, em compilação Debug. Não substitui o teste com voz real (D77), que ainda não foi feito |
 | 02/11/2026 | Voz cantada do usuário, SM7dB e SM57 (`test-audio/voz-usuario/`), por programa temporário, sem DAW | 0.1.0 (com análise) | A04, comparação de microfones e P40; detalhes abaixo | ⚠️ Fundamental e microfones: como esperado. Ressonâncias: nesta voz, falham em 300 e 500 Hz e funcionam a partir de 1 kHz, com dúvidas em 3 e 6 kHz (P41) | Feito por Claude. Uma só voz e uma só música. Não substitui o teste no Reaper nem a conferência no Praat (D77) |
-
 | 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, com `tools/medidor-voz` | 0.1.0 (com a D83) | Mesmas medições, depois de implementar a D83 no plugin | ✅ Mesmos números da simulação da P41 | Feito por Claude. Compilação Release do plugin sem erros. Não substitui o teste no Reaper (D77) |
-
 | 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, no Reaper | 0.1.0 (com a D83) | Análise com o plugin, olhando medidas e curvas | ✅ Análise funcionou nas duas; ⚠️ o resultado do SM57 não corresponde ao início da gravação (detalhes abaixo) | Teste feito e informado pelo usuário. Mostrou os problemas de texto corrigidos no registro seguinte |
 | 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
 | 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
+| 02/11/2026 | Casos conhecidos e 78 janelas de 30 s (VocalSet e voz do usuário), com `verifica` e `banco proposta`, sem DAW | 0.1.0 (passo 1 da Fase 4) | Regras no código real, ainda sem ligação com o som nem com a janela | ✅ 18 verificações das regras OK; contra a simulação, 72 janelas iguais e 6 com a mudança esperada | Feito por Claude. Ver "Regras da Fase 4 no código real" |
+| 02/11/2026 | Tons gerados, voz do usuário e 78 janelas de 30 s, com `verifica` e `banco proposta`, sem DAW | 0.1.0 (passo 2 da Fase 4) | Duas metades da voz, saltos de oitava, salvar e restaurar, plano contra o passo 1 | ✅ 0 falhas; 77 janelas iguais e 1 diferença explicada (male8) | Feito por Claude. O som do plugin não muda neste passo. Ver "Dados novos na análise do plugin" |
+| 02/11/2026 | SM7dB e tons, com `verifica` e uma imagem da janela (`captura`), sem DAW | 0.1.0 (passo 3 da Fase 4) | Lista de bandas e botão Aplicar: parâmetros, som, nova análise, reabrir e pouca voz | ✅ Todos os itens passaram | Feito por Claude. Compensação de volume e intensidade ainda não existiam. Ver "Lista de bandas e botão Aplicar" |
+| 02/11/2026 | SM7dB, SM57 e tons de 1 kHz, com `verifica` e uma imagem da janela, sem DAW | 0.1.0 (passo 4 da Fase 4) | Intensidade, compensação em LUFS e medidor de LUFS | ✅ Todos os itens passaram; LUFS integrado com diferença menor que 0,1 LU | Feito por Claude. Faltou a conferência com o medidor do Reaper. Ver "Intensidade e compensação de volume" |
+| 02/11/2026 | SM7dB, com `verifica` e uma imagem da janela, sem DAW | 0.1.0 (passo 5 da Fase 4) | Dicionário da voz e explicações de cada banda | ✅ Todos os itens passaram; só as duas primeiras bandas aparecem sem rolar o texto | Feito por Claude. Rolagem não testada. Ver "Explicações das correções" |
 | 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, no Reaper | 0.1.0 (passo 5 da Fase 4) | A/B contra o bypass (passo 6 da D99) | ✅ Melhorou no SM7dB, a 100%; tudo certo no SM57. ⚠️ Faltou Ar no SM7dB (detalhes abaixo) | Teste feito e informado pelo usuário |
+| 02/11/2026 | SM7dB, com `verifica` e uma imagem da janela, sem DAW | 0.1.0 (com a D106 e a D107) | Botões Reaplicar e Zerar, medidas atrás de Detalhes e aviso de pouca voz | ✅ 0 falhas | Feito por Claude. Falta o usuário conferir no Reaper. Ver "Botões e Detalhes" |
+| 02/11/2026 | SM7dB, SM57, 72 janelas do VocalSet, curvas conhecidas e chiado gerado, com `verifica` e `banco ar`, sem DAW | 0.1.0 (com a D108) | Ar automático: quantidade, tetos, desconto do ruído, realce pela metade e avisos | ✅ 0 falhas. ⚠️ O realce pela metade só dispara em casos gerados | Feito por Claude. Falta o usuário conferir de ouvido no Reaper. Ver "Ar automático no plugin" e "Simulação do Ar automático" |
 
-## Roteiro do A/B (passo 6 da Fase 4)
+## Fase 4 — Correção automática
 
-Feito pelo usuário, no Reaper (D99). Critério da fase: na voz do usuário, o resultado soa melhor que o original (`04-roadmap-v1.md`). Resultados na seção seguinte.
+Em andamento (D93).
 
-**Preparação:** trilha com a gravação do SM7dB; Lapidamix como primeiro efeito; depois dele, um medidor de LUFS; sem outros efeitos. Volume de monitoração fixo e confortável, sem mexer durante o teste. Repetir depois com o SM57, em outro dia ou depois de uma pausa, se possível.
-
-1. **Analisar:** clicar em Analisar, tocar do início e esperar terminar. Anotar as correções propostas.
-2. **Ler:** as explicações fazem sentido para quem não conhece os termos?
-3. **Volume:** clicar em Aplicar. Medir o LUFS integrado da gravação inteira com o plugin ligado e com o Bypass ligado. Passa com diferença de até 0,5 LU; esperado, perto de 0,1 LU.
-4. **A/B geral:** escolher um trecho de 15 a 30 s, em loop, e alternar o Bypass várias vezes, de olhos fechados se puder. O som está melhor, igual ou pior?
-5. **Banda por banda:** ligar e desligar cada banda aplicada. Embolado: limpou sem afinar? Presença: ficou clara sem ficar áspera? Passa-alta: tirou ronco sem tirar peso? O efeito escrito na janela corresponde ao que se ouve?
-6. **Trecho mais grave e mais agudo:** repetir o A/B na nota mais grave e na mais aguda da gravação. Algo some ou incomoda?
-7. **Intensidade:** comparar 100%, 50% e 0%. Qual soa melhor? Em 0%, o som deve ser igual ao do Bypass.
-8. **Estabilidade:** tocar a gravação inteira, sem estalos ou falhas. Salvar, fechar e reabrir o projeto: as bandas, a Saída e a intensidade continuam iguais?
-
-**O que anotar em cada gravação:** correções propostas; LUFS com plugin e com Bypass; veredito do item 4; banda que incomodou, em que trecho e por quê; melhor intensidade.
-
-**Como decidir:** se soar melhor a 100%, a fase pode fechar. Se só soar melhor com intensidade menor, ou se uma banda atrapalhar, os limites provisórios (D95, D96, D98) precisam de ajuste. Nesse caso, Claude propõe a mudança antes de implementar (D81).
-
-## Resultado do A/B (passo 6, 02/11/2026)
-
-Feito e informado pelo usuário, no Reaper. **O critério da fase passou nas duas gravações.** A Fase 4 ainda não fechou: o usuário pediu ajustes antes (D106, D107, P59).
-
-| Item | SM7dB | SM57 |
-|---|---|---|
-| A/B geral | ✅ Melhorou | ✅ Tudo certo, com menos diferença que no SM7dB. Esperado: esse microfone já capta uma voz mais aberta |
-| Volume com e sem o plugin | ✅ Praticamente igual (valores de LUFS não informados) | Sem observação separada |
-| Melhor intensidade | 100% | Não informada |
-| Embolado, -5 dB em 316 Hz | ✅ Não tirou corpo (o risco da D95 não apareceu nessa voz) | Sem observação separada |
-| Ar | ⚠️ Fez falta. +1 dB à mão soou bem, e +2 dB também soaria; o chiado não incomodou | Sem falta relatada |
-| Textos | ✅ Bons | Sem observação separada |
-| Estalos; salvar e reabrir | ✅ Sem estalos; funcionou | Sem observação separada |
-
-## Botões e Detalhes (D106, D107, 02/11/2026)
-
-Verificado por Claude, sem DAW, com `verifica` (0 falhas) e uma imagem da janela (`captura`). Falta o usuário conferir no Reaper.
-
-| Item | Resultado |
-|---|---|
-| Aplicar vira "Reaplicar análise" | ✅ |
-| Ajuste à mão continua até clicar; Reaplicar volta à proposta e à compensação | ✅ |
-| Zerar desliga as 5 bandas, inclusive o Ar, e põe a Saída em 0 dB | ✅ O botão volta a "Aplicar" |
-| Mover a intensidade depois de Zerar | ✅ Não religa as bandas |
-| Medidas escondidas; "Detalhes" mostra e esconde | ✅ O texto das correções ganha 76 pixels |
-| Aviso de pouca voz com as medidas escondidas | ✅ Aparece na linha de status |
-
-## Ar automático no plugin (D108, 02/11/2026)
+### Ar automático no plugin (D108, 02/11/2026)
 
 Verificado por Claude, sem DAW, com `verifica` (0 falhas) e `banco ar`, que agora usa a análise e a regra reais. **Falta o usuário conferir de ouvido no Reaper.** Limites de -54 e -38 dB provisórios, a calibrar na Fase 5.
 
@@ -126,9 +101,9 @@ Verificado por Claude, sem DAW, com `verifica` (0 falhas) e `banco ar`, que agor
 - O realce muda entre janelas do SM7dB (+1,5 a +3,0 dB). Nas duas com pausa, o ar dessa voz fica só de 3,5 a 4,7 dB acima do ruído, e o desconto pesa.
 - O Reaper não foi usado nesta verificação. A janela foi conferida em imagem, mas a linha do Ar fica abaixo da área visível do texto e exige rolar; a rolagem não foi testada.
 
-## Simulação do Ar automático (P59, 02/11/2026)
+### Simulação do Ar automático (P59, 02/11/2026)
 
-Feita com a primeira versão de `banco ar`, antes de mudar o plugin, em janelas de 30 s de voz válida: 72 janelas de 20 vozes do VocalSet e 3 janelas de cada gravação do usuário. **Aprovada (D108), com o teto de +3 e -5 dB.** Os números do plugin estão na seção anterior.
+Feita com a primeira versão de `banco ar`, antes de mudar o plugin, em janelas de 30 s de voz válida: 72 janelas de 20 vozes do VocalSet e 3 janelas de cada gravação do usuário. **Aprovada (D108), com o teto de +3 e -5 dB.** Os números do plugin estão em "Ar automático no plugin".
 
 **Por que os médios como referência:** é a referência das outras bandas e a única que acompanhou o ouvido. Contra a presença, o SM7dB fica no meio do VocalSet (cerca de -30 dB), o que não explica a falta sentida. Contra os médios, o SM7dB fica entre os mais baixos.
 
@@ -168,7 +143,53 @@ Feita com a primeira versão de `banco ar`, antes de mudar o plugin, em janelas 
 - Um realce em prateleira de 12 kHz dá cerca de metade do ganho em 12 kHz: +3 dB no controle sobem a região de 10 a 14 kHz em cerca de 1,4 dB. O realce não leva a voz até a faixa; é suave de propósito.
 - A atenuação foi vista em uma janela só, e nunca nas gravações do usuário: não foi avaliada de ouvido.
 
-## Explicações das correções (passo 5, 02/11/2026)
+### Botões e Detalhes (D106, D107, 02/11/2026)
+
+Verificado por Claude, sem DAW, com `verifica` (0 falhas) e uma imagem da janela (`captura`). Falta o usuário conferir no Reaper.
+
+| Item | Resultado |
+|---|---|
+| Aplicar vira "Reaplicar análise" | ✅ |
+| Ajuste à mão continua até clicar; Reaplicar volta à proposta e à compensação | ✅ |
+| Zerar desliga as 5 bandas, inclusive o Ar, e põe a Saída em 0 dB | ✅ O botão volta a "Aplicar" |
+| Mover a intensidade depois de Zerar | ✅ Não religa as bandas |
+| Medidas escondidas; "Detalhes" mostra e esconde | ✅ O texto das correções ganha 76 pixels |
+| Aviso de pouca voz com as medidas escondidas | ✅ Aparece na linha de status |
+
+### Resultado do A/B (passo 6, 02/11/2026)
+
+Feito e informado pelo usuário, no Reaper. **O critério da fase passou nas duas gravações.** A Fase 4 ainda não fechou: o usuário pediu ajustes antes (D106, D107, P59).
+
+| Item | SM7dB | SM57 |
+|---|---|---|
+| A/B geral | ✅ Melhorou | ✅ Tudo certo, com menos diferença que no SM7dB. Esperado: esse microfone já capta uma voz mais aberta |
+| Volume com e sem o plugin | ✅ Praticamente igual (valores de LUFS não informados) | Sem observação separada |
+| Melhor intensidade | 100% | Não informada |
+| Embolado, -5 dB em 316 Hz | ✅ Não tirou corpo (o risco da D95 não apareceu nessa voz) | Sem observação separada |
+| Ar | ⚠️ Fez falta. +1 dB à mão soou bem, e +2 dB também soaria; o chiado não incomodou | Sem falta relatada |
+| Textos | ✅ Bons | Sem observação separada |
+| Estalos; salvar e reabrir | ✅ Sem estalos; funcionou | Sem observação separada |
+
+### Roteiro do A/B (passo 6 da Fase 4)
+
+Feito pelo usuário, no Reaper (D99). Critério da fase: na voz do usuário, o resultado soa melhor que o original (`04-roadmap-v1.md`). Resultados em "Resultado do A/B".
+
+**Preparação:** trilha com a gravação do SM7dB; Lapidamix como primeiro efeito; depois dele, um medidor de LUFS; sem outros efeitos. Volume de monitoração fixo e confortável, sem mexer durante o teste. Repetir depois com o SM57, em outro dia ou depois de uma pausa, se possível.
+
+1. **Analisar:** clicar em Analisar, tocar do início e esperar terminar. Anotar as correções propostas.
+2. **Ler:** as explicações fazem sentido para quem não conhece os termos?
+3. **Volume:** clicar em Aplicar. Medir o LUFS integrado da gravação inteira com o plugin ligado e com o Bypass ligado. Passa com diferença de até 0,5 LU; esperado, perto de 0,1 LU.
+4. **A/B geral:** escolher um trecho de 15 a 30 s, em loop, e alternar o Bypass várias vezes, de olhos fechados se puder. O som está melhor, igual ou pior?
+5. **Banda por banda:** ligar e desligar cada banda aplicada. Embolado: limpou sem afinar? Presença: ficou clara sem ficar áspera? Passa-alta: tirou ronco sem tirar peso? O efeito escrito na janela corresponde ao que se ouve?
+6. **Trecho mais grave e mais agudo:** repetir o A/B na nota mais grave e na mais aguda da gravação. Algo some ou incomoda?
+7. **Intensidade:** comparar 100%, 50% e 0%. Qual soa melhor? Em 0%, o som deve ser igual ao do Bypass.
+8. **Estabilidade:** tocar a gravação inteira, sem estalos ou falhas. Salvar, fechar e reabrir o projeto: as bandas, a Saída e a intensidade continuam iguais?
+
+**O que anotar em cada gravação:** correções propostas; LUFS com plugin e com Bypass; veredito do item 4; banda que incomodou, em que trecho e por quê; melhor intensidade.
+
+**Como decidir:** se soar melhor a 100%, a fase pode fechar. Se só soar melhor com intensidade menor, ou se uma banda atrapalhar, os limites provisórios (D95, D96, D98) precisam de ajuste. Nesse caso, Claude propõe a mudança antes de implementar (D81).
+
+### Explicações das correções (passo 5, 02/11/2026)
 
 Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela. Falta o usuário ler no Reaper e conferir os efeitos de ouvido.
 
@@ -182,7 +203,7 @@ Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela. Falta o u
 | Texto real, com o SM7dB | ✅ Lido inteiro na saída da verificação, em linguagem de leigo (D105) |
 | Janela, numa imagem | ✅ Texto com rolagem; só as duas primeiras bandas aparecem sem rolar. A rolagem em si não foi testada |
 
-## Intensidade e compensação de volume (passo 4, 02/11/2026)
+### Intensidade e compensação de volume (passo 4, 02/11/2026)
 
 Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela. Falta conferir de ouvido no Reaper.
 
@@ -202,7 +223,7 @@ Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela. Falta con
 
 **Limites:** a igualdade de volume foi medida em duas gravações, com um medidor nosso. Falta a conferência com o medidor de LUFS do Reaper, e parte dos valores da norma não foi conferida na fonte (`07-referencias.md`). A banda de ar ajustada à mão não entra na compensação.
 
-## Lista de bandas e botão Aplicar (passo 3, 02/11/2026)
+### Lista de bandas e botão Aplicar (passo 3, 02/11/2026)
 
 Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela (`captura`). Falta o usuário conferir no Reaper.
 
@@ -220,7 +241,7 @@ Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela (`captura`
 
 O volume ainda não é compensado, e a intensidade ainda não existe (passo 4). Por isso, o A/B com o bypass ainda não é justo.
 
-## Dados novos na análise do plugin (passo 2, 02/11/2026)
+### Dados novos na análise do plugin (passo 2, 02/11/2026)
 
 A análise agora calcula as duas metades da voz e os saltos de oitava, guarda até 20 candidatas (a janela mostra as 3 mais fortes) e salva tudo no projeto. Isso roda fora da thread de áudio.
 
@@ -231,7 +252,7 @@ A análise agora calcula as duas metades da voz e os saltos de oitava, guarda at
 - **Saltos de oitava em voz real:** no máximo 5,3%, abaixo do limite de 8%.
 - **Restante da verificação:** saída idêntica à entrada, sem pedidos de memória na thread de áudio e 0 falhas. O som do plugin não muda neste passo.
 
-## Regras da Fase 4 no código real (passo 1, 02/11/2026)
+### Regras da Fase 4 no código real (passo 1, 02/11/2026)
 
 `src/core/correction/`, ainda sem ligação com o som nem com a janela. As duas metades e os saltos de oitava ainda vêm da ferramenta de teste (passo 2).
 
@@ -239,7 +260,7 @@ A análise agora calcula as duas metades da voz e os saltos de oitava, guarda at
 - **Código real × simulação abaixo (78 janelas):** 72 iguais. As outras 6 têm a mudança esperada: realce de presença menor que 1 dB, que a simulação ainda mostrava e agora não liga a banda. Nenhuma diferença inesperada.
 - **Plugin:** compila em Release, e o som não muda.
 
-## Simulação das regras propostas para a Fase 4 (02/11/2026)
+### Simulação das regras propostas para a Fase 4 (02/11/2026)
 
 Feita com `banco proposta` e `banco equilibrio`, sem mudar o plugin, em janelas de 30 s. Limites simulados: embolado até +3 dB; presença a partir de -19 dB; ressonância pela D87/D88.
 
@@ -267,7 +288,11 @@ O embolado aparece igual nos dois microfones, então vem da voz, da distância o
 - Faixas medidas em cantores treinados, no mesmo modelo de microfone. A voz do usuário fica fora da faixa do embolado, mas pode ser por ser mais grave que todas as do banco (135 Hz contra 174 Hz ou mais).
 - Só o A/B de ouvido dirá se -5 dB em 316 Hz limpa sem afinar.
 
-## Verificação sem o Reaper (D89, 02/11/2026)
+## Fase 3 — Análise
+
+Concluída, com exceções registradas (D90).
+
+### Verificação sem o Reaper (D89, 02/11/2026)
 
 Feita por Claude, com `tools/praat` e `tools/verifica-plugin`. **O usuário fechou a Fase 3 com as 3 medidas fora da tolerância registradas como exceção (D90).** O erro de oitava do male6 levou à proteção do passa-alta na Fase 4 (D91).
 
@@ -309,7 +334,7 @@ No material inteiro, a mediana e o grave ficam dentro de 3% nas 7 vozes (maior d
 
 **Limitação:** o Reaper não foi usado nos itens acima. Ficam sem conferência real no DAW: o ReaEQ de verdade, salvar dentro de um projeto, o cancelamento dentro do DAW e o motivo de o primeiro teste do SM57 ter dado um resultado parecido com o de 90 s de música. Com o mesmo áudio, do início, o plugin sem DAW dá o esperado (51,2 s, 132 Hz, 98 Hz).
 
-## Segundo teste no Reaper (02/11/2026)
+### Segundo teste no Reaper (02/11/2026)
 
 Informado pelo usuário: interface e SM7dB. **Os resultados dos outros itens não foram informados**: a mensagem trouxe esse campo sem preencher.
 
@@ -318,35 +343,24 @@ Informado pelo usuário: interface e SM7dB. **Os resultados dos outros itens nã
 - **A candidata nova não é uma mudança no plugin:** ela está no limite de 4 dB. No medidor, começar 1 s depois basta para a candidata aparecer perto dali (4941 Hz, +4,0 dB), e começar do zero dá "nenhuma". Pequenas diferenças no ponto de início mudam o resultado nesse limite.
 - **Não seria cortada pela regra D87/D88:** +4,1 dB fica abaixo do mínimo de +6 dB, e 49% a 50% do tempo fica abaixo do mínimo de 60%.
 
-## Teste no Reaper (02/11/2026)
+### O que falta para fechar a Fase 3 (D77)
 
-| | Voz válida / captura | Mediana | Grave (5%) | Aguda (95%) | Confiança | Candidatas |
-|---|---|---|---|---|---|---|
-| SM7dB | 30 s em 52,6 s | 133 Hz | 100 Hz | 153 Hz | 99% | Nenhuma |
-| SM57 | 30 s em 38,1 s | 142 Hz | 87 Hz | 152 Hz | 99% | 4800 Hz (+6 dB, 72% do tempo) |
+**Situação em 02/11/2026:** o item 1 foi concluído no Reaper. Por decisão do usuário (D89), os demais não serão feitos no Reaper: ver "Verificação sem o Reaper". Lista mantida como referência.
 
-**O que o usuário viu:**
-- **SM7dB:** montanha larga de cerca de 120 a 250 Hz e queda forte a partir de cerca de 2 kHz (escuro e embolado, como ele descrevia). As curvas de voz e de todo o som ficaram quase iguais.
-- **SM57:** graves mais concentrados em cerca de 200 Hz e bem mais energia de 2 a 8 kHz. A curva de todo o som ficou acima da de voz entre cerca de 5 e 8 kHz (sibilância).
+Fazer no Reaper, com o plugin reaberto:
 
-**Conclusões do usuário:**
-- A análise se adapta ao som (D25): é a mesma voz, com retratos diferentes por microfone.
-- As duas médias funcionaram.
-- A variação do grave (5%), de 100 para 87 Hz, confirma a necessidade da margem de segurança do passa-alta (P42).
-- A candidata em 4,8 kHz pode ter contribuição da elevação natural de presença do SM57; o usuário vai conferir de ouvido.
+1. ✅ Interface: acentos, casas decimais e as duas curvas.
+2. SM57 do início, com o cursor no zero: cerca de 51 s de captura, 132 Hz, grave de 98 Hz, candidata em 4941 Hz (+6,5 dB).
+3. Cancelamento com análise e RTA ligados: deve dar silêncio.
+4. ReaEQ antes do plugin, com +9 dB estreitos em 2,2 kHz, no SM7dB: candidata perto de 2,2 kHz, medindo menos que 9 dB.
+5. RTA: ligar uma banda do EQ muda o RTA, mas não as médias.
+6. Parar antes de 10 s de voz: aparece o aviso.
+7. Salvar e reabrir: medidas e curvas voltam.
+8. Vozes female3, female7, male9, male8 e male6, com arquivos de `excerpts/straight`: fundamental no Praat dentro de ±3%. Se possível, ouvir male6 e male8 para saber se há trechos realmente agudos.
+9. Durante os testes: nenhum estalo e CPU baixa.
+10. De ouvido: comparar a região de 4,8 kHz entre os dois microfones.
 
-**Ressalva da conferência, com o `banco inicio`:** o usuário indicou que tocou sempre do início, mas o resultado do SM57 não bate com o início da gravação.
-
-| SM57 | Captura | Mediana | Grave (5%) | Candidata |
-|---|---|---|---|---|
-| Reaper | 38,1 s | 142 Hz | 87 Hz | 4800 Hz (+6 dB, 72%) |
-| Medidor, do início | 51,0 s | 132 Hz | 98 Hz | 4941 Hz (+6,6 dB, 74%) |
-| Plugin sem DAW, do início | 51,2 s | 132 Hz | 98 Hz | 4941 Hz (+6,5 dB, 74%) |
-| Medidor, a partir de 90 s | 35,7 s | 142 Hz | 87 Hz | 4800 Hz (+5,8 dB, 71%) |
-
-O SM7dB bate com o início (50,5 s no medidor, 52,6 s no Reaper, 133 Hz, 99 Hz). Com as duas gravações do início, o grave (5%) é 99 × 98 Hz. Portanto, 100 × 87 Hz parece vir de **trechos diferentes da música, não de tomadas diferentes**. A necessidade da P42 continua, porque trechos diferentes de uma mesma gravação também variam: o próprio SM57 dá 98 Hz no início e 87 Hz perto de 90 s. A causa no Reaper não foi confirmada; repetir o teste do SM57.
-
-## Medições com o VocalSet (02/11/2026)
+### Medições com o VocalSet (02/11/2026)
 
 **Escolha.** Medi as 20 vozes e escolhi 5 pelo resultado, usando os trechos cantados, sem a fala. O material é fixo por cantor, por isso as vozes de cada grupo têm medianas parecidas.
 
@@ -440,24 +454,35 @@ Essas vozes variam mais que a do usuário, provavelmente porque cada janela pega
 - **Mínimo de +8 dB:** picos de +9 dB inseridos na voz do usuário mediram quase sempre menos de 8 dB, então a banda quase nunca agiria em um pico real desse tamanho.
 - **Decisão do usuário (D88):** regra aprovada com teto de 6 kHz, sem o mínimo de +8 dB. Na simulação, 17 de 72 janelas e 8 de 20 vozes recebem corte. Ajuste encerrado para a v1.0; a validação final será de ouvido, na Fase 4.
 
-## O que falta para fechar a Fase 3 (D77)
+### Teste no Reaper (02/11/2026)
 
-**Situação em 02/11/2026:** o item 1 foi concluído no Reaper. Por decisão do usuário (D89), os demais não serão feitos no Reaper: ver "Verificação sem o Reaper". Lista mantida como referência.
+| | Voz válida / captura | Mediana | Grave (5%) | Aguda (95%) | Confiança | Candidatas |
+|---|---|---|---|---|---|---|
+| SM7dB | 30 s em 52,6 s | 133 Hz | 100 Hz | 153 Hz | 99% | Nenhuma |
+| SM57 | 30 s em 38,1 s | 142 Hz | 87 Hz | 152 Hz | 99% | 4800 Hz (+6 dB, 72% do tempo) |
 
-Fazer no Reaper, com o plugin reaberto:
+**O que o usuário viu:**
+- **SM7dB:** montanha larga de cerca de 120 a 250 Hz e queda forte a partir de cerca de 2 kHz (escuro e embolado, como ele descrevia). As curvas de voz e de todo o som ficaram quase iguais.
+- **SM57:** graves mais concentrados em cerca de 200 Hz e bem mais energia de 2 a 8 kHz. A curva de todo o som ficou acima da de voz entre cerca de 5 e 8 kHz (sibilância).
 
-1. ✅ Interface: acentos, casas decimais e as duas curvas.
-2. SM57 do início, com o cursor no zero: cerca de 51 s de captura, 132 Hz, grave de 98 Hz, candidata em 4941 Hz (+6,5 dB).
-3. Cancelamento com análise e RTA ligados: deve dar silêncio.
-4. ReaEQ antes do plugin, com +9 dB estreitos em 2,2 kHz, no SM7dB: candidata perto de 2,2 kHz, medindo menos que 9 dB.
-5. RTA: ligar uma banda do EQ muda o RTA, mas não as médias.
-6. Parar antes de 10 s de voz: aparece o aviso.
-7. Salvar e reabrir: medidas e curvas voltam.
-8. Vozes female3, female7, male9, male8 e male6, com arquivos de `excerpts/straight`: fundamental no Praat dentro de ±3%. Se possível, ouvir male6 e male8 para saber se há trechos realmente agudos.
-9. Durante os testes: nenhum estalo e CPU baixa.
-10. De ouvido: comparar a região de 4,8 kHz entre os dois microfones.
+**Conclusões do usuário:**
+- A análise se adapta ao som (D25): é a mesma voz, com retratos diferentes por microfone.
+- As duas médias funcionaram.
+- A variação do grave (5%), de 100 para 87 Hz, confirma a necessidade da margem de segurança do passa-alta (P42).
+- A candidata em 4,8 kHz pode ter contribuição da elevação natural de presença do SM57; o usuário vai conferir de ouvido.
 
-## Medições com voz real (02/11/2026)
+**Ressalva da conferência, com o `banco inicio`:** o usuário indicou que tocou sempre do início, mas o resultado do SM57 não bate com o início da gravação.
+
+| SM57 | Captura | Mediana | Grave (5%) | Candidata |
+|---|---|---|---|---|
+| Reaper | 38,1 s | 142 Hz | 87 Hz | 4800 Hz (+6 dB, 72%) |
+| Medidor, do início | 51,0 s | 132 Hz | 98 Hz | 4941 Hz (+6,6 dB, 74%) |
+| Plugin sem DAW, do início | 51,2 s | 132 Hz | 98 Hz | 4941 Hz (+6,5 dB, 74%) |
+| Medidor, a partir de 90 s | 35,7 s | 142 Hz | 87 Hz | 4800 Hz (+5,8 dB, 71%) |
+
+O SM7dB bate com o início (50,5 s no medidor, 52,6 s no Reaper, 133 Hz, 99 Hz). Com as duas gravações do início, o grave (5%) é 99 × 98 Hz. Portanto, 100 × 87 Hz parece vir de **trechos diferentes da música, não de tomadas diferentes**. A necessidade da P42 continua, porque trechos diferentes de uma mesma gravação também variam: o próprio SM57 dá 98 Hz no início e 87 Hz perto de 90 s. A causa no Reaper não foi confirmada; repetir o teste do SM57.
+
+### Medições com voz real (02/11/2026)
 
 Para repetir, ver `tools/medidor-voz/README.md` (D84). Para comparar com o Praat, `tools/praat/README.md`; para conferir o plugin sem DAW, `tools/verifica-plugin/README.md`. A tabela de ressonâncias abaixo mostra os métodos comparados; a linha da P41 é o método atual do plugin (D83).
 
@@ -494,3 +519,11 @@ Para repetir, ver `tools/medidor-voz/README.md` (D84). Para comparar com o Praat
 - As candidatas de 490 a 583 Hz têm só 3 a 5 notas e mudam de lugar entre as janelas. Podem ser o primeiro formante, mas isso é suposição.
 - Picos em 3 kHz e 6 kHz continuam incertos, e nenhum método achou 300 Hz.
 - **Risco a conferir em outras vozes:** o limite de 6 vezes a fundamental acompanha a voz. Numa voz com mediana de 400 Hz, por exemplo, a busca só começaria em 2,4 kHz. Essa conta ainda não foi testada com vozes agudas.
+
+## Fase 2 — EQ manual
+
+Concluída. Os testes estão no "Registro de testes": a verificação sem DAW e os 5 passos da D66 no Reaper. Não há seção de detalhes.
+
+## Fase 1 — Plugin vazio
+
+Concluída. O teste está no "Registro de testes": os 5 passos da D53 no Reaper. Não há seção de detalhes.
