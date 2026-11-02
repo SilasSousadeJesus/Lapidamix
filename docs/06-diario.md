@@ -16,6 +16,27 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Ideia de explicação didática das correções
+
+**Fase:** entre a Fase 3, concluída, e a Fase 4, não iniciada.
+
+**O que foi feito:**
+- Ideia e rascunho do dicionário da voz registrados em `05-ideias-futuro.md`.
+- Encaixe avaliado e proposto (P47), com seis ajustes, e aprovado pelo usuário (D92). A D85 foi ajustada, a D23 foi substituída e a A03 foi encerrada. Nenhum código foi escrito.
+
+**Decisões tomadas:** D92, que confirma a P47.
+
+**Commits:** este commit. O hash `a9b79c0` entrou nas entradas anteriores (D68).
+
+**Problemas / dúvidas:**
+- O exemplo "em relação ao equilíbrio esperado" depende da curva-alvo (P08), ainda não decidida.
+- O rascunho trazia a frase "a resposta para a sua dúvida" na região nasal, parecendo sobra de outra conversa: ficou de fora do documento.
+
+**Próximos passos:**
+- O usuário autoriza a Fase 4.
+
+---
+
 ## 02/11/2026 — Fase 3 fechada
 
 **Fase:** 3 — Análise, só medir: concluída. A Fase 4 não foi iniciada.
@@ -27,7 +48,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D90, D91.
 
-**Commits:** este commit.
+**Commits:** `a9b79c0`.
 
 **Problemas / dúvidas:**
 - Limites que seguem para as próximas fases: estalos, CPU no DAW e teste de ouvido em 4,8 kHz dispensados (D89); ReaEQ real e salvar em projeto sem conferência no Reaper.
@@ -50,7 +71,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D89.
 
-**Commits:** este commit.
+**Commits:** `a9b79c0`.
 
 **Problemas / dúvidas:**
 - 3 de 42 medidas da fundamental ficam fora de ±3%: mediana da female3 nos 30 s (3,86%) e aguda do male6 (94,87% nos 30 s, 7,82% no material inteiro). Pelo pedido do usuário, a fase só fecha dentro dos critérios, então parei.

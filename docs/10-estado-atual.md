@@ -7,7 +7,7 @@
 ## Onde estamos
 
 - **Fase:** Fase 3 (Análise, só medir) concluída, com exceções registradas (D90). Fase 4 não iniciada.
-- **Último passo concluído:** Fase 3 fechada, com 39 de 42 medidas da fundamental dentro de ±3% do Praat e a verificação sem DAW sem falhas (`08-plano-testes.md`).
+- **Último passo concluído:** explicação simples das correções decidida para a Fase 4 (D92), o que encerra a A03. A Fase 3 está fechada, com 39 de 42 medidas da fundamental dentro de ±3% do Praat e a verificação sem DAW sem falhas (`08-plano-testes.md`).
 - **Próximo passo:** o usuário autorizar o início da Fase 4. Nada dela deve começar antes disso.
 
 ## Bloqueios
@@ -28,7 +28,8 @@ Nenhum bloqueio técnico.
 
 | Commit | O que fez |
 |---|---|
-| este commit | Fechamento da Fase 3, comparação com o Praat e verificação sem DAW (D89 a D91) |
+| este commit | Explicação simples das correções decidida para a Fase 4 e A03 encerrada (D92) |
+| `a9b79c0` | Fechamento da Fase 3, comparação com o Praat e verificação sem DAW (D89 a D91) |
 | `691ae5e` | Resultados parciais do segundo teste no Reaper, sem fechar a Fase 3 |
 | `139cd83` | Ajustes da análise com voz real, correções na interface, ferramentas de teste e regras para a Fase 4 (D81 a D88) |
 | `ecae02e` | Análise e RTA da Fase 3, ainda sem o teste com voz real, e registro do VocalSet (D67 a D80) |

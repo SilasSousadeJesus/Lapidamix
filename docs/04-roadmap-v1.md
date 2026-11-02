@@ -36,7 +36,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** as medidas batem com o que se ouve/vê em outras ferramentas, em 3 a 5 vozes bem diferentes (as 20 vozes ficam para a Fase 5).
 
 ## Fase 4 — Correção automática
-- **Entregas:** regras que transformam as medidas em bandas de EQ; limites de segurança; intensidade; mostrar as bandas pretendidas antes de aplicar, com botão Aplicar (D85). Regra da banda de ressonância (D87, D88), com validação final de ouvido, em A/B contra o bypass. Decidir a margem de segurança do passa-alta (P42) e os detalhes da proteção contra erro de oitava (D91).
+- **Entregas:** regras que transformam as medidas em bandas de EQ; limites de segurança; intensidade; mostrar as bandas pretendidas antes de aplicar, com botão Aplicar (D85). Regra da banda de ressonância (D87, D88), com validação final de ouvido, em A/B contra o bypass. Decidir a margem de segurança do passa-alta (P42) e os detalhes da proteção contra erro de oitava (D91). Explicação simples das correções, em texto, depois das regras, com o dicionário da voz revisado no estudo (D92).
 - **Pronto quando:** na minha voz, o resultado soa melhor que o original no teste A/B.
 
 ## Fase 5 — Testes com várias vozes
