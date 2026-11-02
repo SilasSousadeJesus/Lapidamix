@@ -14,6 +14,7 @@ namespace
     constexpr int resultsHeight = 96;
     constexpr int plotHeight = 220;
     constexpr int refreshRateHz = 30;
+    constexpr int maximumShownResonances = 3;
 
     juce::String utf8 (const char* text)
     {
@@ -207,9 +208,15 @@ void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::Analysi
     {
         text << utf8 ("Ressonâncias candidatas:");
 
-        for (const auto& resonance : result.resonances)
+        // A análise guarda mais candidatas para a regra de corte; a janela mostra só as mais fortes.
+        const auto numShown = juce::jmin ((int) result.resonances.size(), maximumShownResonances);
+
+        for (int index = 0; index < numShown; ++index)
+        {
+            const auto& resonance = result.resonances[(size_t) index];
             text << " " << hertz (resonance.frequency) << " (+" << lapidamix::format::decimal (resonance.prominenceDb, 1)
                  << " dB, " << percent (resonance.presence) << " do tempo)";
+        }
 
         text << "\n";
     }

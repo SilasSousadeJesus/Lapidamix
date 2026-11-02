@@ -17,7 +17,8 @@ function(add_meter name source analyzer)
             ${source}
             "${analyzer}"
             "${LAPIDAMIX_ROOT}/src/core/analysis/YinPitchDetector.cpp"
-            "${LAPIDAMIX_ROOT}/src/core/analysis/AnalysisResult.cpp")
+            "${LAPIDAMIX_ROOT}/src/core/analysis/AnalysisResult.cpp"
+            "${LAPIDAMIX_ROOT}/src/core/correction/CorrectionRules.cpp")
     target_include_directories(${name} PRIVATE "${LAPIDAMIX_ROOT}/src")
     target_compile_definitions(${name}
         PRIVATE
@@ -44,11 +45,3 @@ if(analyzer_without_limit STREQUAL analyzer_code)
 endif()
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/VoiceAnalyzerSemLimite.cpp" "${analyzer_without_limit}")
 add_meter(banco_sem_limite banco.cpp "${CMAKE_CURRENT_BINARY_DIR}/VoiceAnalyzerSemLimite.cpp")
-
-# E sem o corte de 3 candidatas, para separar "não mediu o pico" de "mediu, mas outros eram maiores".
-string(REPLACE "maximumCandidates = 3" "maximumCandidates = 20" analyzer_all_candidates "${analyzer_code}")
-if(analyzer_all_candidates STREQUAL analyzer_code)
-    message(FATAL_ERROR "Corte de candidatas nao encontrado em VoiceAnalyzer.cpp")
-endif()
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/VoiceAnalyzerTodasCandidatas.cpp" "${analyzer_all_candidates}")
-add_meter(banco_todas_candidatas banco.cpp "${CMAKE_CURRENT_BINARY_DIR}/VoiceAnalyzerTodasCandidatas.cpp")

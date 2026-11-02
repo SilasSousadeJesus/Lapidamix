@@ -11,7 +11,9 @@
 #include <new>
 #include <vector>
 
+#include "core/correction/CorrectionRules.h"
 #include "plugin/PluginProcessor.h"
+#include "profiles/InstrumentProfile.h"
 
 // Conta pedidos de memória só enquanto a própria thread estiver dentro do processBlock.
 static thread_local bool insideAudioCallback = false;
@@ -289,9 +291,11 @@ static void testShortAnalysisAndState (const juce::AudioBuffer<float>& audio)
 
     auto resonancesEqual = r.resonances.size() == full.resonances.size();
     for (size_t i = 0; resonancesEqual && i < r.resonances.size(); ++i)
-        resonancesEqual = std::abs (r.resonances[i].frequency - full.resonances[i].frequency) < 0.01f;
+        resonancesEqual = std::abs (r.resonances[i].frequency - full.resonances[i].frequency) < 0.01f
+                       && r.resonances[i].isInBothHalves == full.resonances[i].isInBothHalves;
 
-    check (r.isValid && curvesEqual && resonancesEqual && std::abs (r.fundamentalMedian - full.fundamentalMedian) < 0.01f
+    check (r.isValid && curvesEqual && resonancesEqual && std::abs (r.octaveJumpShare - full.octaveJumpShare) < 0.0001f
+               && std::abs (r.fundamentalMedian - full.fundamentalMedian) < 0.01f
                && std::abs (r.fundamentalLow - full.fundamentalLow) < 0.01f && std::abs (r.fundamentalHigh - full.fundamentalHigh) < 0.01f,
            "Salvar e restaurar: medidas, curvas e candidatas voltam (" + juce::String ((int) state.getSize()) + " bytes, sem audio)");
 }
@@ -350,12 +354,211 @@ static void testResonance (const juce::AudioBuffer<float>& audio, const juce::St
     }
 }
 
+// As regras da Fase 4, com medidas conhecidas, para exercitar também o que a voz real não exercita.
+static lapidamix::AnalysisResult makeKnownAnalysis (float midsDb, float mudDb, float presenceDb)
+{
+    using namespace lapidamix;
+    AnalysisResult analysis;
+    analysis.isValid = true;
+    analysis.voiceSeconds = 30.0f;
+    analysis.fundamentalLow = 100.0f;
+    analysis.fundamentalMedian = 135.0f;
+    analysis.fundamentalHigh = 150.0f;
+    analysis.confidence = 0.99f;
+    analysis.numDistinctNotes = 10;
+    analysis.voiceCurve.assign (spectrum::numDisplayPoints, -80.0f);
+    analysis.soundCurve = analysis.voiceCurve;
+
+    for (int point = 0; point < spectrum::numDisplayPoints; ++point)
+    {
+        const auto frequency = spectrum::getDisplayFrequency (point);
+        auto& value = analysis.voiceCurve[(size_t) point];
+
+        if (frequency >= 500.0f && frequency < 2000.0f) value = midsDb;
+        else if (frequency >= 200.0f && frequency < 500.0f) value = mudDb;
+        else if (frequency >= 2000.0f && frequency < 5000.0f) value = presenceDb;
+    }
+
+    return analysis;
+}
+
+static void testRules()
+{
+    using namespace lapidamix;
+    const auto& settings = voiceProfile.correction;
+    const auto near = [] (float a, float b) { return std::abs (a - b) < 0.05f; };
+
+    {
+        const auto plan = makeCorrectionPlan ({}, settings);
+        check (! plan.highPass.isEnabled && ! plan.mud.isEnabled && ! plan.resonance.isEnabled && ! plan.presence.isEnabled && ! plan.air.isEnabled,
+               "Regras: sem analise, nada e proposto");
+    }
+
+    {
+        const auto plan = makeCorrectionPlan (makeKnownAnalysis (-40.0f, -40.0f, -55.0f), settings);
+        check (near (plan.highPass.frequency, 70.7f) && plan.highPass.reason == CorrectionReason::applied, "Regras: passa-alta meia oitava abaixo do grave de 100 Hz: " + juce::String (plan.highPass.frequency, 1) + " Hz");
+        check (! plan.mud.isEnabled && plan.mud.reason == CorrectionReason::withinRange, "Regras: embolado dentro da faixa nao age");
+        check (! plan.presence.isEnabled && plan.presence.reason == CorrectionReason::withinRange, "Regras: presenca dentro da faixa nao age");
+        check (! plan.air.isEnabled && plan.air.reason == CorrectionReason::notAutomatic, "Regras: ar nao age sozinho (D97)");
+    }
+
+    {
+        const auto plan = makeCorrectionPlan (makeKnownAnalysis (-40.0f, -28.0f, -70.0f), settings);
+        check (plan.mud.isEnabled && near (plan.mud.gainDb, -5.0f) && near (plan.mud.q, 1.0f) && near (plan.mud.frequency, 316.2f), "Regras: embolado de +12 dB corta no teto de -5 dB, Q 1, em 316 Hz");
+        check (plan.presence.isEnabled && near (plan.presence.gainDb, 3.0f) && near (plan.presence.q, 0.7f) && near (plan.presence.frequency, 3500.0f), "Regras: falta de presenca realca no teto de +3 dB, Q 0,7, em 3,5 kHz");
+    }
+
+    {
+        const auto small = makeCorrectionPlan (makeKnownAnalysis (-40.0f, -36.5f, -59.5f), settings);
+        check (! small.mud.isEnabled && ! small.presence.isEnabled, "Regras: menos de 1 dB de acao nao liga a banda");
+        const auto partial = makeCorrectionPlan (makeKnownAnalysis (-40.0f, -35.0f, -60.5f), settings);
+        check (near (partial.mud.gainDb, -2.0f) && near (partial.presence.gainDb, 1.5f), "Regras: corrige so o que passa da faixa");
+    }
+
+    {
+        // Grave medido uma oitava acima: o teto impede subir demais, e a medida inconsistente derruba o filtro.
+        auto analysis = makeKnownAnalysis (-40.0f, -40.0f, -55.0f);
+        analysis.fundamentalLow = 500.0f;
+        check (near (makeCorrectionPlan (analysis, settings).highPass.frequency, 100.0f), "Regras: passa-alta nunca passa de 100 Hz");
+        analysis.fundamentalLow = 40.0f;
+        check (near (makeCorrectionPlan (analysis, settings).highPass.frequency, 40.0f), "Regras: passa-alta nunca fica abaixo de 40 Hz");
+
+        analysis.fundamentalLow = 200.0f;
+        analysis.confidence = 0.7f;
+        auto plan = makeCorrectionPlan (analysis, settings);
+        check (near (plan.highPass.frequency, 40.0f) && plan.highPass.reason == CorrectionReason::inconsistentFundamental, "Regras: confianca baixa deixa o passa-alta em 40 Hz (D91)");
+
+        analysis.confidence = 0.99f;
+        analysis.octaveJumpShare = 0.2f;
+        plan = makeCorrectionPlan (analysis, settings);
+        check (near (plan.highPass.frequency, 40.0f) && plan.highPass.reason == CorrectionReason::inconsistentFundamental, "Regras: saltos de oitava deixam o passa-alta em 40 Hz (D91)");
+    }
+
+    {
+        auto analysis = makeKnownAnalysis (-40.0f, -28.0f, -55.0f);
+        analysis.fundamentalHigh = 580.0f;
+        const auto plan = makeCorrectionPlan (analysis, settings);
+        check (! plan.mud.isEnabled && plan.mud.reason == CorrectionReason::protectedFundamental, "Regras: voz aguda protege a fundamental, e o embolado nao age");
+    }
+
+    {
+        const auto withCandidate = [&] (ResonanceCandidate candidate)
+        {
+            auto analysis = makeKnownAnalysis (-40.0f, -40.0f, -55.0f);
+            analysis.resonances.push_back (candidate);
+            return makeCorrectionPlan (analysis, settings).resonance;
+        };
+
+        const ResonanceCandidate good { 1500.0f, 9.0f, 0.7f, 8, true };
+        const auto cut = withCandidate (good);
+        check (cut.isEnabled && near (cut.gainDb, -3.0f) && near (cut.q, 4.0f), "Regras: candidata elegivel corta um terco, ate -3 dB, Q 4");
+
+        auto weak = good;       weak.prominenceDb = 5.9f;
+        auto brief = good;      brief.presence = 0.5f;
+        auto fewNotes = good;   fewNotes.numNotes = 4;
+        auto oneHalf = good;    oneHalf.isInBothHalves = false;
+        auto formant = good;    formant.frequency = 3000.0f;
+        auto top = good;        top.frequency = 7000.0f;
+        check (! withCandidate (weak).isEnabled && ! withCandidate (brief).isEnabled && ! withCandidate (fewNotes).isEnabled && ! withCandidate (oneHalf).isEnabled,
+               "Regras: candidata fraca, passageira, em poucas notas ou em uma so metade nao corta");
+        check (! withCandidate (formant).isEnabled && ! withCandidate (top).isEnabled, "Regras: nao corta de 2,5 a 4,2 kHz nem acima de 6 kHz (D87, D88)");
+
+        auto limitLow = good;   limitLow.frequency = 4200.0f;
+        auto limitHigh = good;  limitHigh.frequency = 6000.0f;
+        check (! withCandidate (limitLow).isEnabled && withCandidate (limitHigh).isEnabled, "Regras: limites das zonas: 4,2 kHz protegido, 6 kHz ainda atua");
+    }
+}
+
+// A análise de verdade calculando os dados novos, com sinais de resposta conhecida.
+static lapidamix::AnalysisResult analyseMono (const std::vector<float>& mono)
+{
+    lapidamix::VoiceAnalyzer::Settings settings;
+    settings.sampleRate = kRate;
+    lapidamix::VoiceAnalyzer analyzer (settings);
+    return analyzer.finish (mono.data(), (int) mono.size(), nullptr);
+}
+
+static void testAnalysisData (const juce::AudioBuffer<float>& audio)
+{
+    using namespace lapidamix;
+
+    // Tom constante × tom que salta uma oitava a cada 200 ms.
+    const auto makeTone = [] (bool jumps)
+    {
+        std::vector<float> tone ((size_t) (20.0 * kRate));
+        auto phase = 0.0;
+        for (size_t i = 0; i < tone.size(); ++i)
+        {
+            const auto isHigh = jumps && ((int) ((double) i / kRate / 0.2) % 2) == 1;
+            phase += juce::MathConstants<double>::twoPi * (isHigh ? 300.0 : 150.0) / kRate;
+            tone[i] = 0.2f * (float) std::sin (phase);
+        }
+        return tone;
+    };
+
+    const auto steady = analyseMono (makeTone (false));
+    const auto jumping = analyseMono (makeTone (true));
+    check (steady.octaveJumpShare < 0.001f, "Analise: tom constante, " + juce::String (steady.octaveJumpShare * 100.0f, 1) + "% de saltos de oitava");
+    check (jumping.octaveJumpShare > voiceProfile.correction.highPass.maximumOctaveJumpShare,
+           "Analise: tom que salta uma oitava, " + juce::String (jumping.octaveJumpShare * 100.0f, 1) + "% de saltos");
+    check (makeCorrectionPlan (jumping, voiceProfile.correction).highPass.reason == CorrectionReason::inconsistentFundamental,
+           "Analise e regras juntas: saltos reais deixam o passa-alta em 40 Hz (D91)");
+
+    // Um pico inserido em toda a gravação × só na primeira metade da voz.
+    std::vector<float> mono ((size_t) (60.0 * kRate));
+    for (size_t i = 0; i < mono.size(); ++i)
+        mono[i] = 0.5f * (audio.getSample (0, (int) i) + audio.getSample (1, (int) i));
+
+    const auto voiceHalfSample = [&]
+    {
+        // Metade da voz válida, procurada pela própria análise.
+        const auto wholeVoice = analyseMono (mono).voiceSeconds;
+        for (int seconds = 5; seconds < 60; ++seconds)
+        {
+            const std::vector<float> part (mono.begin(), mono.begin() + (std::ptrdiff_t) (seconds * kRate));
+            if (analyseMono (part).voiceSeconds >= wholeVoice * 0.5f)
+                return (size_t) (seconds * kRate);
+        }
+        return mono.size() / 2;
+    }();
+
+    const auto applyPeak = [&] (size_t endSample)
+    {
+        auto peaked = mono;
+        juce::dsp::IIR::Filter<float> filter;
+        filter.coefficients = new juce::dsp::IIR::Coefficients<float> (juce::dsp::IIR::ArrayCoefficients<float>::makePeakFilter (kRate, 1000.0f, 8.0f, juce::Decibels::decibelsToGain (9.0f)));
+        filter.prepare ({ kRate, 4096, 1 });
+        for (size_t i = 0; i < endSample; ++i) peaked[i] = filter.processSample (peaked[i]);
+        return peaked;
+    };
+
+    const auto findPeak = [] (const AnalysisResult& result) -> const ResonanceCandidate*
+    {
+        for (const auto& candidate : result.resonances)
+            if (std::abs (std::log2 (candidate.frequency / 1000.0f)) <= 1.0f / 12.0f)
+                return &candidate;
+        return nullptr;
+    };
+
+    const auto everywhere = analyseMono (applyPeak (mono.size()));
+    const auto* inBoth = findPeak (everywhere);
+    check (inBoth != nullptr && inBoth->isInBothHalves, "Analise: pico em toda a gravacao aparece nas duas metades");
+
+    const auto oneHalf = analyseMono (applyPeak (voiceHalfSample));
+    const auto* inOne = findPeak (oneHalf);
+    check (inOne == nullptr || ! inOne->isInBothHalves,
+           juce::String ("Analise: pico so na primeira metade nao conta como persistente (") + (inOne == nullptr ? "nem virou candidata)" : "candidata, mas nao nas duas metades)"));
+}
+
 int main()
 {
     const juce::ScopedJuceInitialiser_GUI gui;
+    testRules();
+
     const auto sm7 = loadStereo ("VOZ-CANTADA-SHURE-SM7DB.wav");
     const auto sm57 = loadStereo ("VOZ-CANTADA-SHURE-SM57.wav");
 
+    testAnalysisData (sm7);
     testTransparency (sm7);
     testBypassAndGain (sm7);
     testAnalysisIsBeforeEq (sm7);

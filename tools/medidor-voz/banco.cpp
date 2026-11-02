@@ -15,6 +15,8 @@
 #include "core/analysis/SpectrumGrid.h"
 #include "core/analysis/VoiceAnalyzer.h"
 #include "core/analysis/YinPitchDetector.h"
+#include "core/correction/CorrectionRules.h"
+#include "profiles/InstrumentProfile.h"
 
 using namespace lapidamix;
 
@@ -285,7 +287,6 @@ static void detail (const juce::File& root, const juce::String& singer)
 }
 
 // Simula a regra da banda de ressonância (D87), sem tocar no plugin.
-// Usar com banco_todas_candidatas, para o corte de 3 candidatas não esconder uma elegível.
 struct RuleCut { float frequency = 0, prominence = 0, cutDb = 0; };
 
 struct RuleOptions
@@ -416,6 +417,91 @@ static void ruleTest (const juce::File& root, int argc, char** argv)
     }
 }
 
+// Equilíbrio entre regiões da voz, em dB, para o estudo das regras da Fase 4.
+static float bandLevel (const std::vector<float>& curve, float low, float high)
+{
+    auto sum = 0.0f; int n = 0;
+    for (int p = 0; p < spectrum::numDisplayPoints; ++p)
+    {
+        const auto f = spectrum::getDisplayFrequency (p);
+        if (f >= low && f < high) { sum += std::pow (10.0f, curve[(size_t) p] / 10.0f); ++n; }
+    }
+    return 10.0f * std::log10 (sum / (float) juce::jmax (1, n) + 1.0e-12f);
+}
+
+static void balanceRow (const juce::String& name, const std::vector<float>& x)
+{
+    const auto printRow = [&] (const char* part, const AnalysisResult& r)
+    {
+        const auto& v = r.voiceCurve;
+        const auto low = bandLevel (v, 200, 500), mid = bandLevel (v, 500, 2000), presence = bandLevel (v, 2000, 5000), air = bandLevel (v, 10000, 14000);
+        auto peak = 0.0f, best = -200.0f;
+        for (int p = 0; p < spectrum::numDisplayPoints; ++p)
+        {
+            const auto f = spectrum::getDisplayFrequency (p);
+            if (f >= 100 && f <= 800 && v[(size_t) p] > best) { best = v[(size_t) p]; peak = f; }
+        }
+        printf ("%s; %s; %.0f; %.0f; %.0f; %.1f; %.1f; %.1f; %.1f; %.0f\n", name.toRawUTF8(), part, r.fundamentalLow, r.fundamentalMedian, r.fundamentalHigh,
+                low - mid, presence - mid, air - presence, air, peak);
+    };
+
+    printRow ("inteiro", capture (x, 0, 1.0e9f, 1000.0).result);
+    printRow ("30s", capture (x, 0, 30.0f).result);
+    fflush (stdout);
+}
+
+static void balanceTable (const juce::File& root, int argc, char** argv)
+{
+    printf ("voz; trecho; p5; mediana; p95; embolado-medios; presenca-medios; ar-presenca; ar dB; pico 100-800 Hz\n");
+    auto folders = root.findChildFiles (juce::File::findDirectories, false);
+    folders.sort();
+    for (const auto& folder : folders) balanceRow (folder.getFileName(), loadSinger (root, folder.getFileName()));
+
+    for (int i = 3; i < argc; ++i)
+    {
+        std::vector<float> x;
+        const juce::File file (juce::String::fromUTF8 (argv[i]));
+        appendWav (file, x);
+        balanceRow (file.getFileNameWithoutExtension(), x);
+    }
+}
+
+// O que as regras da Fase 4 fariam em cada voz, sem tocar no plugin.
+static void proposalRow (const juce::String& name, const std::vector<float>& x)
+{
+    int window = 0;
+
+    for (const auto& run : windows (x, 30.0f))
+    {
+        // A análise e as regras reais do plugin.
+        const auto& analysis = run.result;
+        const auto plan = makeCorrectionPlan (analysis, voiceProfile.correction);
+
+        printf ("%s; %d; %.1f; %.1f; %.0f; %s; %s; %s\n", name.toRawUTF8(), window++, analysis.octaveJumpShare * 100.0f, analysis.confidence, plan.highPass.frequency,
+                plan.mud.reason == CorrectionReason::protectedFundamental ? "sem regiao"
+                    : juce::String::formatted ("%.1f em %.0f, -%.1f", plan.mud.measuredDb, plan.mud.frequency, std::abs (plan.mud.gainDb)).toRawUTF8(),
+                plan.resonance.isEnabled ? juce::String::formatted ("%.0f, -%.1f", plan.resonance.frequency, std::abs (plan.resonance.gainDb)).toRawUTF8() : "nada",
+                juce::String::formatted ("%.1f, +%.1f", plan.presence.measuredDb, plan.presence.gainDb).toRawUTF8());
+        fflush (stdout);
+    }
+}
+
+static void proposalTable (const juce::File& root, int firstWav, int argc, char** argv)
+{
+    printf ("voz; janela; saltos de oitava %%; confianca; passa-alta Hz; embolado (medida, centro, corte); ressonancia; presenca (medida, realce)\n");
+    auto folders = root.findChildFiles (juce::File::findDirectories, false);
+    folders.sort();
+    for (const auto& folder : folders) proposalRow (folder.getFileName(), loadSinger (root, folder.getFileName()));
+
+    for (int i = firstWav; i < argc; ++i)
+    {
+        std::vector<float> x;
+        const juce::File file (juce::String::fromUTF8 (argv[i]));
+        appendWav (file, x);
+        proposalRow (file.getFileNameWithoutExtension(), x);
+    }
+}
+
 // Grava o trecho que o plugin analisa, para outra ferramenta medir exatamente o mesmo áudio.
 static void writeWav (const juce::File& file, const float* samples, int numSamples)
 {
@@ -498,6 +584,10 @@ int main (int argc, char** argv)
         scan (juce::File (juce::String::fromUTF8 (argv[2])));
     else if (mode == "detalhe" && argc >= 4)
         for (int i = 3; i < argc; ++i) detail (juce::File (juce::String::fromUTF8 (argv[2])), juce::String::fromUTF8 (argv[i]));
+    else if (mode == "proposta" && argc >= 3)
+        proposalTable (juce::File (juce::String::fromUTF8 (argv[2])), 3, argc, argv);
+    else if (mode == "equilibrio" && argc >= 3)
+        balanceTable (juce::File (juce::String::fromUTF8 (argv[2])), argc, argv);
     else if (mode == "exportar" && argc >= 5)
         exportForComparison (juce::File (juce::String::fromUTF8 (argv[2])), juce::File (juce::String::fromUTF8 (argv[3])), argc, argv);
     else if (mode == "regra" && argc >= 3)

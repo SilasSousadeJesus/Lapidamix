@@ -35,6 +35,7 @@ target_sources(Lapidamix
         src/core/analysis/AudioCapture.cpp
         src/core/analysis/VoiceAnalyzer.cpp
         src/core/analysis/YinPitchDetector.cpp
+        src/core/correction/CorrectionRules.cpp
         src/core/eq/EqBandFilter.cpp
         src/modules/EqModule.cpp
         src/plugin/PluginEditor.cpp

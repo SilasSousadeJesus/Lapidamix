@@ -35,7 +35,9 @@ namespace lapidamix
         constexpr int minimumNotes = 3;
         constexpr int narrownessOffset = gridPointsPerOctave / 4;
         constexpr float maximumShoulderRatio = 0.5f;
-        constexpr size_t maximumCandidates = 3;
+        constexpr size_t maximumCandidates = 20; // A regra de corte precisa ver além das mais fortes (D87).
+        constexpr float halvesMatchOctaves = 1.0f / 12.0f;
+        constexpr float octaveJumpMargin = 0.1f;
 
         // Limites em dB valem para potência: 10 dB, não 20 dB, multiplicam a potência por 10.
         float decibelsToPower (float decibels) noexcept
@@ -155,6 +157,84 @@ namespace lapidamix
                 if (deviation >= framePresenceDb)
                     ++observations.countAboveFrame[(size_t) point];
             }
+        }
+
+        float getGridFrequency (int point) noexcept
+        {
+            return resonanceMinimumFrequency * std::pow (2.0f, (float) point / (float) gridPointsPerOctave);
+        }
+
+        // Ressonâncias: picos estreitos em relação à vizinhança da própria voz (D14, D83).
+        // Da mais forte para a mais fraca.
+        std::vector<ResonanceCandidate> findResonances (const ResonanceObservations& observations, float fundamentalMedian)
+        {
+            const auto numGridPoints = (int) observations.count.size();
+
+            // Cada ponto reúne também os vizinhos diretos, porque as notas não caem sempre no mesmo ponto.
+            const auto getProminence = [&] (int point)
+            {
+                auto sum = 0.0f;
+                auto count = 0;
+
+                for (int index = juce::jmax (0, point - 1); index <= juce::jmin (numGridPoints - 1, point + 1); ++index)
+                {
+                    sum += observations.deviationSum[(size_t) index];
+                    count += observations.count[(size_t) index];
+                }
+
+                return count >= minimumObservations ? sum / (float) count : 0.0f;
+            };
+
+            std::vector<ResonanceCandidate> resonances;
+
+            for (int point = 1; point + 1 < numGridPoints; ++point)
+            {
+                // Com harmônicos mais espaçados que isso, não dá para medir a largura do pico.
+                if (getGridFrequency (point) < minimumHarmonicNumber * fundamentalMedian)
+                    continue;
+
+                const auto value = getProminence (point);
+
+                if (value < minimumProminenceDb || value < getProminence (point - 1) || value < getProminence (point + 1))
+                    continue;
+
+                // Um formante é largo: continua alto a 1/4 de oitava dos dois lados. Uma ressonância não.
+                const auto below = getProminence (juce::jmax (0, point - narrownessOffset));
+                const auto above = getProminence (juce::jmin (numGridPoints - 1, point + narrownessOffset));
+
+                if (juce::jmin (below, above) > value * maximumShoulderRatio)
+                    continue;
+
+                auto observed = 0;
+                auto observedAbove = 0;
+                std::set<int> notes;
+
+                for (int index = juce::jmax (0, point - 1); index <= juce::jmin (numGridPoints - 1, point + 1); ++index)
+                {
+                    observed += observations.count[(size_t) index];
+                    observedAbove += observations.countAboveFrame[(size_t) index];
+                    notes.insert (observations.notes[(size_t) index].begin(), observations.notes[(size_t) index].end());
+                }
+
+                const auto presence = (float) observedAbove / (float) observed;
+
+                if (presence >= minimumPresence && (int) notes.size() >= minimumNotes)
+                    resonances.push_back ({ getGridFrequency (point), value, presence, (int) notes.size() });
+            }
+
+            std::sort (resonances.begin(), resonances.end(),
+                       [] (const ResonanceCandidate& a, const ResonanceCandidate& b) { return a.prominenceDb > b.prominenceDb; });
+
+            return resonances;
+        }
+
+        bool hasResonanceNear (const std::vector<ResonanceCandidate>& resonances, float frequency) noexcept
+        {
+            for (const auto& resonance : resonances)
+                if (std::abs (std::log2 (resonance.frequency / frequency)) <= halvesMatchOctaves)
+                    return true;
+
+            return false;
         }
     }
 
@@ -325,6 +405,28 @@ namespace lapidamix
             result.confidence = confidenceSum / (float) frequencies.size();
         }
 
+        // Saltos de oitava entre blocos de voz vizinhos deixam a medida do grave suspeita (D94).
+        auto numVoicePairs = 0;
+        auto numOctaveJumps = 0;
+        std::vector<int> voiceBlocksBefore (blocks.size() + 1, 0);
+
+        for (size_t index = 0; index < blocks.size(); ++index)
+        {
+            voiceBlocksBefore[index + 1] = voiceBlocksBefore[index] + isVoice[index];
+
+            if (index > 0 && isVoice[index] != 0 && isVoice[index - 1] != 0)
+            {
+                const auto ratio = blocks[index].frequency / blocks[index - 1].frequency;
+                ++numVoicePairs;
+
+                if (std::abs (ratio - 2.0f) < 2.0f * octaveJumpMargin || std::abs (ratio - 0.5f) < 0.5f * octaveJumpMargin)
+                    ++numOctaveJumps;
+            }
+        }
+
+        if (numVoicePairs > 0)
+            result.octaveJumpShare = (float) numOctaveJumps / (float) numVoicePairs;
+
         // Espectro médio pelo método de Welch: média em potência, só depois em dB (D71).
         const auto order = juce::roundToInt (std::log2 (settings.sampleRate * spectrumFrameSeconds));
         const auto frameSize = 1 << order;
@@ -344,12 +446,10 @@ namespace lapidamix
         std::vector<float> soundPower ((size_t) numBins, 0.0f);
 
         const auto numGridPoints = (int) std::floor (std::log2 (resonanceMaximumFrequency / resonanceMinimumFrequency) * gridPointsPerOctave) + 1;
-        const auto getGridFrequency = [] (int point)
-        {
-            return resonanceMinimumFrequency * std::pow (2.0f, (float) point / (float) gridPointsPerOctave);
-        };
 
-        ResonanceObservations observations (numGridPoints);
+        // As duas metades da voz válida, para saber se um pico persiste na captura (D87).
+        ResonanceObservations observations (numGridPoints), firstHalf (numGridPoints), secondHalf (numGridPoints);
+        const auto halfVoiceBlocks = (int) frequencies.size() / 2;
         std::set<int> allNotes;
         auto numVoiceFrames = 0;
         auto numSoundFrames = 0;
@@ -411,6 +511,8 @@ namespace lapidamix
                     const auto note = juce::roundToInt (12.0f * std::log2 (noteFrequency / 440.0f));
                     allNotes.insert (note);
                     addFrameObservations (observations, framePower.data(), numBins, binWidth, noteFrequency, note);
+                    addFrameObservations (voiceBlocksBefore[(size_t) firstBlock] < halfVoiceBlocks ? firstHalf : secondHalf,
+                                          framePower.data(), numBins, binWidth, noteFrequency, note);
                 }
             }
         }
@@ -430,59 +532,14 @@ namespace lapidamix
 
         result.numDistinctNotes = (int) allNotes.size();
 
-        // Ressonâncias: picos estreitos em relação à vizinhança da própria voz (D14, D83).
-        // Cada ponto reúne também os vizinhos diretos, porque as notas não caem sempre no mesmo ponto.
-        const auto getProminence = [&] (int point)
-        {
-            auto sum = 0.0f;
-            auto count = 0;
+        result.resonances = findResonances (observations, result.fundamentalMedian);
 
-            for (int index = juce::jmax (0, point - 1); index <= juce::jmin (numGridPoints - 1, point + 1); ++index)
-            {
-                sum += observations.deviationSum[(size_t) index];
-                count += observations.count[(size_t) index];
-            }
+        const auto firstHalfResonances = findResonances (firstHalf, result.fundamentalMedian);
+        const auto secondHalfResonances = findResonances (secondHalf, result.fundamentalMedian);
 
-            return count >= minimumObservations ? sum / (float) count : 0.0f;
-        };
-
-        for (int point = 1; point + 1 < numGridPoints; ++point)
-        {
-            // Com harmônicos mais espaçados que isso, não dá para medir a largura do pico.
-            if (getGridFrequency (point) < minimumHarmonicNumber * result.fundamentalMedian)
-                continue;
-
-            const auto value = getProminence (point);
-
-            if (value < minimumProminenceDb || value < getProminence (point - 1) || value < getProminence (point + 1))
-                continue;
-
-            // Um formante é largo: continua alto a 1/4 de oitava dos dois lados. Uma ressonância não.
-            const auto below = getProminence (juce::jmax (0, point - narrownessOffset));
-            const auto above = getProminence (juce::jmin (numGridPoints - 1, point + narrownessOffset));
-
-            if (juce::jmin (below, above) > value * maximumShoulderRatio)
-                continue;
-
-            auto observed = 0;
-            auto observedAbove = 0;
-            std::set<int> notes;
-
-            for (int index = juce::jmax (0, point - 1); index <= juce::jmin (numGridPoints - 1, point + 1); ++index)
-            {
-                observed += observations.count[(size_t) index];
-                observedAbove += observations.countAboveFrame[(size_t) index];
-                notes.insert (observations.notes[(size_t) index].begin(), observations.notes[(size_t) index].end());
-            }
-
-            const auto presence = (float) observedAbove / (float) observed;
-
-            if (presence >= minimumPresence && (int) notes.size() >= minimumNotes)
-                result.resonances.push_back ({ getGridFrequency (point), value, presence, (int) notes.size() });
-        }
-
-        std::sort (result.resonances.begin(), result.resonances.end(),
-                   [] (const ResonanceCandidate& a, const ResonanceCandidate& b) { return a.prominenceDb > b.prominenceDb; });
+        for (auto& resonance : result.resonances)
+            resonance.isInBothHalves = hasResonanceNear (firstHalfResonances, resonance.frequency)
+                                    && hasResonanceNear (secondHalfResonances, resonance.frequency);
 
         if (result.resonances.size() > maximumCandidates)
             result.resonances.resize (maximumCandidates);

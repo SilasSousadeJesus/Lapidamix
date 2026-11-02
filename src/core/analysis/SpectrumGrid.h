@@ -43,6 +43,27 @@ namespace lapidamix::spectrum
         return sum / (float) (last - first + 1);
     }
 
+    // Nível de uma região numa curva já em dB, com a média feita em potência (D71).
+    template <typename Curve>
+    float getCurveRegionDb (const Curve& curve, float lowFrequency, float highFrequency) noexcept
+    {
+        auto sum = 0.0f;
+        auto count = 0;
+
+        for (int point = 0; point < numDisplayPoints; ++point)
+        {
+            const auto frequency = getDisplayFrequency (point);
+
+            if (frequency >= lowFrequency && frequency < highFrequency)
+            {
+                sum += std::pow (10.0f, curve[(size_t) point] / 10.0f);
+                ++count;
+            }
+        }
+
+        return count > 0 ? powerToDb (sum / (float) count) : silenceDb;
+    }
+
     // Curva em dB, com suavização de 1/6 de oitava feita em potência.
     template <typename Output>
     void fillDisplayCurve (const float* powers, int numBins, double binWidth, Output& output) noexcept

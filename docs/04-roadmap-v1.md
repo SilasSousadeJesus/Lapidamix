@@ -8,7 +8,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 | 1 | Ambiente e plugin "vazio" | ✅ Concluída (02/11/2026) |
 | 2 | EQ manual | ✅ Concluída (02/11/2026) |
 | 3 | Análise (só medir) | ✅ Concluída (02/11/2026), com exceções registradas (D90) |
-| 4 | Correção automática | ⚪ Não iniciada |
+| 4 | Correção automática | 🔵 Em andamento (autorizada em 02/11/2026 — D93): proposta aprovada (D94 a D100) e passos 1 e 2 de 6 feitos (regras e dados da análise, sem ligar ao som) |
 | 5 | Testes com várias vozes | ⚪ Não iniciada |
 | 6 | Fechamento da v1.0 | ⚪ Não iniciada |
 

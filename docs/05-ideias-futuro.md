@@ -24,6 +24,9 @@ Depois da v1.0, fora do escopo atual. Seguem o método da D37 (estudo, proposta,
 - **Ideia:** detectar a região de sibilância de cada voz e atenuar só nos instantes em que ela aparece.
 - **Relação com o que já existe:** a análise da Fase 3 já calcula a média "todo o som", que inclui as sibilantes. A diferença entre ela e a média "voz" pode indicar onde a sibilância está e quanto ela pesa. No SM57, essa diferença apareceu entre cerca de 5 e 8 kHz.
 
+## Embolado
+- Testar com mais vozes graves e avaliar uma faixa que leve em conta a fundamental. Em vozes graves, 200–500 Hz contém harmônicos fortes, que podem ser corpo legítimo, e as faixas atuais vieram de vozes mais agudas (D95).
+
 ## Ressonâncias
 Melhorias na detecção, fora da v1.0 (D88):
 - Zona de proteção do formante que acompanhe cada voz, no lugar da faixa fixa de 2,5 a 4,2 kHz (D87).

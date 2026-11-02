@@ -16,6 +16,77 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fase 4: dados novos na análise
+
+**Fase:** 4 — Correção automática (etapa c da D37, passo 2 de 6 da D99)
+
+**O que foi feito:**
+- Intensidade no passa-alta aprovada (D100, confirma P55).
+- `VoiceAnalyzer` passou a calcular as duas metades da voz e os saltos de oitava, e a guardar até 20 candidatas. A janela continua mostrando 3. Os dados novos são salvos no projeto.
+- Testes novos em `tools/verifica-plugin`, com tons conhecidos e picos inseridos. A ferramenta `banco_todas_candidatas` deixou de ser necessária.
+
+- Abaixo de 10 s de voz válida, o plugin não proporá bandas (D101).
+
+**Decisões tomadas:** D100, D101.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- As metades calculadas dentro da análise mudam o plano em 1 de 78 janelas (male8, janela 2), que ganha -3,0 dB em 1100 Hz.
+
+**Próximos passos:**
+- Passo 3: lista de bandas e botão Aplicar.
+
+---
+
+## 02/11/2026 — Fase 4: proposta aprovada e regras no código
+
+**Fase:** 4 — Correção automática (etapa c da D37, passo 1 de 6 da D99)
+
+**O que foi feito:**
+- Proposta aprovada com ajustes (D94 a D99): risco em vozes graves registrado, Q 1,0 no embolado e Q 0,7 na presença, e ideia de faixa que leve em conta a fundamental em `05-ideias-futuro.md`.
+- Intensidade no passa-alta proposta (P55), sem implementar.
+- Regras escritas em `src/core/correction/`, com valores no perfil da voz. Nada liga ao som nem à janela.
+- 18 verificações das regras em `tools/verifica-plugin`, todas OK. `banco proposta` passou a usar as regras reais: nenhuma diferença inesperada com a simulação.
+
+**Decisões tomadas:** D94 a D99. Proposta nova: P55.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- As duas metades e os saltos de oitava ainda vêm da ferramenta; sem eles no plugin, a ressonância nunca cortaria, o que é seguro até o passo 2.
+- A análise guarda só 3 candidatas, mas a simulação da regra olhou todas. O passo 2 precisa guardar mais.
+
+**Próximos passos:**
+- O usuário decide a P55. Passo 2 da D99.
+
+---
+
+## 02/11/2026 — Fase 4: estudo e proposta
+
+**Fase:** 4 — Correção automática (etapas a e b da D37)
+
+**O que foi feito:**
+- Fase 4 autorizada (D93).
+- Estudo registrado em `07-referencias.md`, separando fatos e suposições, com a revisão do dicionário da voz.
+- Equilíbrio da voz medido em 20 vozes do VocalSet e nas duas gravações, e regras simuladas em `tools/medidor-voz` (`banco equilibrio` e `banco proposta`). Nenhum código do plugin foi escrito.
+- Proposta registrada (P48 a P54).
+
+**Decisões tomadas:** D93. Propostas novas: P48 a P54.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- A faixa saudável vem de cantores treinados, com um só modelo de microfone. A voz do usuário é mais grave que todas as do banco.
+- O embolado da voz do usuário é igual nos dois microfones; o que muda é a presença.
+- A proteção do passa-alta nunca disparou nos dados reais, então só um teste sintético a exercita.
+- O guia da Avid recusou o acesso, e o dicionário tem apoio parcial nas fontes (`07-referencias.md`).
+
+**Próximos passos:**
+- O usuário aprova ou ajusta a proposta.
+
+---
+
 ## 02/11/2026 — Ideia de explicação didática das correções
 
 **Fase:** entre a Fase 3, concluída, e a Fase 4, não iniciada.
@@ -26,7 +97,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D92, que confirma a P47.
 
-**Commits:** este commit. O hash `a9b79c0` entrou nas entradas anteriores (D68).
+**Commits:** `0671ca7`. O hash `a9b79c0` entrou nas entradas anteriores (D68).
 
 **Problemas / dúvidas:**
 - O exemplo "em relação ao equilíbrio esperado" depende da curva-alvo (P08), ainda não decidida.

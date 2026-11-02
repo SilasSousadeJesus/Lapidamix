@@ -44,6 +44,53 @@
 | 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
 | 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
 
+## Dados novos na análise do plugin (passo 2, 02/11/2026)
+
+A análise agora calcula as duas metades da voz e os saltos de oitava, guarda até 20 candidatas (a janela mostra as 3 mais fortes) e salva tudo no projeto. Isso roda fora da thread de áudio.
+
+- **Saltos de oitava, com tons conhecidos:** 0,0% em um tom constante e 12,0% em um tom que salta a cada 200 ms. Nesse caso, a análise e as regras juntas deixam o passa-alta em 40 Hz (D91).
+- **Duas metades, com a voz do usuário:** um pico de +9 dB em toda a gravação conta como presente nas duas metades; o mesmo pico só na primeira metade vira candidata, mas não conta como persistente.
+- **Salvar e restaurar:** os dados novos voltam. Projetos antigos não têm esses dados: nesse caso, nada é cortado na ressonância.
+- **Plano nas 78 janelas, passo 1 × passo 2:** 77 iguais. A diferença está no male8, janela 2, que ganha -3,0 dB em 1100 Hz, porque as metades agora são calculadas dentro da mesma análise. A contagem de cortes de ressonância passa de 17 para 18 janelas nos homens.
+- **Saltos de oitava em voz real:** no máximo 5,3%, abaixo do limite de 8%.
+- **Restante da verificação:** saída idêntica à entrada, sem pedidos de memória na thread de áudio e 0 falhas. O som do plugin não muda neste passo.
+
+## Regras da Fase 4 no código real (passo 1, 02/11/2026)
+
+`src/core/correction/`, ainda sem ligação com o som nem com a janela. As duas metades e os saltos de oitava ainda vêm da ferramenta de teste (passo 2).
+
+- **Casos conhecidos (`verifica`):** 18 verificações das regras, todas OK, inclusive a proteção do passa-alta (confiança baixa e saltos de oitava levam a 40 Hz), que a voz real não exercitou. O resto da verificação do plugin continua sem falhas.
+- **Código real × simulação abaixo (78 janelas):** 72 iguais. As outras 6 têm a mudança esperada: realce de presença menor que 1 dB, que a simulação ainda mostrava e agora não liga a banda. Nenhuma diferença inesperada.
+- **Plugin:** compila em Release, e o som não muda.
+
+## Simulação das regras propostas para a Fase 4 (02/11/2026)
+
+Feita com `banco proposta` e `banco equilibrio`, sem mudar o plugin, em janelas de 30 s. Limites simulados: embolado até +3 dB; presença a partir de -19 dB; ressonância pela D87/D88.
+
+**Medidas, no material inteiro (dB):**
+
+| Medida | VocalSet (20 vozes) | SM7dB | SM57 |
+|---|---|---|---|
+| 200–500 Hz contra 500 Hz–2 kHz | -5,1 a +2,5 | **+11,9** | **+12,0** |
+| 2–5 kHz contra 500 Hz–2 kHz | -19,2 a -6,4 | **-24,2** | -18,2 |
+| 10–14 kHz contra 2–5 kHz | -42,3 a -20,7 | -30,0 | -20,3 |
+
+O embolado aparece igual nos dois microfones, então vem da voz, da distância ou da região grave, não só do SM7dB. O "escuro" (pouca presença) é o que muda: está fora da faixa no SM7dB e dentro no SM57. Isso combina com o que o usuário descrevia.
+
+**O que cada banda faria:**
+
+| Material | Passa-alta | Embolado | Ressonância | Presença |
+|---|---|---|---|---|
+| SM7dB (3 janelas) | 63–70 Hz | -5 dB em 316 Hz, nas 3 | Nada | +3 dB, nas 3 |
+| SM57 (3 janelas) | 61–69 Hz | -5 dB em 316 Hz, nas 3 | -2,2 dB em 4941 Hz, em 1 | Abaixo de 1 dB |
+| 9 mulheres (32 janelas) | 100 Hz (teto) | Não age: a fundamental ocupa a região | Nada | +1,1 a +2,7 dB, em 4 |
+| 11 homens (40 janelas) | 87–100 Hz | -1,5 a -1,9 dB, em 3 | -2,0 a -3,0 dB, em 17 | +1,2 a +3,0 dB, em 2 (male9) |
+
+**Limites:**
+- Saltos de oitava: máximo de 5,1%; confiança: nunca abaixo de 0,85. A proteção do passa-alta não disparou nenhuma vez, nem no male6, em que a aguda está errada. Com a aguda errada, o embolado não age, o que é uma falha segura.
+- Faixas medidas em cantores treinados, no mesmo modelo de microfone. A voz do usuário fica fora da faixa do embolado, mas pode ser por ser mais grave que todas as do banco (135 Hz contra 174 Hz ou mais).
+- Só o A/B de ouvido dirá se -5 dB em 316 Hz limpa sem afinar.
+
 ## Verificação sem o Reaper (D89, 02/11/2026)
 
 Feita por Claude, com `tools/praat` e `tools/verifica-plugin`. **O usuário fechou a Fase 3 com as 3 medidas fora da tolerância registradas como exceção (D90).** O erro de oitava do male6 levou à proteção do passa-alta na Fase 4 (D91).

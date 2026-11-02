@@ -98,6 +98,15 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D90 | 02/11/2026 | **Fase 3 fechada, com exceções registradas:** 39 de 42 medidas da fundamental ficam dentro de ±3% do Praat. As 3 exceções são a mediana da female3 nos 30 s (3,86%) e a aguda do male6 (94,87% nos 30 s e 7,82% no material inteiro) | Decisão do usuário. O grave e a mediana, usados nas regras decididas, ficam dentro da tolerância nessas vozes, exceto a mediana da female3, com pouco efeito. Limitações em `08-plano-testes.md` |
 | D91 | 02/11/2026 | **Proteção do passa-alta contra erro de oitava, na Fase 4 (complementa a D78):** se a medida do grave parecer inconsistente (confiança baixa ou saltos de oitava), o passa-alta fica na posição mais conservadora. Os detalhes serão decididos na Fase 4 | O male6 mostrou erro de oitava. Um grave medido uma oitava acima subiria o passa-alta e cortaria o peso da voz |
 | D92 | 02/11/2026 | **Explicação das correções, versão simples na Fase 4 (confirma P47; ajusta a D85; encerra a A03; substitui a D23):** só texto, ao lado das bandas mostradas antes de aplicar, com o que será feito, por que e o efeito. O efeito vem de um dicionário de regiões no perfil de instrumento (D30), num arquivo de dados separado do código. Regras: (1) texto que sirva antes e depois do Aplicar ("Atenuar 3 dB em 250 Hz"); (2) o "por que" diz só o que foi medido, e o efeito é escrito como tendência; (3) explicar também quando a banda não age; (4) arquivo em UTF-8, embutido no plugin ao compilar; (5) dicionário revisado no estudo da Fase 4; (6) implementar depois das regras | Pensado para quem vai usar o projeto aberto, e ajuda a validar as regras nos testes. Interface bonita, explicações em outras línguas e dicionários de outros instrumentos ficam fora. Rascunho do dicionário em `05-ideias-futuro.md` |
+| D93 | 02/11/2026 | **Início da Fase 4**, autorizado pelo usuário, começando pelo estudo e pela proposta (D37) | Fase 3 fechada (D90). Nenhum código de plugin antes da aprovação |
+| D94 | 02/11/2026 | **Passa-alta automático (confirma P48; responde P42 pela opção a; detalha D91):** meia oitava abaixo do grave (5%), entre 40 e 100 Hz, com Q fixo. Se a confiança for menor que 0,85 ou mais de 8% dos pares de blocos vizinhos saltarem uma oitava, fica em 40 Hz | A opção b tornaria o filtro dinâmico, contra a D07. Meia oitava cobre a variação medida, e a nota mais grave perde cerca de 1 dB |
+| D95 | 02/11/2026 | **Embolado automático (confirma P49, com ajuste):** região de 200 a 500 Hz, começando acima de 1,25 vez a aguda (95%); se sobrar menos de 1,25 vez entre as pontas, a banda não age. Mede a região contra os médios (500 Hz a 2 kHz) e corta o que passar de +3 dB, até -5 dB, com **Q 1,0**, no centro da região. **Risco registrado:** as faixas vieram de vozes mais agudas que a do usuário e podem cortar demais em vozes graves, em que 200–500 Hz contém harmônicos fortes, que podem ser corpo legítimo. Os limites são provisórios, a calibrar no teste de ouvido | Pedido do usuário. O teto de -5 dB fica mantido. Testar mais vozes graves e avaliar uma faixa que leve em conta a fundamental fica em `05-ideias-futuro.md` |
+| D96 | 02/11/2026 | **Presença automática (confirma P50, com ajuste):** mede 2 a 5 kHz contra os médios e realça o que faltar para chegar a -19 dB, até +3 dB, em 3,5 kHz, com **Q 0,7** | Banda larga e suave, como pedido pelo usuário (Q de 0,7 a 1,0). Limite provisório |
+| D97 | 02/11/2026 | **Ar na v1.0 (confirma P51):** a banda não age sozinha e continua disponível à mão. Substitui, na v1.0, o realce automático previsto na especificação | A medida fica quase sempre dentro da faixa, e a região está perto do ruído |
+| D98 | 02/11/2026 | **Limites comuns (confirma P52, P03, P06 e P08):** faixa saudável medida contra a própria voz, sem corrigir o que está dentro; ação mínima de 1 dB; cortes até -5 dB (-3 dB na ressonância, D87), realces até +3 dB; intensidade de 0 a 100%, que escala os ganhos. Valores no perfil de instrumento (D30). O efeito no passa-alta, que não tem ganho, depende da P55 | Faixas provisórias, vindas do VocalSet |
+| D99 | 02/11/2026 | **Fluxo e ordem (confirma P53 e P54):** Analisar → lista de bandas e explicação (D92) → Aplicar, que escreve nos parâmetros existentes; volume compensado no ganho de saída, para o A/B ser justo. Implementar em passos pequenos: regras; dados da análise; lista e Aplicar; intensidade e volume; explicações; verificação sem DAW e **A/B no Reaper, feito pelo usuário no fim da fase** | O A/B é o critério da fase e não pode ser dispensado |
+| D100 | 02/11/2026 | **Intensidade no passa-alta (confirma P55; completa a D98):** em 0%, a banda fica desligada. De 0% a 100%, a frequência sai de 40 Hz e sobe até o valor calculado, em proporção de oitavas. O Q fica fixo. É a única banda em que a intensidade muda a frequência | O passa-alta não tem ganho para escalar. Assim ele age menos em intensidade baixa e nunca sobe acima do calculado |
+| D101 | 02/11/2026 | **Pouca voz:** abaixo de 10 s de voz válida, o plugin não propõe bandas: mostra as medidas e um aviso que orienta a solução: "Pouca voz para propor correções. Cante mais ou repita o trecho em loop até chegar a 10 s." | Com tão pouca voz, as medidas variam demais para decidir um corte. O aviso diz o que fazer |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -105,11 +114,7 @@ Serão decididas nas fases em que forem usadas (D31).
 
 | # | Proposta | Observação |
 |---|---|---|
-| P03 | Limites de segurança: cortes de no máximo ~-5 dB, realces de no máximo ~+3 dB, bandas largas (Q baixo) | Valores a calibrar nos testes |
-| P06 | Controle de **intensidade** (0–100%) e **bypass** | Ajuste fino e comparação antes/depois |
-| P08 | Curva-alvo como **faixa saudável de equilíbrio**, não como linha exata | Forma de cumprir a D14 |
 | P12 | **Numeração seguinte:** v2 = violão | Continua a lógica da D19, seguindo a ordem da D18 |
-| P42 | **Margem de segurança do passa-alta (decidir na Fase 4):** (a) posicionar o passa-alta bem abaixo do percentil de 5%, por exemplo meia oitava; (b) continuar acompanhando a nota mais grave enquanto a música toca | Complementa a D78. Nas medições, o percentil de 5% variou cerca de 11% a 13% entre trechos de 30 s, e mais tempo quase não ajudou (`08-plano-testes.md`) |
 
 ## Propostas encerradas
 
@@ -157,6 +162,18 @@ Serão decididas nas fases em que forem usadas (D31).
 | P45 | Regra da banda de ressonância | Confirmada, com zona até 4,2 kHz e pico nas duas metades: ver D87 |
 | P46 | Teto de 6 kHz na banda de ressonância | Confirmada, sem o mínimo de +8 dB: ver D88 |
 | P47 | Explicação das correções, versão simples na Fase 4 | Confirmada, com os seis ajustes: ver D92 |
+| P03 | Limites de segurança | Confirmada: ver D98 |
+| P06 | Intensidade e bypass | Confirmada: ver D98 |
+| P08 | Curva-alvo como faixa saudável | Confirmada: ver D98 |
+| P42 | Margem de segurança do passa-alta | Opção a confirmada: ver D94 |
+| P48 | Passa-alta automático | Confirmada: ver D94 |
+| P49 | Embolado automático | Confirmada, com Q 1,0 e risco registrado: ver D95 |
+| P50 | Presença automática | Confirmada, com Q 0,7: ver D96 |
+| P51 | Ar na v1.0 | Confirmada: ver D97 |
+| P52 | Limites comuns | Confirmada: ver D98 |
+| P53 | Fluxo | Confirmada: ver D99 |
+| P54 | Ordem e teste | Confirmada: ver D99 |
+| P55 | Intensidade no passa-alta | Confirmada: ver D100 |
 
 ## ❓ Em aberto
 

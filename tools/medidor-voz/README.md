@@ -31,13 +31,11 @@ Cada programa leva cerca de 1 minuto. As gravações são comparadas entre si, e
 |---|---|
 | `medidor` | Gravação inteira; estabilidade com 10, 20, 30 e 45 s em janelas separadas; concordância do YIN com um segundo estimador; comparação entre as gravações; picos inseridos, no método atual e na reconstrução da D73 |
 | `resumo` | Pontos de saturação; espectro entre janelas, por faixa; candidatas que se repetem; contagem de picos encontrados |
-
 | `banco` | Vozes de um banco com pastas por cantor, como o VocalSet: varredura de todos os cantores, detalhe de alguns e busca do ponto da gravação de onde saiu um resultado |
 | `origem` | De onde vem um pico que se repete entre cantores: por vogal (`vogais`) ou fora da voz cantada (`fora-da-voz`) |
 | `banco_sem_limite` | O `banco`, sem o limite de 6 vezes a fundamental (D83) |
-| `banco_todas_candidatas` | O `banco`, sem o corte de 3 candidatas |
 
-As duas variantes do `banco` são geradas na pasta de compilação, a partir do `VoiceAnalyzer.cpp`; o código do plugin não muda.
+A variante do `banco` é gerada na pasta de compilação, a partir do `VoiceAnalyzer.cpp`; o código do plugin não muda.
 
 ```powershell
 $banco = 'tools\medidor-voz\build\banco_artefacts\Release\banco.exe'
@@ -45,8 +43,12 @@ $banco = 'tools\medidor-voz\build\banco_artefacts\Release\banco.exe'
 & $banco detalhe 'test-audio\vocalset\data_by_singer' female3 female7 male9 male8 male6 female3:escalas
 & $banco inicio 'voz.wav' 38.1 142 87
 
-# Regra da banda de ressonância (D87) e variantes; use a versão sem o corte de candidatas.
-& 'tools\medidor-voz\build\banco_todas_candidatas_artefacts\Release\banco_todas_candidatas.exe' regra 'test-audio\vocalset\data_by_singer' 'voz.wav'
+# Regra da banda de ressonância (D87) e variantes.
+& $banco regra 'test-audio\vocalset\data_by_singer' 'voz.wav'
+
+# Equilíbrio entre regiões e o que as regras reais da Fase 4 fariam em cada voz.
+& $banco equilibrio 'test-audio\vocalset\data_by_singer' 'voz.wav'
+& $banco proposta 'test-audio\vocalset\data_by_singer' 'voz.wav'
 
 $origem = 'tools\medidor-voz\build\origem_artefacts\Release\origem.exe'
 & $origem vogais 'test-audio\vocalset\data_by_singer' 5500 8500

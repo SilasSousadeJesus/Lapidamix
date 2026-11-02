@@ -13,6 +13,7 @@ juce_add_console_app(captura PRODUCT_NAME "captura")
 
 file(GLOB plugin_sources CONFIGURE_DEPENDS
     "${LAPIDAMIX_ROOT}/src/core/analysis/*.cpp"
+    "${LAPIDAMIX_ROOT}/src/core/correction/*.cpp"
     "${LAPIDAMIX_ROOT}/src/core/eq/*.cpp"
     "${LAPIDAMIX_ROOT}/src/modules/*.cpp"
     "${LAPIDAMIX_ROOT}/src/plugin/*.cpp")

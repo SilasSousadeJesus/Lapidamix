@@ -9,8 +9,8 @@ Legenda: ✅ Decidido · 🟡 Proposta · ❓ Em aberto
 1. O usuário coloca o plugin no insert da trilha de voz e escolhe o instrumento numa lista que só tem "Voz". ✅ (D30)
 2. Aperta **"Analisar"** e dá play num trecho cantado.
 3. O plugin escuta, analisa e calcula as correções.
-4. O EQ é aplicado automaticamente.
-5. O usuário compara com o **bypass** e, se quiser, ajusta a **intensidade** ou as bandas à mão. 🟡
+4. O plugin mostra as bandas que pretende usar, com a explicação de cada uma, e o usuário clica em **Aplicar**. ✅ (D85, D92, D99)
+5. O usuário compara com o **bypass**, com o volume compensado, e, se quiser, ajusta a **intensidade** ou as bandas à mão. ✅ (D98, D99)
 
 ## 2. Análise (o "cérebro")
 
@@ -21,9 +21,9 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ **Duas médias do espectro**, feitas em potência: voz cantada (principal) e todo o som, incluindo consoantes como "s" (D71).
 - ✅ **Fundamental:** mediana, percentis de 5% e 95% e confiança (D72). Na Fase 4, o passa-alta se baseia nas notas mais graves (D78).
 - ✅ **Ressonâncias candidatas**, sempre relativas ao espectro da própria voz e presentes em notas diferentes, medidas nos harmônicos e só acima de 6 vezes a fundamental (D83).
-- ✅ **Duração:** 30 s de voz válida ou até clicar Parar, com aviso abaixo de 10 s (D75, confirmada pelas medições na D82).
-- 🟡 **Posicionar as correções** a partir da fundamental: "embolado" fica em lugares diferentes numa voz grave masculina e numa voz feminina aguda (Fase 4).
-- 🟡 **Curva-alvo como faixa saudável:** o equilíbrio entre graves, médios e agudos deve ficar dentro de uma faixa. O plugin só corrige o que estiver fora, e só o quanto precisa.
+- ✅ **Duração:** 30 s de voz válida ou até clicar Parar (D75, confirmada pelas medições na D82). Abaixo de 10 s, mostra as medidas e um aviso com a solução, sem propor bandas (D101).
+- ✅ **Posicionar as correções** a partir da fundamental: a região do embolado começa acima das notas cantadas, e a banda não age se não sobrar região (D95).
+- ✅ **Curva-alvo como faixa saudável:** o plugin só corrige o que estiver fora da faixa, e só o quanto precisa, com ação mínima de 1 dB (D98). As faixas são provisórias, a calibrar no teste de ouvido.
 
 ## 3. Correção (o EQ)
 
@@ -31,13 +31,13 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ Sem cortes agressivos (D10).
 - ✅ Filtros biquad em série, sem latência (D59), com frequência limitada a 45% da taxa de amostragem (D62) e ganho manual de ±12 dB (D63).
 - ✅ 5 bandas, cada uma com valores iniciais do perfil de instrumento (D61, D62):
-  - **Passa-alta** — remove graves inúteis, nunca acima da fundamental. Se a medida do grave parecer inconsistente, fica na posição mais conservadora (D91).
-  - **Embolado** — reduz o acúmulo de graves/médio-graves (efeito de proximidade).
-  - **Ressonância** — atenua um pico incômodo, se houver.
-  - **Presença** — realce suave onde falta clareza (região de inteligibilidade).
-  - **Ar** — realce suave dos agudos, se a voz estiver escura.
-- 🟡 Limites da correção automática (Fase 4): cortes até ~-5 dB, realces até ~+3 dB, bandas largas (Q baixo).
-- 🟡 Intensidade 0–100% escala todas as correções proporcionalmente.
+  - **Passa-alta** — remove graves inúteis, meia oitava abaixo do grave (5%), entre 40 e 100 Hz. Se a medida do grave parecer inconsistente, fica em 40 Hz (D91, D94).
+  - **Embolado** — reduz o acúmulo de graves/médio-graves: até -5 dB, com Q 1,0 (D95).
+  - **Ressonância** — atenua um pico, só se cumprir a regra abaixo (D87, D88).
+  - **Presença** — realce suave onde falta clareza: até +3 dB em 3,5 kHz, com Q 0,7 (D96).
+  - **Ar** — não age sozinha na v1.0; continua disponível à mão (D97).
+- ✅ Limites da correção automática: cortes até -5 dB, realces até +3 dB (D98).
+- ✅ Intensidade 0–100% escala os ganhos das correções (D98). No passa-alta, 0% desliga a banda, e a frequência sobe de 40 Hz até o valor calculado, em proporção de oitavas (D100).
 - ✅ O plugin mostra as bandas que pretende usar antes de aplicá-las, com um botão Aplicar (D85), e explica cada uma em texto simples: o que será feito, por que e o efeito, inclusive quando a banda não age (D92).
 - ✅ Uma ressonância candidata não basta para justificar um corte (D86). A banda de ressonância é conservadora e limitada de propósito (D87, D88):
   - **Corta só:** pico de pelo menos +6 dB, estreito e persistente, com corte de até -3 dB.
@@ -52,7 +52,7 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ Bypass, ganho de saída de ±12 dB e os controles de cada banda: liga/desliga, frequência, ganho e Q (D65). A passa-alta não tem ganho e tem Q fixo (D62).
 - ✅ Botão Analisar/Parar, indicador de status e resultados em texto (D69, D75).
 - ✅ Gráfico com o RTA simples e as duas médias; o RTA bonito fica para a interface final (D71, D74).
-- 🟡 Intensidade (Fase 4).
+- ✅ Lista de bandas pretendidas, explicação em texto, botão Aplicar e intensidade (Fase 4; D85, D92, D98, D99).
 - 🟡 Os parâmetros devem ser salvos com o projeto do DAW e automatizáveis.
 
 ## 5. Arquitetura técnica

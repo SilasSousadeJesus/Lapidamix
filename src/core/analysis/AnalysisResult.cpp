@@ -44,6 +44,7 @@ namespace lapidamix
         tree.setProperty ("fundamentalLow", fundamentalLow, nullptr);
         tree.setProperty ("fundamentalHigh", fundamentalHigh, nullptr);
         tree.setProperty ("confidence", confidence, nullptr);
+        tree.setProperty ("octaveJumpShare", octaveJumpShare, nullptr);
         tree.setProperty ("numDistinctNotes", numDistinctNotes, nullptr);
         tree.setProperty ("voiceCurve", curveToString (voiceCurve), nullptr);
         tree.setProperty ("soundCurve", curveToString (soundCurve), nullptr);
@@ -55,6 +56,7 @@ namespace lapidamix
             child.setProperty ("prominenceDb", resonance.prominenceDb, nullptr);
             child.setProperty ("presence", resonance.presence, nullptr);
             child.setProperty ("numNotes", resonance.numNotes, nullptr);
+            child.setProperty ("isInBothHalves", resonance.isInBothHalves, nullptr);
             tree.appendChild (child, nullptr);
         }
 
@@ -76,6 +78,7 @@ namespace lapidamix
         result.fundamentalLow = tree.getProperty ("fundamentalLow");
         result.fundamentalHigh = tree.getProperty ("fundamentalHigh");
         result.confidence = tree.getProperty ("confidence");
+        result.octaveJumpShare = tree.getProperty ("octaveJumpShare"); // Projetos antigos não têm: fica 0.
         result.numDistinctNotes = tree.getProperty ("numDistinctNotes");
         result.voiceCurve = stringToCurve (tree.getProperty ("voiceCurve").toString());
         result.soundCurve = stringToCurve (tree.getProperty ("soundCurve").toString());
@@ -87,6 +90,7 @@ namespace lapidamix
             resonance.prominenceDb = child.getProperty ("prominenceDb");
             resonance.presence = child.getProperty ("presence");
             resonance.numNotes = child.getProperty ("numNotes");
+            resonance.isInBothHalves = child.getProperty ("isInBothHalves"); // Projetos antigos não têm: fica falso, e nada é cortado.
             result.resonances.push_back (resonance);
         }
 
