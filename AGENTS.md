@@ -17,7 +17,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 1 — Ambiente e plugin "vazio": concluída.** A Fase 2 ainda não começou. Não escrever código da Fase 2 até o usuário pedir explicitamente o início dela. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
+**Fase 2 — EQ manual: concluída.** A Fase 3 ainda não começou. Não escrever código da Fase 3 até o usuário pedir explicitamente o início dela. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 

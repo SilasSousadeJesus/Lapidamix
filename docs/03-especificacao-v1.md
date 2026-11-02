@@ -26,20 +26,22 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 
 - ✅ Corretivo (D05) e estático (D07).
 - ✅ Sem cortes agressivos (D10).
-- 🟡 Até 5 bandas:
+- ✅ Filtros biquad em série, sem latência (D59), com frequência limitada a 45% da taxa de amostragem (D62) e ganho manual de ±12 dB (D63).
+- ✅ 5 bandas, cada uma com valores iniciais do perfil de instrumento (D61, D62):
   - **Passa-alta** — remove graves inúteis, nunca acima da fundamental.
   - **Embolado** — reduz o acúmulo de graves/médio-graves (efeito de proximidade).
   - **Ressonância** — atenua um pico incômodo, se houver.
   - **Presença** — realce suave onde falta clareza (região de inteligibilidade).
   - **Ar** — realce suave dos agudos, se a voz estiver escura.
-- 🟡 Limites: cortes até ~-5 dB, realces até ~+3 dB, bandas largas (Q baixo).
+- 🟡 Limites da correção automática (Fase 4): cortes até ~-5 dB, realces até ~+3 dB, bandas largas (Q baixo).
 - 🟡 Intensidade 0–100% escala todas as correções proporcionalmente.
 
 ## 4. Interface (v1)
 
 - ✅ Bem simples, mas com todos os parâmetros já conectados (D08), para a interface bonita ser só "trocar a casca" depois.
 - ✅ Lista de instrumento, só com "Voz" (D30).
-- 🟡 Outros elementos mínimos: botão Analisar, indicador de status (analisando / pronto), intensidade, bypass, e os controles de cada banda (frequência, ganho, Q, liga/desliga).
+- ✅ Bypass, ganho de saída de ±12 dB e os controles de cada banda: liga/desliga, frequência, ganho e Q (D65). A passa-alta não tem ganho e tem Q fixo (D62).
+- 🟡 Outros elementos mínimos (Fases 3 e 4): botão Analisar, indicador de status (analisando / pronto) e intensidade.
 - 🟡 RTA simples como ferramenta de diagnóstico, a partir da Fase 3; o RTA bonito fica para a interface final (P14).
 - 🟡 Os parâmetros devem ser salvos com o projeto do DAW e automatizáveis.
 

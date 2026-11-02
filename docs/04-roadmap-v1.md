@@ -6,7 +6,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 |---|---|---|
 | 0 | Planejamento | ✅ Concluída (02/11/2026) |
 | 1 | Ambiente e plugin "vazio" | ✅ Concluída (02/11/2026) |
-| 2 | EQ manual | ⚪ Não iniciada |
+| 2 | EQ manual | ✅ Concluída (02/11/2026) |
 | 3 | Análise (só medir) | ⚪ Não iniciada |
 | 4 | Correção automática | ⚪ Não iniciada |
 | 5 | Testes com várias vozes | ⚪ Não iniciada |
@@ -25,6 +25,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** o plugin abre no Reaper e o áudio passa sem alterações nem estalos.
 
 ## Fase 2 — EQ manual
+- **Andamento (D37):** estudo concluído (`07-referencias.md`); proposta aprovada (D59 a D66); implementação concluída e verificada automaticamente; teste no Reaper aprovado pelo usuário (D66).
 - **Entregas:** etapa de estudo do EQ (D37); o EQ como primeiro módulo da arquitetura, com as bandas funcionando com controles manuais; parâmetros salvos com o projeto; bypass.
 - **Material:** pode usar qualquer gravação de voz que o usuário já tenha.
 - **Pronto quando:** dá para mixar a voz "na mão" com o plugin, respeitando a regra de ouro do tempo real.

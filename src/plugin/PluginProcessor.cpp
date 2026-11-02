@@ -15,6 +15,22 @@ namespace
             lapidamix::getInstrumentNames(),
             0));
 
+        layout.add (std::make_unique<juce::AudioParameterBool> (
+            juce::ParameterID { LapidamixAudioProcessor::bypassParameterId, 1 },
+            "Bypass",
+            false));
+
+        layout.add (std::make_unique<juce::AudioParameterFloat> (
+            juce::ParameterID { LapidamixAudioProcessor::outputGainParameterId, 1 },
+            juce::String::fromUTF8 ("Ganho de saída"),
+            juce::NormalisableRange<float> { -12.0f, 12.0f, 0.1f },
+            0.0f,
+            juce::AudioParameterFloatAttributes()
+                .withLabel ("dB")
+                .withStringFromValueFunction ([] (float value, int) { return juce::String (value, 1); })));
+
+        lapidamix::EqModule::addParameters (layout, lapidamix::voiceProfile);
+
         return layout;
     }
 }
@@ -23,7 +39,10 @@ LapidamixAudioProcessor::LapidamixAudioProcessor()
     : AudioProcessor (BusesProperties()
                           .withInput ("Input", juce::AudioChannelSet::stereo(), true)
                           .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
-      parameters (*this, nullptr, "LapidamixState", createParameterLayout())
+      parameters (*this, nullptr, "LapidamixState", createParameterLayout()),
+      eq (parameters, lapidamix::voiceProfile),
+      bypassValue (parameters.getRawParameterValue (bypassParameterId)),
+      outputGainDbValue (parameters.getRawParameterValue (outputGainParameterId))
 {
 }
 
@@ -31,11 +50,20 @@ LapidamixAudioProcessor::~LapidamixAudioProcessor() = default;
 
 void LapidamixAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
+    const juce::dsp::ProcessSpec spec { sampleRate,
+                                        (juce::uint32) samplesPerBlock,
+                                        (juce::uint32) getTotalNumOutputChannels() };
+
+    eq.setBypassed (bypassValue->load (std::memory_order_relaxed) >= 0.5f);
+    eq.prepare (spec);
+
+    outputGain.reset (sampleRate, 0.02);
+    outputGain.setCurrentAndTargetValue (getTargetOutputGain());
 }
 
 void LapidamixAudioProcessor::releaseResources()
 {
+    eq.reset();
 }
 
 bool LapidamixAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -50,9 +78,43 @@ bool LapidamixAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 
 void LapidamixAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    juce::ignoreUnused (midiMessages);
+    render (buffer);
+}
+
+void LapidamixAudioProcessor::processBlockBypassed (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+    // O mesmo caminho do processBlock, para o bypass também ter transição curta (D64).
+    juce::ignoreUnused (midiMessages);
+    render (buffer);
+}
+
+void LapidamixAudioProcessor::render (juce::AudioBuffer<float>& buffer) noexcept
+{
     // Regra de ouro do tempo real (D09): nada aqui pode bloquear a thread de áudio.
-    // A entrada e a saída usam o mesmo buffer, então não mexer nele deixa o áudio passar intacto.
-    juce::ignoreUnused (buffer, midiMessages);
+    const juce::ScopedNoDenormals noDenormals;
+
+    eq.setBypassed (bypassValue->load (std::memory_order_relaxed) >= 0.5f);
+    eq.process (buffer);
+
+    outputGain.setTargetValue (getTargetOutputGain());
+
+    if (outputGain.isSmoothing() || ! juce::exactlyEqual (outputGain.getTargetValue(), 1.0f))
+        outputGain.applyGain (buffer, buffer.getNumSamples());
+}
+
+float LapidamixAudioProcessor::getTargetOutputGain() const noexcept
+{
+    // O bypass também ignora o ganho de saída (D65).
+    if (bypassValue->load (std::memory_order_relaxed) >= 0.5f)
+        return 1.0f;
+
+    return juce::Decibels::decibelsToGain (outputGainDbValue->load (std::memory_order_relaxed));
+}
+
+juce::AudioProcessorParameter* LapidamixAudioProcessor::getBypassParameter() const
+{
+    return parameters.getParameter (bypassParameterId);
 }
 
 juce::AudioProcessorEditor* LapidamixAudioProcessor::createEditor()

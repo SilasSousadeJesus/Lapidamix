@@ -63,6 +63,15 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D55 | 02/11/2026 | **Contexto vivo:** `docs/10-estado-atual.md` é o primeiro arquivo a ser lido. Ao iniciar uma sessão, ler o estado atual e as últimas entradas do diário; ao terminar, atualizar os dois. Cada entrada do diário cita os commits da sessão, e cada mensagem de commit cita fase/etapa e as decisões relacionadas | Qualquer IA deve conseguir continuar o trabalho sem depender do histórico do chat |
 | D56 | 02/11/2026 | **`AGENTS.md` é o arquivo único de regras.** O `CLAUDE.md` fica só com a linha `@AGENTS.md`, que faz o Claude Code importar o outro arquivo (confirma P22) | Evita duplicar o conteúdo; ferramentas que leem `AGENTS.md` recebem as regras completas |
 | D57 | 02/11/2026 | **Documentos evoluem junto com o trabalho:** tudo o que for feito no projeto precisa ser refletido nos documentos. O `10-estado-atual.md` é atualizado a cada mudança relevante, não só no fim da sessão. Antes de cada commit, o diário (entrada da sessão) e o estado atual devem estar atualizados com o que o commit leva. Qualquer outro documento afetado (decisões, roadmap, especificação, glossário etc.) é atualizado no mesmo commit. Complementa a D55 | Manter os documentos sempre fiéis ao estado real do projeto |
+| D58 | 02/11/2026 | **Início da Fase 2 autorizado**, começando pela etapa de estudo do EQ (D37). Nenhum código antes da aprovação da proposta do módulo | Autorização do usuário |
+| D59 | 02/11/2026 | **EQ com filtros biquad** (`juce::dsp::IIR::Filter`) em série, sem latência; passa-alta de 12 dB por oitava; sem fase linear nem oversampling na v1.0 (confirma P23) | Simples, leve e coerente com a D51. Base: estudo de 02/11/2026 em `07-referencias.md` |
+| D60 | 02/11/2026 | **Tempo real:** ler os parâmetros por atômicos, suavizá-los e recalcular os coeficientes com `ArrayCoefficients`, a cada 32 amostras e só enquanto houver mudança; filtros de ordem fixa, preparados no `prepareToPlay()`; `juce::ScopedNoDenormals` no `processBlock()` (confirma P24, com ajuste) | Cumpre a D09; a proteção evita picos de processamento quando o som vai sumindo |
+| D61 | 02/11/2026 | **Lugar do EQ na arquitetura:** motor de filtros em `src/core/eq/`; `EqModule` em `src/modules/`, implementando a interface comum `ProcessorModule`; nomes e valores iniciais das bandas em `src/profiles/` (confirma P25) | Concilia a D30 e a D38 |
+| D62 | 02/11/2026 | **As 5 bandas:** 1 Passa-alta (80 Hz, Q fixo de 0,707, sem ganho); 2 Embolado, sino (300 Hz, Q 1,0); 3 Ressonância, sino (1 kHz, Q 2,0); 4 Presença, sino (3,5 kHz, Q 0,7); 5 Ar, prateleira alta (12 kHz, Q 0,7). **Q:** 0,3 a 10 nos sinos e 0,3 a 2 na prateleira. **Frequência:** de 20 Hz até o menor valor entre 20 kHz e 45% da taxa de amostragem, ajustado automaticamente (confirma P07 e P26, com ajustes) | Valores iniciais de partida para a voz; perto do limite superior os filtros se comportam mal; a banda de ressonância precisa de Q alto. A faixa de Q da prateleira foi escolhida por Claude, porque Q alto nela cria saliências |
+| D63 | 02/11/2026 | **Ganho manual de ±12 dB nas bandas.** Os limites da P03 ficam para a correção automática da Fase 4 (confirma P27) | Na Fase 2 quem decide é o usuário, e a mudança precisa ser audível nos testes |
+| D64 | 02/11/2026 | **Transparência:** bandas começam desligadas e com 0 dB; banda desligada não processa o áudio; ligar, desligar e o bypass geral fazem transição curta (cerca de 20 ms), e o bypass é informado ao DAW (confirma P28) | O plugin recém-aberto não altera o som, e ligar ou desligar não causa estalo |
+| D65 | 02/11/2026 | **Interface simples:** lista de instrumento, bypass, ganho de saída de ±12 dB e, para cada banda, liga/desliga, frequência, ganho e Q; sem gráfico nem RTA nesta fase (confirma P29, com ajuste) | O ganho de saída permite comparar com o bypass no mesmo volume, porque um som mais alto tende a parecer melhor. O bypass também ignora o ganho de saída |
+| D66 | 02/11/2026 | **Teste da Fase 2 no Reaper:** repetir o cancelamento com tudo desligado; conferir cada banda com ruído rosa e analisador de espectro, em 44,1 e 96 kHz; mexer nos controles durante a reprodução; salvar e reabrir; mixar uma gravação de voz à mão (confirma P30) | Cobre os critérios da Fase 2 e as suposições do estudo |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -74,7 +83,6 @@ Serão decididas nas fases em que forem usadas (D31).
 | P04 | **Proteger a fundamental**: detectar a nota grave da voz e nunca colocar o passa-alta acima dela | Preserva o peso de vozes graves |
 | P05 | Analisar **só os trechos cantados** (ignorar silêncio, respiração, ruído) | Evita distorcer a média |
 | P06 | Controle de **intensidade** (0–100%) e **bypass** | Ajuste fino e comparação antes/depois |
-| P07 | Até **5 bandas**: passa-alta, embolado, ressonância, presença, ar | Pode mudar após os testes |
 | P08 | Curva-alvo como **faixa saudável de equilíbrio**, não como linha exata | Forma de cumprir a D14 |
 | P12 | **Numeração seguinte:** v2 = violão | Continua a lógica da D19, seguindo a ordem da D18 |
 | P14 | **RTA:** um RTA simples na Fase 3 como ferramenta de diagnóstico, e o RTA bonito na interface final | Ajuda a conferir as medidas da análise |
@@ -83,6 +91,7 @@ Serão decididas nas fases em que forem usadas (D31).
 
 | # | Proposta | Resultado |
 |---|---|---|
+| P07 | Até **5 bandas**: passa-alta, embolado, ressonância, presença, ar | Confirmada: ver D62 |
 | P01 | Usar **JUCE (C++)** como framework | Confirmada: ver D26 |
 | P02 | Formato inicial **VST3** | Confirmada: ver D27 |
 | P09 | Separar o plugin em **parte de tempo real** (aplica o EQ) e **parte de análise** (fora da thread de áudio) | Confirmada: ver D28 |
@@ -97,6 +106,14 @@ Serão decididas nas fases em que forem usadas (D31).
 | P20 | Instalação na pasta VST3 do usuário | Confirmada: ver D52 |
 | P21 | Teste da Fase 1 no Reaper | Confirmada: ver D53 |
 | P22 | `AGENTS.md` como arquivo único de regras, importado pelo `CLAUDE.md` | Confirmada: ver D56 |
+| P23 | EQ com filtros biquad em série, sem latência | Confirmada: ver D59 |
+| P24 | Tempo real: parâmetros suavizados e `ArrayCoefficients` | Confirmada com ajuste: ver D60 |
+| P25 | Lugar do EQ na arquitetura | Confirmada: ver D61 |
+| P26 | As 5 bandas | Confirmada com ajustes: ver D62 |
+| P27 | Ganho manual de ±12 dB | Confirmada: ver D63 |
+| P28 | Transparência das bandas e do bypass | Confirmada: ver D64 |
+| P29 | Interface simples | Confirmada com ajuste: ver D65 |
+| P30 | Teste da Fase 2 no Reaper | Confirmada: ver D66 |
 
 ## ❓ Em aberto
 

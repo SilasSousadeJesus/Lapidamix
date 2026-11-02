@@ -1,3 +1,3 @@
 # EQ
 
-EQ do núcleo comum (D30). Entra na Fase 2, começando pela etapa de estudo (D37, D38). Ainda vazio.
+Motor de filtros do EQ, compartilhado por todos os instrumentos (D30, D61). `EqBandFilter` é uma banda: um filtro biquad por canal, com parâmetros suavizados.

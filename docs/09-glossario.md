@@ -5,6 +5,15 @@ Termos técnicos usados no projeto, em linguagem simples.
 ## Áudio e mixagem
 - **Ar** — agudos bem altos (acima de ~10 kHz) que dão sensação de abertura e brilho à voz.
 - **Bypass** — desliga o efeito temporariamente para comparar antes e depois.
+- **Biquad** — tipo comum de filtro digital, leve e sem latência, usado para construir cada banda de um EQ.
+- **Sino (bell)** — banda de EQ que aumenta ou reduz uma região em torno de uma frequência central.
+- **Prateleira (shelf)** — banda de EQ que aumenta ou reduz tudo acima (alta) ou abaixo (baixa) de uma frequência.
+- **Latência** — atraso entre o som entrar e sair do plugin.
+- **Fase linear** — modo de EQ que preserva a fase do som, mas cria latência.
+- **Oversampling** — processar internamente em uma taxa de amostragem mais alta; gasta mais processamento.
+- **Taxa de amostragem** — quantas vezes por segundo o som é medido no áudio digital (ex.: 44,1 kHz). Limita as frequências que ele consegue representar a cerca da metade desse valor.
+- **Suavização de parâmetro** — mudar um valor aos poucos, em vez de num salto, para evitar estalos.
+- **Ruído rosa** — ruído com energia distribuída de forma equilibrada entre as oitavas; útil para enxergar a curva de um EQ.
 - **Cadeia de sinal** — a sequência de processadores por onde o som passa (ex.: EQ, depois compressor, depois de-esser).
 - **DSP (processamento digital de sinais)** — a matemática usada para analisar e modificar o som no computador.
 - **Efeito de proximidade** — microfones direcionais (como o SM7dB) acentuam os graves quando se canta perto deles. Causa comum de voz escura e embolada.
@@ -49,4 +58,5 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **processBlock()** — a função do plugin que processa cada pedaço de áudio.
 - **prepareToPlay()** — função chamada antes de o áudio começar; é onde se prepara tudo (inclusive memória) com antecedência.
 - **Alocação de memória** — pedir memória nova ao sistema operacional; pode demorar e por isso é proibida dentro do `processBlock()`.
+- **Denormais** — números minúsculos que os filtros geram quando o som vai sumindo. Podem deixar o processador muito lento; `juce::ScopedNoDenormals` protege contra isso.
 - **Regra de ouro do tempo real** — nada no `processBlock()` pode travar: sem prints, sem pedir memória nova, sem acessar disco. Se travar, o pedaço chega atrasado e ouvem-se estalos.

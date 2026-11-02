@@ -30,6 +30,8 @@ juce_add_plugin(Lapidamix
 
 target_sources(Lapidamix
     PRIVATE
+        src/core/eq/EqBandFilter.cpp
+        src/modules/EqModule.cpp
         src/plugin/PluginEditor.cpp
         src/plugin/PluginProcessor.cpp)
 
@@ -43,9 +45,15 @@ target_compile_definitions(Lapidamix
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0)
 
+# Os nomes das bandas têm acentos: o compilador precisa ler o código como UTF-8.
+target_compile_options(Lapidamix
+    PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
+
 target_link_libraries(Lapidamix
     PRIVATE
         juce::juce_audio_utils
+        juce::juce_dsp
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

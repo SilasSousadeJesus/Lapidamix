@@ -16,6 +16,73 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fechamento da Fase 2
+
+**Fase:** 2 — EQ manual (concluída nesta sessão)
+
+**O que foi feito:**
+- O usuário fez os 5 passos do teste no Reaper (D66), e todos passaram.
+- Resultado registrado em `08-plano-testes.md` e `07-referencias.md`, e status atualizado.
+
+**Decisões tomadas:** nenhuma nova.
+
+**Commits:** nenhum até aqui nesta fase; as mudanças aguardam commit.
+
+**Problemas / dúvidas:** o resultado em 44,1 e 96 kHz foi avaliado no analisador, sem medição numérica da diferença entre as taxas.
+
+**Próximos passos:**
+- Fazer o commit da Fase 2.
+- A Fase 3 só começa quando o usuário autorizar, pela etapa de estudo da análise (D37, D38).
+
+---
+
+## 02/11/2026 — Fase 2: EQ implementado
+
+**Fase:** 2 — EQ manual (etapa c concluída; etapa d aguardando o usuário)
+
+**O que foi feito:**
+- Proposta aprovada, com limite de frequência de 45% da taxa de amostragem, faixas de Q por banda, `ScopedNoDenormals` e ganho de saída de ±12 dB.
+- Criados `ProcessorModule`, `EqBandFilter`, `EqModule` e o perfil da voz; `PluginProcessor` e `PluginEditor` atualizados.
+- Plugin compilado em Release, com 0 erros e 0 avisos, e copiado para a pasta VST3.
+- Verificação automática em programa temporário, em Debug, apagado depois: todas as verificações passaram, sem nenhum pedido de memória na thread de áudio.
+
+**Decisões tomadas:** D59 a D66.
+
+**Commits:** nenhum até aqui nesta etapa; as mudanças aguardam commit.
+
+**Problemas / dúvidas:**
+- A faixa de frequência dos parâmetros continua de 20 Hz a 20 kHz, porque o DAW precisa de uma faixa fixa; o limite de 45% é aplicado no processamento, e a janela pode mostrar um valor acima do aplicado em taxas de amostragem baixas.
+- O primeiro relatório acusou pedidos de memória, mas eles vinham do temporizador do JUCE em outra thread; o verificador foi corrigido para contar só a thread de áudio.
+- A aparência da janela e o som ainda não foram avaliados: isso depende do teste no Reaper.
+
+**Próximos passos:**
+- O usuário faz o teste no Reaper (D66).
+
+---
+
+## 02/11/2026 — Fase 2: estudo e proposta do EQ
+
+**Fase:** 2 — EQ manual (etapas a e b da D37)
+
+**O que foi feito:**
+- Fase 2 autorizada e status atualizado.
+- Estudo do EQ feito, com a nota em `07-referencias.md`, separando fatos, prática comum e suposições.
+- Proposta do módulo registrada (P23 a P30). Nenhum código foi escrito.
+- Termos novos adicionados ao glossário.
+
+**Decisões tomadas:** D58. Propostas novas: P23 a P30.
+
+**Commits:** nenhum até aqui nesta etapa; as mudanças aguardam commit.
+
+**Problemas / dúvidas:**
+- A página do ReaEQ não abriu e o artigo de Vicanek só pôde ser lido em parte, como indicado na nota.
+- A D30 põe o EQ no núcleo comum e a D38 o chama de primeiro módulo; a P25 propõe como conciliar.
+
+**Próximos passos:**
+- Aprovação ou ajuste da proposta pelo usuário.
+
+---
+
 ## 02/11/2026 — Documentos evoluem junto com o trabalho
 
 **Fase:** 1 concluída; Fase 2 aguardando a autorização do usuário.

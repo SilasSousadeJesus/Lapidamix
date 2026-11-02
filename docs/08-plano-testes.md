@@ -32,3 +32,5 @@
 | Data | Voz / material | Versão do plugin | O que foi testado | Resultado | Observações |
 |---|---|---|---|---|---|
 | 02/11/2026 | Voz do usuário, no Reaper | 0.1.0 (plugin vazio) | Os 5 passos da D53: carregar, conferir a lista, ouvir com e sem o plugin, teste de cancelamento, salvar e reabrir | ✅ Todos passaram | Teste feito e informado pelo usuário. Encerra a Fase 1 |
+| 02/11/2026 | Sinais gerados por programa temporário, sem DAW | 0.1.0 (com EQ) | Transparência bit a bit, curvas das 5 bandas, bypass, ganho de saída, extremos de 22,05 a 192 kHz, denormais, mono, salvamento e pedidos de memória na thread de áudio | ✅ Todas as verificações passaram | Feito por Claude, em compilação Debug. Não substitui o teste no Reaper (D66) |
+| 02/11/2026 | Voz do usuário e ruído, no Reaper, em 44,1 e 96 kHz | 0.1.0 (com EQ) | Os 5 passos da D66: transparência, curva de cada banda, mexer durante a reprodução, salvar e reabrir, mixar a voz à mão | ✅ Todos passaram | Teste feito e informado pelo usuário. Encerra a Fase 2 |
