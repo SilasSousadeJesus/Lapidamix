@@ -44,6 +44,39 @@
 | 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
 | 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
 
+## Roteiro do A/B (passo 6 da Fase 4)
+
+Feito pelo usuário, no Reaper (D99). Critério da fase: na voz do usuário, o resultado soa melhor que o original (`04-roadmap-v1.md`). Resultados: a preencher.
+
+**Preparação:** trilha com a gravação do SM7dB; Lapidamix como primeiro efeito; depois dele, um medidor de LUFS; sem outros efeitos. Volume de monitoração fixo e confortável, sem mexer durante o teste. Repetir depois com o SM57, em outro dia ou depois de uma pausa, se possível.
+
+1. **Analisar:** clicar em Analisar, tocar do início e esperar terminar. Anotar as correções propostas.
+2. **Ler:** as explicações fazem sentido para quem não conhece os termos?
+3. **Volume:** clicar em Aplicar. Medir o LUFS integrado da gravação inteira com o plugin ligado e com o Bypass ligado. Passa com diferença de até 0,5 LU; esperado, perto de 0,1 LU.
+4. **A/B geral:** escolher um trecho de 15 a 30 s, em loop, e alternar o Bypass várias vezes, de olhos fechados se puder. O som está melhor, igual ou pior?
+5. **Banda por banda:** ligar e desligar cada banda aplicada. Embolado: limpou sem afinar? Presença: ficou clara sem ficar áspera? Passa-alta: tirou ronco sem tirar peso? O efeito escrito na janela corresponde ao que se ouve?
+6. **Trecho mais grave e mais agudo:** repetir o A/B na nota mais grave e na mais aguda da gravação. Algo some ou incomoda?
+7. **Intensidade:** comparar 100%, 50% e 0%. Qual soa melhor? Em 0%, o som deve ser igual ao do Bypass.
+8. **Estabilidade:** tocar a gravação inteira, sem estalos ou falhas. Salvar, fechar e reabrir o projeto: as bandas, a Saída e a intensidade continuam iguais?
+
+**O que anotar em cada gravação:** correções propostas; LUFS com plugin e com Bypass; veredito do item 4; banda que incomodou, em que trecho e por quê; melhor intensidade.
+
+**Como decidir:** se soar melhor a 100%, a fase pode fechar. Se só soar melhor com intensidade menor, ou se uma banda atrapalhar, os limites provisórios (D95, D96, D98) precisam de ajuste. Nesse caso, Claude propõe a mudança antes de implementar (D81).
+
+## Explicações das correções (passo 5, 02/11/2026)
+
+Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela. Falta o usuário ler no Reaper e conferir os efeitos de ouvido.
+
+| Item | Resultado |
+|---|---|
+| Dicionário embutido | ✅ 8 regiões em sequência, com acentos e textos como tendência |
+| Bandas que agem | ✅ O que será feito, por que e efeito vindo do dicionário, com a mesma frase antes e depois do Aplicar |
+| Bandas que não agem | ✅ Dentro da faixa, fundamental protegida, nenhum pico e intensidade em 0%, com o valor medido quando há um |
+| Passa-alta conservador e Saída | ✅ Mostram a medida que causou a escolha; Saída soma, reduz ou fica em 0 dB |
+| Pouca voz | ✅ Sem lista (D101) |
+| Texto real, com o SM7dB | ✅ Lido inteiro na saída da verificação, em linguagem de leigo (D105) |
+| Janela, numa imagem | ✅ Texto com rolagem; só as duas primeiras bandas aparecem sem rolar. A rolagem em si não foi testada |
+
 ## Intensidade e compensação de volume (passo 4, 02/11/2026)
 
 Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela. Falta conferir de ouvido no Reaper.

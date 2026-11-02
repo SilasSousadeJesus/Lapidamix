@@ -1,0 +1,60 @@
+{
+    "regions": [
+        {
+            "name": "Ronco",
+            "low": 20,
+            "high": 80,
+            "boost": "Tende a somar ronco, estouros de \"p\" e \"b\" e barulho de mexer no microfone.",
+            "cut": "Tende a tirar ronco, estouros de \"p\" e \"b\" e barulho de mexer no microfone, deixando o som mais limpo."
+        },
+        {
+            "name": "Corpo",
+            "low": 80,
+            "high": 200,
+            "boost": "Tende a deixar a voz mais cheia, quente e próxima.",
+            "cut": "Tende a deixar a voz mais fina e distante, com menos força."
+        },
+        {
+            "name": "Embolado",
+            "low": 200,
+            "high": 500,
+            "boost": "Tende a deixar a voz embolada, abafada e confusa.",
+            "cut": "Tende a deixar a voz mais limpa e clara. Em excesso, pode deixá-la fina."
+        },
+        {
+            "name": "Caixa",
+            "low": 500,
+            "high": 800,
+            "boost": "Tende a dar um som de caixa, de sala pequena.",
+            "cut": "Tende a deixar a voz mais seca e aberta."
+        },
+        {
+            "name": "Nasal",
+            "low": 800,
+            "high": 2000,
+            "boost": "Tende a deixar a voz anasalada, com som de telefone.",
+            "cut": "Tende a reduzir o anasalado. Em excesso, a voz pode ficar oca e mais distante."
+        },
+        {
+            "name": "Presença",
+            "low": 2000,
+            "high": 5000,
+            "boost": "Tende a trazer a voz para a frente, mais clara e fácil de entender. Em excesso, fica áspera e cansativa.",
+            "cut": "Tende a suavizar a aspereza. Em excesso, a voz fica apagada, mais para trás e difícil de entender."
+        },
+        {
+            "name": "Sibilância e brilho",
+            "low": 5000,
+            "high": 10000,
+            "boost": "Tende a deixar as consoantes mais nítidas. Em excesso, os \"s\" ficam agressivos.",
+            "cut": "Tende a suavizar os \"s\". Em excesso, a voz fica abafada e as consoantes perdem nitidez."
+        },
+        {
+            "name": "Ar",
+            "low": 10000,
+            "high": 24000,
+            "boost": "Tende a abrir e dar leveza à voz. Em excesso, aparece chiado.",
+            "cut": "Tende a fechar a voz e tirar brilho."
+        }
+    ]
+}

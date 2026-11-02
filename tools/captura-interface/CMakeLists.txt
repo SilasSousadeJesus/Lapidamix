@@ -16,7 +16,13 @@ file(GLOB plugin_sources CONFIGURE_DEPENDS
     "${LAPIDAMIX_ROOT}/src/core/correction/*.cpp"
     "${LAPIDAMIX_ROOT}/src/core/eq/*.cpp"
     "${LAPIDAMIX_ROOT}/src/modules/*.cpp"
-    "${LAPIDAMIX_ROOT}/src/plugin/*.cpp")
+    "${LAPIDAMIX_ROOT}/src/plugin/*.cpp"
+    "${LAPIDAMIX_ROOT}/src/profiles/*.cpp")
+
+juce_add_binary_data(LapidamixData
+    HEADER_NAME "LapidamixData.h"
+    NAMESPACE LapidamixData
+    SOURCES "${LAPIDAMIX_ROOT}/src/profiles/voice-dictionary.json")
 
 target_sources(captura PRIVATE captura.cpp ${plugin_sources})
 target_include_directories(captura PRIVATE "${LAPIDAMIX_ROOT}/src")
@@ -27,4 +33,4 @@ target_compile_definitions(captura
         JUCE_MODAL_LOOPS_PERMITTED=1
         JucePlugin_Name="Lapidamix")
 target_compile_options(captura PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
-target_link_libraries(captura PRIVATE juce::juce_audio_utils juce::juce_dsp)
+target_link_libraries(captura PRIVATE LapidamixData juce::juce_audio_utils juce::juce_dsp)

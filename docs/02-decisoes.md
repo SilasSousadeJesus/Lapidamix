@@ -109,6 +109,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D101 | 02/11/2026 | **Pouca voz:** abaixo de 10 s de voz válida, o plugin não propõe bandas: mostra as medidas e um aviso que orienta a solução: "Pouca voz para propor correções. Cante mais ou repita o trecho em loop até chegar a 10 s." | Com tão pouca voz, as medidas variam demais para decidir um corte. O aviso diz o que fazer |
 | D102 | 02/11/2026 | **Compensação de volume (detalha a D99):** um valor fixo, calculado a partir da análise no momento do Aplicar e escrito no controle Saída, visível e ajustável à mão. Quando a intensidade mudar, a compensação acompanha. Nada de ganho que muda durante a reprodução | Um ganho que muda continuamente seria um compressor, fora do escopo (D04) |
 | D103 | 02/11/2026 | **Volume em LUFS (substitui a P56):** a compensação compara o volume antes e depois do plano com a ponderação K da ITU-R BS.1770, a mesma do LUFS, em vez da ponderação A. O plugin aplica a ponderação ao espectro da análise, sem os portões da norma. A conferência usa um medidor de LUFS integrado completo, em `tools/verifica-plugin`, e o medidor do Reaper | Pedido do usuário: é o padrão para volume percebido de música e pode ser conferido no Reaper. A troca foi simples: só mudou o peso de cada frequência |
+| D105 | 02/11/2026 | **Dicionário da voz (confirma a P58, com ajuste; cumpre a regra 5 da D92):** 8 regiões em sequência, sem sobreposição: ronco até 80 Hz; corpo até 200 Hz; embolado até 500 Hz; caixa até 800 Hz; nasal até 2 kHz; presença até 5 kHz; sibilância e brilho até 10 kHz; ar acima disso. Textos em `src/profiles/voice-dictionary.json`, como tendência. "Por quê" e "Efeito" ficam em linguagem de leigo, sem jargão | Sem sobreposição, cada frequência acha uma só região, e embolado e presença coincidem com as regiões das regras (D95, D96). A linguagem simples é pedido do usuário. Corpo, caixa e nasal seguem sem fonte conferida. Regiões fixas em Hz têm limite registrado em `05-ideias-futuro.md` |
 | D104 | 02/11/2026 | **Intensidade depois de aplicar (confirma a P57, com ajuste):** mover a intensidade reaplica o plano e sobrescreve ajustes manuais nas bandas e na Saída. Com uma análise nova ainda não aplicada, só muda a proposta. Não é automatizável. Fica um aviso curto junto ao controle: "Ajuste a intensidade antes de mexer nas bandas à mão" | O aviso é pedido do usuário, para ninguém perder ajustes sem perceber. Automatizar a intensidade reescreveria outros parâmetros durante a reprodução |
 
 ## 🟡 Propostas aguardando confirmação
@@ -179,6 +180,7 @@ Serão decididas nas fases em que forem usadas (D31).
 | P55 | Intensidade no passa-alta | Confirmada: ver D100 |
 | P56 | Volume da compensação com ponderação A | Substituída por LUFS (ponderação K): ver D103 |
 | P57 | Intensidade depois de aplicar | Confirmada, com um aviso na janela: ver D104 |
+| P58 | Dicionário da voz revisado | Confirmada, com linguagem de leigo: ver D105 |
 
 ## ❓ Em aberto
 

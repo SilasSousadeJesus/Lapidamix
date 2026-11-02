@@ -28,6 +28,7 @@ namespace lapidamix
         float maximumFundamental;
         std::array<EqBandProfile, numEqBands> eqBands;
         CorrectionSettings correction;
+        const char* dictionaryResource; // Nome do arquivo de textos embutido no plugin (D92).
     };
 
     // Valores iniciais de partida para a voz, a ajustar nos testes (D62).
@@ -49,6 +50,7 @@ namespace lapidamix
             { 200.0f, 500.0f, 1.25f, 1.25f, 3.0f, 5.0f, 1.0f },
             { 2000.0f, 5000.0f, 3500.0f, -19.0f, 3.0f, 0.7f },
             { 6.0f, 0.6f, 0.5f, 2500.0f, 4200.0f, 6000.0f, 1.0f / 3.0f, 3.0f, 4.0f }
-        }
+        },
+        "voicedictionary_json"
     };
 }

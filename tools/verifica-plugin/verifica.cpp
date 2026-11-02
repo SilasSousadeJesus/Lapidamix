@@ -14,6 +14,7 @@
 #include "core/Loudness.h"
 #include "core/correction/CorrectionRules.h"
 #include "plugin/PluginProcessor.h"
+#include "profiles/CorrectionExplanation.h"
 #include "profiles/InstrumentProfile.h"
 
 // Conta pedidos de memória só enquanto a própria thread estiver dentro do processBlock.
@@ -103,6 +104,7 @@ static juce::String collectLabelText (juce::Component& parent)
     for (auto* child : parent.getChildren())
     {
         if (auto* label = dynamic_cast<juce::Label*> (child)) text << label->getText() << "\n";
+        if (auto* editor = dynamic_cast<juce::TextEditor*> (child)) text << editor->getText() << "\n";
         text << collectLabelText (*child);
     }
 
@@ -834,6 +836,110 @@ static void testIntensityAndVolume (const juce::AudioBuffer<float>& audio, const
     check (near (getValue (EqModule::getGainParameterId (1)), gainBefore, 0.001f), "Analise nova nao aplicada: mover a intensidade nao muda o som");
 }
 
+// Explicações de cada banda e dicionário embutido (D92).
+static void testExplanations (const juce::AudioBuffer<float>& audio)
+{
+    using namespace lapidamix;
+    const auto& profile = voiceProfile;
+    const auto dictionary = loadRegionDictionary (profile);
+    const auto utf8 = [] (const char* text) { return juce::String::fromUTF8 (text); };
+
+    auto regionsAreComplete = dictionary.regions.size() == 8;
+    auto previousHigh = dictionary.regions.empty() ? 0.0f : dictionary.regions.front().lowFrequency;
+
+    for (const auto& region : dictionary.regions)
+    {
+        regionsAreComplete = regionsAreComplete && region.name.isNotEmpty() && region.boostEffect.startsWith ("Tende a") && region.cutEffect.startsWith ("Tende a")
+                          && juce::approximatelyEqual (region.lowFrequency, previousHigh);
+        previousHigh = region.highFrequency;
+    }
+
+    check (regionsAreComplete, "Dicionario embutido: 8 regioes em sequencia, com os textos como tendencia (D92)");
+
+    const auto regionName = [&] (float frequency)
+    {
+        const auto* region = dictionary.findRegion (frequency);
+        return region != nullptr ? region->name : juce::String();
+    };
+
+    check (regionName (35.0f) == "Ronco" && regionName (316.0f) == "Embolado" && regionName (3500.0f) == utf8 ("Presença") && regionName (12000.0f) == "Ar",
+           "Dicionario: cada frequencia acha a regiao certa, com acentos");
+
+    AnalysisResult analysis;
+    analysis.fundamentalLow = 99.0f;
+    analysis.fundamentalHigh = 153.0f;
+    analysis.confidence = 0.7f;
+    analysis.octaveJumpShare = 0.12f;
+
+    CorrectionPlan plan;
+    plan.isAvailable = true;
+    plan.highPass = { true, 70.0f, 0.0f, 0.0f, 0.0f, CorrectionReason::applied };
+    plan.mud = { true, 316.0f, -5.0f, 1.0f, 8.0f, CorrectionReason::applied };
+    plan.resonance = { true, 1000.0f, -2.0f, 4.0f, 6.0f, CorrectionReason::applied };
+    plan.presence = { true, 3500.0f, 3.0f, 0.7f, -22.0f, CorrectionReason::applied };
+    plan.air.reason = CorrectionReason::notAutomatic;
+
+    const auto acting = explainCorrectionPlan (plan, analysis, 1.7f, profile, dictionary);
+    check (juce::StringArray::fromLines (acting).size() > 0 && acting.contains ("Filtrar abaixo de 70 Hz.") && acting.contains ("Atenuar 5,0 dB em 316 Hz, Q 1,0.")
+               && acting.contains (utf8 ("Realçar 3,0 dB em 3500 Hz")) && acting.contains ("Somar 1,7 dB."),
+           "Explicacao: o que sera feito, com a mesma frase antes e depois do Aplicar");
+    check (! acting.contains ("Atenuei") && ! acting.contains (utf8 ("Realcei")), "Explicacao: sem verbo no passado (D92, regra 1)");
+    check (acting.contains (utf8 ("Se realçar à mão, tende a abrir")), "Explicacao: banda de ar diz o efeito se for realcada a mao");
+    check (acting.contains (utf8 ("está 8,0 dB acima da região média da voz (500 Hz a 2 kHz)")) && acting.contains (utf8 ("região de 2 kHz a 5 kHz está 22,0 dB abaixo")),
+           "Explicacao: compara com a regiao media em linguagem simples");
+
+    auto hasJargon = false;
+
+    for (const auto* word : { "contra os m", "(5%)", "(95%)", "fundamental", "pondera", "plosivos", "manuseio", "inconsistente", "entorno", "timbre", "conservadora" })
+        hasJargon = hasJargon || acting.containsIgnoreCase (juce::String (word));
+
+    check (! hasJargon, "Explicacao: sem os termos tecnicos da versao anterior");
+
+    const auto count = [] (const juce::String& text, const juce::String& word)
+    {
+        auto total = 0;
+        for (auto index = text.indexOf (word); index >= 0; index = text.indexOf (index + 1, word)) ++total;
+        return total;
+    };
+
+    check (count (acting, utf8 ("Por quê: ")) == 6 && count (acting, "Efeito: ") == 6, "Explicacao: as 6 linhas da lista tem o por que e o efeito");
+    check (acting.contains (dictionary.findRegion (316.0f)->cutEffect) && acting.contains (dictionary.findRegion (3500.0f)->boostEffect) && acting.contains (dictionary.findRegion (35.0f)->cutEffect),
+           "Explicacao: o efeito vem do dicionario, inclusive o do passa-alta");
+
+    auto idle = plan;
+    idle.highPass.frequency = 40.0f;
+    idle.highPass.reason = CorrectionReason::inconsistentFundamental;
+    idle.mud = { false, 316.0f, 0.0f, 1.0f, 1.0f, CorrectionReason::withinRange };
+    idle.resonance = { false, 0.0f, 0.0f, 4.0f, 0.0f, CorrectionReason::noEligiblePeak };
+    idle.presence = { false, 3500.0f, 0.0f, 0.7f, -15.0f, CorrectionReason::withinRange };
+
+    const auto notActing = explainCorrectionPlan (idle, analysis, 0.0f, profile, dictionary);
+    check (count (notActing, utf8 ("Não mexer.")) == 3 && notActing.contains ("1,0 dB acima") && notActing.contains ("15,0 dB abaixo") && notActing.contains (utf8 ("Nenhuma frequência")),
+           "Explicacao: tambem diz por que a banda nao age, com o valor medido (D92, regra 3)");
+    check (notActing.contains ("Filtrar abaixo de 40 Hz.") && notActing.contains (utf8 ("em dúvida")) && notActing.contains ("70%") && notActing.contains ("12%"),
+           "Explicacao: passa-alta conservador mostra a medida que causou a escolha");
+    check (notActing.contains ("Manter em 0 dB."), "Explicacao: sem correcoes, a Saida fica em 0 dB");
+
+    auto highVoice = idle;
+    highVoice.mud = { false, 0.0f, 0.0f, 1.0f, 0.0f, CorrectionReason::protectedFundamental };
+    check (explainCorrectionPlan (highVoice, analysis, 0.0f, profile, dictionary).contains (utf8 ("atingiria as notas cantadas")), "Explicacao: regiao protegida pela fundamental");
+
+    const auto off = explainCorrectionPlan (scaleCorrectionPlan (plan, 0.0f, profile.correction), analysis, 0.0f, profile, dictionary);
+    check (off.contains (utf8 ("Não filtrar: intensidade em 0%.")) && count (off, utf8 ("Não mexer: intensidade em 0%.")) == 3, "Explicacao: intensidade em 0%");
+
+    check (explainCorrectionPlan (plan, analysis, -0.8f, profile, dictionary).contains ("Reduzir 0,8 dB."), "Explicacao: compensacao negativa reduz a Saida");
+
+    CorrectionPlan unavailable;
+    check (explainCorrectionPlan (unavailable, analysis, 0.0f, profile, dictionary).isEmpty(), "Explicacao: pouca voz nao mostra lista (D101)");
+
+    // O texto de verdade, com a voz do usuário, para leitura.
+    LapidamixAudioProcessor processor;
+    prepare (processor);
+    analyseExactly (processor, audio, (int) (60.0 * kRate));
+    const auto realPlan = processor.getCorrectionPlan();
+    printf ("\n%s\n\n", explainCorrectionPlan (realPlan, processor.getLastAnalysisResult(), processor.getCompensationDb (realPlan), profile, dictionary).toRawUTF8());
+}
+
 // A análise de verdade calculando os dados novos, com sinais de resposta conhecida.
 static void testAnalysisData (const juce::AudioBuffer<float>& audio)
 {
@@ -917,6 +1023,7 @@ int main()
 
     testAnalysisData (sm7);
     testApply (sm7);
+    testExplanations (sm7);
     testLufsMeter();
     testIntensityAndVolume (sm7, "SM7dB");
     testIntensityAndVolume (sm57, "SM57");

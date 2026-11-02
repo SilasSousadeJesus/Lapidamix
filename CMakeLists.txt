@@ -28,6 +28,12 @@ juce_add_plugin(Lapidamix
     COPY_PLUGIN_AFTER_BUILD TRUE
     VST3_COPY_DIR "${LAPIDAMIX_VST3_DIR}")
 
+# Textos das explicações, embutidos no plugin ao compilar (D92).
+juce_add_binary_data(LapidamixData
+    HEADER_NAME "LapidamixData.h"
+    NAMESPACE LapidamixData
+    SOURCES src/profiles/voice-dictionary.json)
+
 target_sources(Lapidamix
     PRIVATE
         src/core/analysis/AnalysisController.cpp
@@ -41,7 +47,8 @@ target_sources(Lapidamix
         src/plugin/PluginEditor.cpp
         src/plugin/PluginProcessor.cpp
         src/plugin/RtaAnalyzer.cpp
-        src/plugin/SpectrumPlot.cpp)
+        src/plugin/SpectrumPlot.cpp
+        src/profiles/CorrectionExplanation.cpp)
 
 target_include_directories(Lapidamix
     PRIVATE
@@ -60,6 +67,7 @@ target_compile_options(Lapidamix
 
 target_link_libraries(Lapidamix
     PRIVATE
+        LapidamixData
         juce::juce_audio_utils
         juce::juce_dsp
     PUBLIC

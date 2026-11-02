@@ -16,6 +16,32 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fase 4: explicações das correções
+
+**Fase:** 4 — Correção automática (etapa c da D37, passo 5 de 6 da D99)
+
+**O que foi feito:**
+- Dicionário da voz em arquivo UTF-8, embutido no plugin ao compilar, com 8 regiões (D92, D105).
+- Cada banda e a Saída explicam o que será feito, por que e o efeito, inclusive quando não agem, em linguagem de leigo.
+- Limite das regiões fixas em Hz registrado em `05-ideias-futuro.md`.
+- Roteiro do A/B do passo 6 escrito em `08-plano-testes.md`.
+- A lista virou um texto com rolagem. A janela ficou com 754 pixels de altura, e o gráfico ficou um pouco mais baixo.
+- Verificação sem DAW ampliada e texto real conferido com a gravação do SM7dB.
+
+**Decisões tomadas:** D105, que confirma a P58.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- Só as duas primeiras bandas aparecem sem rolar o texto.
+- Mover a intensidade leva o texto de volta ao início.
+- Os efeitos são tendências, ainda não conferidas de ouvido. Corpo, caixa e nasal seguem sem fonte conferida.
+
+**Próximos passos:**
+- Passo 6: A/B no Reaper, feito pelo usuário, seguindo o roteiro.
+
+---
+
 ## 02/11/2026 — Fase 4: intensidade e compensação de volume
 
 **Fase:** 4 — Correção automática (etapa c da D37, passo 4 de 6 da D99)
@@ -29,7 +55,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D102, D103 (substitui a P56), D104 (confirma a P57, com o aviso).
 
-**Commits:** este commit, com os passos 3 e 4.
+**Commits:** `5a5b038`, com os passos 3 e 4.
 
 **Problemas / dúvidas:**
 - Mover a intensidade depois de aplicar sobrescreve ajustes manuais nas bandas e na Saída; o aviso deixa isso claro (D104).
@@ -53,7 +79,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** nenhuma nova neste passo.
 
-**Commits:** o mesmo commit do passo 4.
+**Commits:** `5a5b038`, junto com o passo 4.
 
 **Problemas / dúvidas:**
 - A janela ficou mais alta para caber a lista.

@@ -30,6 +30,7 @@ Depois da v1.0, fora do escopo atual. Seguem o método da D37 (estudo, proposta,
 ## Ressonâncias
 Melhorias na detecção, fora da v1.0 (D88):
 - Zona de proteção do formante que acompanhe cada voz, no lugar da faixa fixa de 2,5 a 4,2 kHz (D87).
+- **Regiões do dicionário que acompanhem a voz:** as regiões da D105 são fixas em Hz. Na banda de ressonância, que pode cair em qualquer região, o efeito escrito pode descrever mal uma voz aguda: um pico em 700 Hz recebe o texto de "caixa", mesmo que ali esteja o corpo dessa voz. Avaliar junto com a zona de proteção acima, usando a mesma medida da voz para as duas.
 - Vozes agudas: nelas, a busca só começa perto de 2,3 kHz, e nenhum material testado passou de cerca de 395 Hz de mediana.
 - Picos pouco encontrados: nas vozes do VocalSet, picos inseridos acima do início da busca passam muitas vezes sem detecção, por causa ainda desconhecida.
 - Região acima de 6 kHz: entender o pico que se repete perto de 7 kHz e decidir se a banda pode atuar ali.
@@ -64,7 +65,7 @@ Para cada correção, o plugin mostra um texto com três partes:
 
 A parte 3 vem de um **dicionário de regiões por instrumento**, parte do perfil de instrumento (D30): cada região tem nome, faixa aproximada, sensação ao realçar e sensação ao cortar. Cada instrumento novo terá o seu dicionário. Os textos ficam num arquivo de dados separado do código, para facilitar correções, contribuições e traduções.
 
-**Rascunho do dicionário da voz, a revisar na etapa de estudo:**
+**Rascunho do dicionário da voz. A versão revisada, em uso no plugin, está em `src/profiles/voice-dictionary.json` (D105):**
 
 | Região | Sensação ao realçar | Sensação ao cortar |
 |---|---|---|

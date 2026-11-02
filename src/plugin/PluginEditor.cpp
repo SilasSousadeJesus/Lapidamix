@@ -12,9 +12,9 @@ namespace
     constexpr int toggleWidth = 36;
     constexpr int columnGap = 8;
     constexpr int resultsHeight = 76;
-    constexpr int planHeight = 116;
+    constexpr int planHeight = 190;
     constexpr int applyColumnWidth = 220;
-    constexpr int plotHeight = 220;
+    constexpr int plotHeight = 200;
     constexpr int refreshRateHz = 30;
     constexpr int maximumShownResonances = 3;
 
@@ -38,49 +38,6 @@ namespace
         return lapidamix::format::decimal (fraction * 100.0f, 0) + "%";
     }
 
-    juce::String describeGainBand (const lapidamix::BandCorrection& band)
-    {
-        using Reason = lapidamix::CorrectionReason;
-
-        switch (band.reason)
-        {
-            case Reason::applied:
-                if (! band.isEnabled)
-                    return "desligada, intensidade em 0%";
-
-                return (band.gainDb > 0.0f ? "+" : "") + lapidamix::format::decimal (band.gainDb, 1) + " dB em " + hertz (band.frequency)
-                     + ", Q " + lapidamix::format::decimal (band.q, 1);
-            case Reason::withinRange:          return "nada, dentro da faixa";
-            case Reason::protectedFundamental: return utf8 ("nada, a fundamental ocupa essa região");
-            case Reason::noEligiblePeak:       return utf8 ("nada, nenhum pico cumpre a regra");
-            case Reason::noAnalysis:
-            case Reason::inconsistentFundamental:
-            case Reason::notAutomatic:
-                break;
-        }
-
-        return {};
-    }
-
-    juce::String describePlan (const lapidamix::CorrectionPlan& plan, float compensationDb)
-    {
-        using Reason = lapidamix::CorrectionReason;
-
-        auto text = utf8 ("Correções propostas (só valem depois de clicar em Aplicar):\n");
-        text << "Passa-alta: " << (plan.highPass.isEnabled ? hertz (plan.highPass.frequency) : juce::String ("desligada, intensidade em 0%"));
-
-        if (plan.highPass.reason == Reason::inconsistentFundamental)
-            text << utf8 (", posição conservadora: a medida do grave parece inconsistente");
-
-        text << "\nEmbolado: " << describeGainBand (plan.mud)
-             << utf8 ("\nRessonância: ") << describeGainBand (plan.resonance)
-             << utf8 ("\nPresença: ") << describeGainBand (plan.presence)
-             << utf8 ("\nAr: não age sozinha; ajuste à mão, se quiser")
-             << utf8 ("\nSaída: ") << (compensationDb > 0.0f ? "+" : "") << lapidamix::format::decimal (compensationDb, 1)
-             << " dB, para manter o volume";
-
-        return text;
-    }
 }
 
 LapidamixAudioProcessorEditor::LapidamixAudioProcessorEditor (LapidamixAudioProcessor& processor)
@@ -160,7 +117,15 @@ LapidamixAudioProcessorEditor::LapidamixAudioProcessorEditor (LapidamixAudioProc
     analysisResults.setJustificationType (juce::Justification::topLeft);
     addAndMakeVisible (analysisResults);
 
-    planText.setJustificationType (juce::Justification::topLeft);
+    // Texto longo demais para caber na janela: rola, sem aumentar a altura a cada explicação (D92).
+    dictionary = lapidamix::loadRegionDictionary (lapidamix::voiceProfile);
+    planText.setMultiLine (true);
+    planText.setReadOnly (true);
+    planText.setCaretVisible (false);
+    planText.setScrollbarsShown (true);
+    planText.setFont (juce::FontOptions (14.0f));
+    planText.setColour (juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
+    planText.setColour (juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible (planText);
 
     applyButton.setButtonText ("Aplicar");
@@ -312,7 +277,8 @@ void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::Analysi
 void LapidamixAudioProcessorEditor::updatePlanText()
 {
     const auto plan = audioProcessor.getCorrectionPlan();
-    planText.setText (plan.isAvailable ? describePlan (plan, audioProcessor.getCompensationDb (plan)) : juce::String(), juce::dontSendNotification);
+    planText.setText (lapidamix::explainCorrectionPlan (plan, audioProcessor.getLastAnalysisResult(), audioProcessor.getCompensationDb (plan),
+                                                        lapidamix::voiceProfile, dictionary), false);
     applyButton.setEnabled (plan.isAvailable);
 }
 

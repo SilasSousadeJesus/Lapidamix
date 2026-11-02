@@ -4,6 +4,7 @@
 
 #include "plugin/PluginProcessor.h"
 #include "plugin/SpectrumPlot.h"
+#include "profiles/CorrectionExplanation.h"
 
 // Interface simples (D08, D65): instrumento, bypass, ganho de saída, bandas, análise e RTA.
 class LapidamixAudioProcessorEditor final : public juce::AudioProcessorEditor,
@@ -62,7 +63,8 @@ private:
     juce::TextButton analyseButton;
     juce::Label analysisStatus;
     juce::Label analysisResults;
-    juce::Label planText;
+    juce::TextEditor planText;
+    lapidamix::RegionDictionary dictionary;
     juce::TextButton applyButton;
     juce::Label intensityLabel;
     juce::Slider intensitySlider;
