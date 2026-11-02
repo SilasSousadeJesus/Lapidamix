@@ -1,6 +1,6 @@
 # 10 - Estado Atual
 
-**Leia este arquivo primeiro.** Depois, leia as últimas entradas de `06-diario.md` e as regras em `../AGENTS.md`. Atualize este arquivo ao terminar cada sessão (D55).
+**Leia este arquivo primeiro.** Depois, leia as últimas entradas de `06-diario.md` e as regras em `../AGENTS.md`. Atualize este arquivo a cada mudança relevante e antes de cada commit (D57).
 
 **Última atualização:** 02/11/2026
 
@@ -8,7 +8,7 @@
 
 - **Fase:** Fase 1 (Ambiente e plugin "vazio") concluída. Fase 2 (EQ manual) não iniciada.
 - **Etapa:** nenhuma em andamento.
-- **Último passo concluído:** regras movidas para o `AGENTS.md`, importado pelo `CLAUDE.md` (D56), com a importação testada numa sessão nova do Claude Code.
+- **Último passo concluído:** regra de manutenção ajustada para os documentos evoluírem junto com o trabalho (D57).
 - **Próximo passo:** o usuário autorizar a Fase 2, que começa pela etapa de estudo do EQ (D37, D38). Nenhum código da Fase 2 antes disso.
 
 ## Bloqueios
@@ -26,9 +26,10 @@ Nenhum bloqueio técnico. A Fase 2 depende da autorização do usuário.
 
 | Commit | O que fez |
 |---|---|
+| `48724f0` | Regras movidas para o `AGENTS.md` (D56) |
 | `a7d04e9` | Contexto vivo do projeto (D54, D55) |
 | `9228abe` | Plugin vazio, JUCE 9.0.4 como submódulo e conclusão da Fase 1 |
 | `9b8b9cc` | Nome definitivo Lapidamix e README |
 | `ccf7d79` | Licença AGPLv3 e arquivo `LICENSE` |
 
-O commit que traz esta versão do arquivo vem logo depois do `a7d04e9`; veja `git log`.
+O commit que traz esta versão do arquivo vem logo depois do `48724f0`; veja `git log`.

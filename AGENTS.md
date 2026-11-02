@@ -13,7 +13,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 ## Início e fim de cada sessão (D55)
 
 - **Ao iniciar:** ler `docs/10-estado-atual.md` e as últimas entradas de `docs/06-diario.md`.
-- **Ao terminar:** atualizar os dois.
+- **Durante e ao terminar:** manter os dois atualizados, conforme as regras de manutenção abaixo (D57).
 
 ## Fase atual
 
@@ -73,8 +73,14 @@ A pasta `docs/` é a **fonte da verdade** do projeto (✅ D24). O Google Drive g
 
 ### Manutenção dos documentos
 
+**Tudo o que for feito no projeto precisa ser refletido nos documentos, para que eles evoluam junto com o trabalho (D57):**
+
+- **A cada mudança relevante:** atualizar `docs/10-estado-atual.md`, sem esperar o fim da sessão.
+- **Antes de cada commit:** o diário (entrada da sessão) e o estado atual devem estar atualizados com o que o commit leva.
+- **No mesmo commit:** atualizar qualquer outro documento afetado pela mudança (decisões, roadmap, especificação, glossário etc.).
+
 - **Decisão nova:** registrar primeiro em `docs/02-decisoes.md` (próximo número Dxx, com data e motivo), depois ajustar os documentos afetados. Só registre como decisão (✅) o que eu confirmei.
-- **Fim de cada sessão:** adicionar uma entrada no topo de `docs/06-diario.md` seguindo o modelo do arquivo, citando os commits da sessão, atualizar `docs/10-estado-atual.md` e atualizar o status em `docs/00-indice.md` e `docs/04-roadmap-v1.md` se algo mudou.
+- **Diário e status:** manter uma entrada da sessão no topo de `docs/06-diario.md`, seguindo o modelo do arquivo e citando os commits da sessão, e atualizar o status em `docs/00-indice.md` e `docs/04-roadmap-v1.md` se algo mudou.
 - Legenda: ✅ Decidido · 🟡 Proposta · ❓ Em aberto. Datas em DD/MM/AAAA.
 - Nunca apagar decisões antigas: marcar como "Substituída por Dxx".
 - As regras ficam só neste arquivo (D56). O `CLAUDE.md` apenas importa este arquivo; não acrescentar regras lá.

@@ -62,6 +62,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D54 | 02/11/2026 | **Convenções de código:** nomes em inglês, comentários e documentação em português, commits pequenos com mensagens em português | Confirmação do usuário |
 | D55 | 02/11/2026 | **Contexto vivo:** `docs/10-estado-atual.md` é o primeiro arquivo a ser lido. Ao iniciar uma sessão, ler o estado atual e as últimas entradas do diário; ao terminar, atualizar os dois. Cada entrada do diário cita os commits da sessão, e cada mensagem de commit cita fase/etapa e as decisões relacionadas | Qualquer IA deve conseguir continuar o trabalho sem depender do histórico do chat |
 | D56 | 02/11/2026 | **`AGENTS.md` é o arquivo único de regras.** O `CLAUDE.md` fica só com a linha `@AGENTS.md`, que faz o Claude Code importar o outro arquivo (confirma P22) | Evita duplicar o conteúdo; ferramentas que leem `AGENTS.md` recebem as regras completas |
+| D57 | 02/11/2026 | **Documentos evoluem junto com o trabalho:** tudo o que for feito no projeto precisa ser refletido nos documentos. O `10-estado-atual.md` é atualizado a cada mudança relevante, não só no fim da sessão. Antes de cada commit, o diário (entrada da sessão) e o estado atual devem estar atualizados com o que o commit leva. Qualquer outro documento afetado (decisões, roadmap, especificação, glossário etc.) é atualizado no mesmo commit. Complementa a D55 | Manter os documentos sempre fiéis ao estado real do projeto |
 
 ## 🟡 Propostas aguardando confirmação
 

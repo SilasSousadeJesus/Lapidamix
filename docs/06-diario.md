@@ -16,6 +16,25 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Documentos evoluem junto com o trabalho
+
+**Fase:** 1 concluída; Fase 2 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Regra de manutenção ajustada no `AGENTS.md`: estado atual atualizado a cada mudança relevante; diário e estado atual atualizados antes de cada commit; outros documentos afetados atualizados no mesmo commit.
+- Índice e estado atual alinhados à nova regra.
+
+**Decisões tomadas:** D57 (complementa a D55).
+
+**Commits:** "Fase 1: faz os documentos evoluírem junto com o trabalho (D57)", que traz esta entrada.
+
+**Problemas / dúvidas:** nenhum no momento.
+
+**Próximos passos:**
+- A Fase 2 só começa quando o usuário autorizar, pela etapa de estudo do EQ (D37, D38).
+
+---
+
 ## 02/11/2026 — Regras movidas para o AGENTS.md
 
 **Fase:** 1 concluída; Fase 2 aguardando a autorização do usuário.
