@@ -1,0 +1,8 @@
+# Arquivos de áudio de teste ficam fora do Git (ver docs/08-plano-testes.md)
+*.wav
+*.mp3
+*.flac
+*.aif
+*.aiff
+*.ogg
+*.m4a
