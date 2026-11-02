@@ -416,6 +416,54 @@ static void ruleTest (const juce::File& root, int argc, char** argv)
     }
 }
 
+// Grava o trecho que o plugin analisa, para outra ferramenta medir exatamente o mesmo áudio.
+static void writeWav (const juce::File& file, const float* samples, int numSamples)
+{
+    file.deleteFile();
+    std::unique_ptr<juce::OutputStream> stream = file.createOutputStream();
+    juce::WavAudioFormat format;
+    auto writer = format.createWriterFor (stream, juce::AudioFormatWriterOptions{}.withSampleRate (kRate).withNumChannels (1).withBitsPerSample (24));
+    const float* channels[] = { samples };
+    writer->writeFromFloatArrays (channels, 1, numSamples);
+}
+
+static void exportForComparison (const juce::File& root, const juce::File& output, int argc, char** argv)
+{
+    juce::FileOutputStream table (output.getChildFile ("plugin.csv"));
+    table.setPosition (0);
+    table.truncate();
+    table.writeText ("nome,trecho,arquivo,captura,mediana,p5,p95,curva\n", false, false, nullptr);
+
+    const auto writeRow = [&] (const juce::String& name, const char* part, const std::vector<float>& x, const Run& run)
+    {
+        const auto label = name + "_" + part;
+        writeWav (output.getChildFile (label + ".wav"), x.data() + run.start, run.length);
+        const auto& r = run.result;
+        juce::String curveText;
+        for (const auto value : r.soundCurve) curveText << juce::String (value, 2) << " ";
+        table.writeText (label + "," + part + "," + label + ".wav," + juce::String (r.capturedSeconds, 1) + "," + juce::String (r.fundamentalMedian, 2) + ","
+                             + juce::String (r.fundamentalLow, 2) + "," + juce::String (r.fundamentalHigh, 2) + "," + curveText + "\n", false, false, nullptr);
+    };
+
+    for (int i = 4; i < argc; ++i)
+    {
+        const juce::String argument = juce::String::fromUTF8 (argv[i]);
+        std::vector<float> x;
+        juce::String name = argument;
+
+        if (argument.endsWithIgnoreCase (".wav"))
+        {
+            name = juce::File (argument).getFileNameWithoutExtension();
+            appendWav (juce::File (argument), x);
+        }
+        else
+            x = loadSinger (root, argument);
+
+        writeRow (name, "30s", x, capture (x, 0, 30.0f));
+        writeRow (name, "inteiro", x, capture (x, 0, 1.0e9f, 1000.0));
+    }
+}
+
 // Procura de que ponto da gravação sai um resultado visto no DAW.
 static void findStart (const juce::File& file, float capturedSeconds, float median, float low)
 {
@@ -450,6 +498,8 @@ int main (int argc, char** argv)
         scan (juce::File (juce::String::fromUTF8 (argv[2])));
     else if (mode == "detalhe" && argc >= 4)
         for (int i = 3; i < argc; ++i) detail (juce::File (juce::String::fromUTF8 (argv[2])), juce::String::fromUTF8 (argv[i]));
+    else if (mode == "exportar" && argc >= 5)
+        exportForComparison (juce::File (juce::String::fromUTF8 (argv[2])), juce::File (juce::String::fromUTF8 (argv[3])), argc, argv);
     else if (mode == "regra" && argc >= 3)
         ruleTest (juce::File (juce::String::fromUTF8 (argv[2])), argc, argv);
     else if (mode == "inicio" && argc == 6)

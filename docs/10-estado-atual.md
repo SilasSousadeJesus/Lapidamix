@@ -6,30 +6,30 @@
 
 ## Onde estamos
 
-- **Fase:** Fase 3 (Análise, só medir), em andamento (D67).
-- **Etapa:** teste com voz real (etapa d da D37).
-- **Último passo concluído:** ajuste da regra da banda de ressonância encerrado para a v1.0 (D87, D88), com teto de 6 kHz: na simulação, corta em 17 de 72 janelas do VocalSet. Ainda não está no plugin.
-- **Testes no Reaper:** interface e SM7dB informados e registrados. Os outros itens ainda não têm resultado, então a fase não foi fechada.
-- **Próximo passo:** o usuário informar os resultados dos itens 2 a 10 da lista em `08-plano-testes.md`, para reavaliar o fechamento. A Fase 4 não começa antes do pedido do usuário.
+- **Fase:** Fase 3 (Análise, só medir) concluída, com exceções registradas (D90). Fase 4 não iniciada.
+- **Último passo concluído:** Fase 3 fechada, com 39 de 42 medidas da fundamental dentro de ±3% do Praat e a verificação sem DAW sem falhas (`08-plano-testes.md`).
+- **Próximo passo:** o usuário autorizar o início da Fase 4. Nada dela deve começar antes disso.
 
 ## Bloqueios
 
-Nenhum bloqueio técnico. O fechamento da Fase 3 depende do restante do teste no Reaper (D77).
+Nenhum bloqueio técnico.
 
 ## Pendências
 
 - **Banda de ressonância:** regra decidida (D87, D88), a implementar na Fase 4, com validação final de ouvido em A/B contra o bypass (D85). Melhorias na detecção estão em `05-ideias-futuro.md`.
-- **SM57 no Reaper:** o resultado não corresponde ao início da gravação (parece vir de perto de 90 s). Repetir.
+- **SM57 no Reaper:** o primeiro teste não correspondeu ao início da gravação, e a causa ficou sem confirmação (D89). Sem DAW, o plugin dá o esperado.
 - **Propostas a decidir nas fases em que forem usadas (D31):** P03, P06, P08, P12 e P42.
-- **Margem do passa-alta (P42):** o percentil de 5% variou cerca de 11% a 13% entre trechos de 30 s da música. Opções registradas; decidir na Fase 4.
-- **Fase 3:** restante do teste no Reaper com a voz gravada (`test-audio/voz-usuario/`) e as 5 vozes do VocalSet (`11-bancos-de-vozes.md`). Gravações de conhecidos ainda a obter (D79).
+- **Passa-alta na Fase 4:** decidir a margem de segurança (P42) e os detalhes da proteção contra erro de oitava (D91).
+- **Limites herdados da Fase 3:** estalos, CPU no DAW e teste de ouvido em 4,8 kHz foram dispensados (D89); a aguda (95%) errou no male6; gravações de conhecidos não foram obtidas (D79). As 5 vozes do VocalSet cobriram o critério de 3 a 5 vozes.
+- **Depois da v1.0:** tratamento de plosivos e de sibilância registrados em `05-ideias-futuro.md`.
 - **Antes de distribuir o plugin:** analisar as licenças de terceiros em `external/JUCE/JUCE.spdx.json`.
 
 ## Últimos commits relevantes
 
 | Commit | O que fez |
 |---|---|
-| este commit | Resultados parciais do segundo teste no Reaper, sem fechar a Fase 3 |
+| este commit | Fechamento da Fase 3, comparação com o Praat e verificação sem DAW (D89 a D91) |
+| `691ae5e` | Resultados parciais do segundo teste no Reaper, sem fechar a Fase 3 |
 | `139cd83` | Ajustes da análise com voz real, correções na interface, ferramentas de teste e regras para a Fase 4 (D81 a D88) |
 | `ecae02e` | Análise e RTA da Fase 3, ainda sem o teste com voz real, e registro do VocalSet (D67 a D80) |
 | `cbf6f27` | Correção do diário e do estado atual da Fase 2 (D57) |

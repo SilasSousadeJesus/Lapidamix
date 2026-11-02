@@ -16,6 +16,52 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fase 3 fechada
+
+**Fase:** 3 — Análise, só medir: concluída. A Fase 4 não foi iniciada.
+
+**O que foi feito:**
+- Fase 3 fechada por decisão do usuário, com as 3 medidas fora da tolerância registradas como exceção (D90).
+- Registrada a proteção do passa-alta contra erro de oitava, com detalhes a decidir na Fase 4 (D91).
+- Tratamento de plosivos e de sibilância registrados em `05-ideias-futuro.md`, para depois da v1.0.
+
+**Decisões tomadas:** D90, D91.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- Limites que seguem para as próximas fases: estalos, CPU no DAW e teste de ouvido em 4,8 kHz dispensados (D89); ReaEQ real e salvar em projeto sem conferência no Reaper.
+- A exclusão de plosivos pela média de voz não foi medida com plosivos: anotado na ideia futura.
+
+**Próximos passos:**
+- O usuário autoriza o início da Fase 4.
+
+---
+
+## 02/11/2026 — Verificação sem o Reaper e comparação com o Praat
+
+**Fase:** 3 — Análise, só medir (etapa d). Fase fechada na entrada acima, depois da decisão do usuário.
+
+**O que foi feito:**
+- Praat 7.0.02 instalado em `%LOCALAPPDATA%\Programs\Praat`, com o SHA-256 conferido, e comparado com o plugin em 7 vozes (`tools/praat`).
+- Criada a verificação do plugin sem DAW (`tools/verifica-plugin`): 0 falhas.
+- Estalos, CPU no DAW e teste de ouvido em 4,8 kHz registrados como dispensados por decisão do usuário (D89).
+- Espectro também comparado com o Praat, porque a D77 pede.
+
+**Decisões tomadas:** D89.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- 3 de 42 medidas da fundamental ficam fora de ±3%: mediana da female3 nos 30 s (3,86%) e aguda do male6 (94,87% nos 30 s, 7,82% no material inteiro). Pelo pedido do usuário, a fase só fecha dentro dos critérios, então parei.
+- A dúvida sobre a aguda do male6 foi respondida: o Praat não vê esses trechos agudos. Nenhuma regra decidida usa essa medida. Nada foi mudado (D81).
+- Dois erros no meu teste, corrigidos: tolerância menor que a precisão com que o estado guarda as curvas, e um filtro destruído antes da hora, que travou o programa.
+
+**Próximos passos:**
+- O usuário decide se fecha a fase com essas exceções registradas.
+
+---
+
 ## 02/11/2026 — Segundo teste no Reaper, resultados parciais
 
 **Fase:** 3 — Análise, só medir (etapa d). **A fase não foi fechada.** A Fase 4 não foi iniciada.
@@ -27,7 +73,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** nenhuma.
 
-**Commits:** este commit. O hash `139cd83` entrou nas entradas anteriores (D68).
+**Commits:** `691ae5e`. O hash `139cd83` entrou nas entradas anteriores (D68).
 
 **Problemas / dúvidas:** a mensagem do usuário trouxe sem preencher o campo com SM57 do início, cancelamento, RTA, aviso de menos de 10 s, salvar e reabrir, ressonância artificial e VocalSet. Sem esses resultados, em especial a comparação das vozes com outra ferramenta, a fase não fecha.
 

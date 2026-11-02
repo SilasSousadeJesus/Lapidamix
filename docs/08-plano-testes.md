@@ -44,6 +44,48 @@
 | 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
 | 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
 
+## Verificação sem o Reaper (D89, 02/11/2026)
+
+Feita por Claude, com `tools/praat` e `tools/verifica-plugin`. **O usuário fechou a Fase 3 com as 3 medidas fora da tolerância registradas como exceção (D90).** O erro de oitava do male6 levou à proteção do passa-alta na Fase 4 (D91).
+
+**Fundamental, plugin × Praat 7.0.02, no trecho de 30 s de voz válida, do início.** Tolerância de ±3%.
+
+| Voz | Mediana (plugin / Praat) | Dif. | Grave 5% | Dif. | Aguda 95% | Dif. |
+|---|---|---|---|---|---|---|
+| SM7dB | 132,8 / 132,9 Hz | 0,08% | 99,1 / 99,2 Hz | 0,19% | 153,0 / 153,0 Hz | 0,03% |
+| SM57 | 132,2 / 132,4 Hz | 0,20% | 98,0 / 100,5 Hz | 2,50% | 151,1 / 151,1 Hz | 0,03% |
+| female3 | 417,7 / 434,5 Hz | **3,86% ❌** | 304,9 / 305,2 Hz | 0,10% | 586,6 / 588,2 Hz | 0,27% |
+| female7 | 390,5 / 391,3 Hz | 0,21% | 286,7 / 287,2 Hz | 0,15% | 581,9 / 581,8 Hz | 0,02% |
+| male9 | 416,4 / 415,3 Hz | 0,26% | 281,8 / 282,1 Hz | 0,12% | 566,3 / 563,2 Hz | 0,54% |
+| male8 | 192,1 / 192,0 Hz | 0,01% | 129,4 / 128,3 Hz | 0,83% | 258,2 / 257,9 Hz | 0,11% |
+| male6 | 220,4 / 217,7 Hz | 1,23% | 146,4 / 146,5 Hz | 0,10% | 572,2 / 293,6 Hz | **94,87% ❌** |
+
+No material inteiro, a mediana e o grave ficam dentro de 3% nas 7 vozes (maior diferença: 0,96% e 1,13%). A aguda fica dentro em 6 vozes; no male6, dá 313,0 / 290,3 Hz (**7,82% ❌**). No total, **39 de 42 medidas ficam dentro da tolerância**.
+
+- **female3:** a mediana cai entre duas notas próximas, e as pontas e o material inteiro concordam (0,41%). Provavelmente é a diferença de quais trechos cada programa conta como voz, mas isso não foi confirmado.
+- **male6:** o Praat vê quase nada acima de 400 Hz (0,1% a 0,3% dos trechos com voz), enquanto o plugin põe pelo menos 5% acima de 572 Hz nos primeiros 30 s. A aguda do plugin está errada nessa voz, provavelmente por erro de oitava em parte dos trechos. A aguda não é usada por nenhuma regra decidida; a mediana (D83) e o grave (D78) dessa voz ficam dentro da tolerância. Nada foi mudado (D81).
+
+**Espectro, plugin × Praat, em terços de oitava, sem o volume geral, nos 30 s:** diferença de forma de 0,40 a 1,94 dB rms, e maior diferença de 1,08 a 6,43 dB (female3). No material inteiro: de 0,31 a 1,88 dB rms. A D77 não define tolerância para o espectro.
+
+**Plugin sem DAW (`verifica`), com 0 falhas:**
+
+| Item | Resultado |
+|---|---|
+| Saída igual à entrada, com análise e RTA ligados | ✅ 0 amostras diferentes de 12.395.520 |
+| Bypass com banda ligada | ✅ Saída idêntica |
+| Pedidos de memória na thread de áudio | ✅ 0 |
+| Análise mede antes do EQ | ✅ Médias iguais com +12 dB em 2,2 kHz |
+| RTA reage ao EQ | ✅ +11,7 dB em 2,2 kHz e 0,0 dB em 100 Hz |
+| Aviso com pouca voz | ✅ Aparece com 6,0 s; não aparece com 36,2 s |
+| Salvar e restaurar | ✅ Medidas, curvas (com uma casa decimal) e candidatas voltam |
+| Fechar o plugin com a análise rodando | ✅ Não trava |
+| Pico de +9 dB em 2,2 kHz, Q 8, com filtro do JUCE | ✅ SM7dB: 2201 Hz (+4,8 dB, em 50 s). SM57: 2138 Hz (+4,1 dB, em 50 s) e 2201 Hz (+4,8 dB, em 100 s) |
+| Tempo por bloco de 11,6 ms | Indício: média de 0,0003 ms, pior de 0,043 ms |
+
+**Dispensado por decisão do usuário (D89), sem verificação:** estalos durante a reprodução, uso de CPU no DAW e teste de ouvido em 4,8 kHz.
+
+**Limitação:** o Reaper não foi usado nos itens acima. Ficam sem conferência real no DAW: o ReaEQ de verdade, salvar dentro de um projeto, o cancelamento dentro do DAW e o motivo de o primeiro teste do SM57 ter dado um resultado parecido com o de 90 s de música. Com o mesmo áudio, do início, o plugin sem DAW dá o esperado (51,2 s, 132 Hz, 98 Hz).
+
 ## Segundo teste no Reaper (02/11/2026)
 
 Informado pelo usuário: interface e SM7dB. **Os resultados dos outros itens não foram informados**: a mensagem trouxe esse campo sem preencher.
@@ -177,7 +219,7 @@ Essas vozes variam mais que a do usuário, provavelmente porque cada janela pega
 
 ## O que falta para fechar a Fase 3 (D77)
 
-**Situação em 02/11/2026:** o item 1 foi concluído. Os itens 2 a 10 ainda não têm resultado informado, e a Fase 3 continua aberta. O critério do roadmap depende principalmente do item 8.
+**Situação em 02/11/2026:** o item 1 foi concluído no Reaper. Por decisão do usuário (D89), os demais não serão feitos no Reaper: ver "Verificação sem o Reaper". Lista mantida como referência.
 
 Fazer no Reaper, com o plugin reaberto:
 
@@ -194,7 +236,7 @@ Fazer no Reaper, com o plugin reaberto:
 
 ## Medições com voz real (02/11/2026)
 
-Para repetir, ver `tools/medidor-voz/README.md` (D84). A tabela de ressonâncias abaixo mostra os métodos comparados; a linha da P41 é o método atual do plugin (D83).
+Para repetir, ver `tools/medidor-voz/README.md` (D84). Para comparar com o Praat, `tools/praat/README.md`; para conferir o plugin sem DAW, `tools/verifica-plugin/README.md`. A tabela de ressonâncias abaixo mostra os métodos comparados; a linha da P41 é o método atual do plugin (D83).
 
 **Material:** duas tomadas diferentes da mesma música, não gravadas ao mesmo tempo (correlação da forma de onda 0,12), com 140 e 136 s. Por isso a comparação bloco a bloco da fundamental não vale como teste. O SM57 chega a 0 dB em 3 trechos curtos (35 amostras), o que não deve pesar na média. Voz do usuário: fundamental mediana perto de 136 Hz, notas de E2 a D#3.
 

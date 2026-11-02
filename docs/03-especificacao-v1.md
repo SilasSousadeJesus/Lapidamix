@@ -31,7 +31,7 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ Sem cortes agressivos (D10).
 - ✅ Filtros biquad em série, sem latência (D59), com frequência limitada a 45% da taxa de amostragem (D62) e ganho manual de ±12 dB (D63).
 - ✅ 5 bandas, cada uma com valores iniciais do perfil de instrumento (D61, D62):
-  - **Passa-alta** — remove graves inúteis, nunca acima da fundamental.
+  - **Passa-alta** — remove graves inúteis, nunca acima da fundamental. Se a medida do grave parecer inconsistente, fica na posição mais conservadora (D91).
   - **Embolado** — reduz o acúmulo de graves/médio-graves (efeito de proximidade).
   - **Ressonância** — atenua um pico incômodo, se houver.
   - **Presença** — realce suave onde falta clareza (região de inteligibilidade).

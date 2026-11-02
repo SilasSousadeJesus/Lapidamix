@@ -17,7 +17,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 3 — Análise (só medir): em andamento** (D67). A análise e o RTA estão implementados (D69 a D76, D82, D83), e o teste com voz real no Reaper (D77) aguarda o usuário. Nada corrige o som sozinho até a Fase 4. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
+**Fase 3 — Análise (só medir): concluída**, com exceções registradas (D90). **A Fase 4 não foi iniciada** e só começa quando eu pedir. Nada corrige o som sozinho até lá. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 

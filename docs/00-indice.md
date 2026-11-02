@@ -2,7 +2,7 @@
 
 **Lapidamix** é um assistente de mixagem capaz de mixar qualquer instrumento, em forma de plugin de insert para DAWs. A voz é só o primeiro instrumento, por questão de escopo (D17): a v1.0 é o EQ corretivo da voz, e o projeto cresce um processador e um instrumento por vez (D18, D19).
 
-**Status atual:** Fases 0, 1 e 2 concluídas: o plugin tem EQ manual de 5 bandas e funciona no Reaper. Fase 3 (Análise) em andamento: implementada, verificada com voz sintética e medida com a voz do usuário fora do DAW; duração e medida de ressonâncias decididas (D82, D83), 5 vozes do VocalSet medidas, e o restante do teste no Reaper aguarda o usuário. Repositório público desde 02/11/2026 (D40); licença AGPLv3 (D42).
+**Status atual:** Fases 0, 1, 2 e 3 concluídas: o plugin tem EQ manual de 5 bandas e mede a voz (fundamental, espectro e ressonâncias), sem corrigir nada sozinho. A Fase 3 fechou com exceções registradas (D90). Fase 4 (Correção automática) não iniciada, aguardando autorização. Repositório público desde 02/11/2026 (D40); licença AGPLv3 (D42).
 **Última atualização:** 02/11/2026
 
 ## Fonte da verdade

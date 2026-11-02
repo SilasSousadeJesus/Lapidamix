@@ -5,10 +5,24 @@ Tudo que está fora da v1.0. Só está decidido o que cita um Dxx; o resto é um
 ## Próximos processadores para a voz (um por vez)
 Entram nas versões 1.1, 1.2 etc., até fechar a cadeia de sinal da voz (D19). A lista abaixo ainda não define a ordem.
 - Compressor automático (controlar a variação de volume).
-- De-esser automático (controlar os "S" e "X").
+- De-esser automático (controlar os "S" e "X"). Detalhes em "Plosivos e sibilância".
+- Tratamento de plosivos ("P" e "B"). Detalhes em "Plosivos e sibilância".
 - EQ dinâmico / controle de ressonâncias que só age quando o problema aparece (referência: Soothe2).
 - Nivelamento de ganho de saída.
 - Efeitos de ambiência (reverb, delay) — bem mais à frente.
+
+## Plosivos e sibilância
+Depois da v1.0, fora do escopo atual. Seguem o método da D37 (estudo, proposta, implementação, teste) e entram como módulos encaixáveis (D30), um por vez, na ordem das versões 1.1, 1.2 etc. A ordem entre elas será decidida depois.
+
+**Tratamento de plosivos ("p", "b")**
+- **O que é:** o sopro de ar batendo na cápsula do microfone, com energia nos graves (geralmente abaixo de cerca de 150–200 Hz), em rajadas curtas. Microfones como o SM57 captam bastante; o SM7dB lida melhor, mas também capta.
+- **Ideia:** detectar essas rajadas e atenuar só os graves naqueles instantes, sem afetar o resto da voz. É diferente do passa-alta, que age o tempo todo.
+- **Relação com o que já existe:** o filtro de periodicidade da análise (P32, D70) tira os plosivos da média de voz, mas não os corrige. A exclusão ainda não foi medida com plosivos, e um trecho de voz da média ainda pode conter até 20% de blocos fora da voz.
+
+**Tratamento de sibilância ("s", "ch", "x"): de-esser automático**
+- **O que é:** energia excessiva nos agudos (aproximadamente de 4 a 10 kHz, variando por voz e microfone) nas consoantes sibilantes.
+- **Ideia:** detectar a região de sibilância de cada voz e atenuar só nos instantes em que ela aparece.
+- **Relação com o que já existe:** a análise da Fase 3 já calcula a média "todo o som", que inclui as sibilantes. A diferença entre ela e a média "voz" pode indicar onde a sibilância está e quanto ela pesa. No SM57, essa diferença apareceu entre cerca de 5 e 8 kHz.
 
 ## Ressonâncias
 Melhorias na detecção, fora da v1.0 (D88):
@@ -16,6 +30,9 @@ Melhorias na detecção, fora da v1.0 (D88):
 - Vozes agudas: nelas, a busca só começa perto de 2,3 kHz, e nenhum material testado passou de cerca de 395 Hz de mediana.
 - Picos pouco encontrados: nas vozes do VocalSet, picos inseridos acima do início da busca passam muitas vezes sem detecção, por causa ainda desconhecida.
 - Região acima de 6 kHz: entender o pico que se repete perto de 7 kHz e decidir se a banda pode atuar ali.
+
+## Fundamental
+- Aguda (95%) errada no male6 do VocalSet, comparada ao Praat, provavelmente por erro de oitava em parte dos trechos (`08-plano-testes.md`). Nenhuma regra decidida usa essa medida.
 
 ## Modo sugestão / modo professor
 - O plugin analisa e mostra o EQ sugerido numa interface bonita, e o usuário decide se aplica ou ajusta à mão.
