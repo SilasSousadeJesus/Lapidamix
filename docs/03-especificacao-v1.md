@@ -20,8 +20,8 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ **Duas classes de trecho:** voz válida e todo o som; silêncio é ignorado, e respiração e ruído ficam fora da voz válida (D70).
 - ✅ **Duas médias do espectro**, feitas em potência: voz cantada (principal) e todo o som, incluindo consoantes como "s" (D71).
 - ✅ **Fundamental:** mediana, percentis de 5% e 95% e confiança (D72). Na Fase 4, o passa-alta se baseia nas notas mais graves (D78).
-- ✅ **Ressonâncias candidatas**, sempre relativas ao espectro da própria voz e presentes em notas diferentes (D73; ajuste na P40).
-- ✅ **Duração:** 30 s de voz válida ou até clicar Parar, com aviso abaixo de 10 s (D75). A meta ainda será confirmada com medições (A04).
+- ✅ **Ressonâncias candidatas**, sempre relativas ao espectro da própria voz e presentes em notas diferentes, medidas nos harmônicos e só acima de 6 vezes a fundamental (D83).
+- ✅ **Duração:** 30 s de voz válida ou até clicar Parar, com aviso abaixo de 10 s (D75, confirmada pelas medições na D82).
 - 🟡 **Posicionar as correções** a partir da fundamental: "embolado" fica em lugares diferentes numa voz grave masculina e numa voz feminina aguda (Fase 4).
 - 🟡 **Curva-alvo como faixa saudável:** o equilíbrio entre graves, médios e agudos deve ficar dentro de uma faixa. O plugin só corrige o que estiver fora, e só o quanto precisa.
 
@@ -38,6 +38,12 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
   - **Ar** — realce suave dos agudos, se a voz estiver escura.
 - 🟡 Limites da correção automática (Fase 4): cortes até ~-5 dB, realces até ~+3 dB, bandas largas (Q baixo).
 - 🟡 Intensidade 0–100% escala todas as correções proporcionalmente.
+- ✅ O plugin mostra as bandas que pretende usar antes de aplicá-las, com um botão Aplicar (D85).
+- ✅ Uma ressonância candidata não basta para justificar um corte (D86). A banda de ressonância é conservadora e limitada de propósito (D87, D88):
+  - **Corta só:** pico de pelo menos +6 dB, estreito e persistente, com corte de até -3 dB.
+  - **Atua:** de 6 vezes a fundamental até 2,5 kHz, e de 4,2 a 6 kHz.
+  - **Não atua:** abaixo de 6 vezes a fundamental (largura do pico não mensurável), de 2,5 a 4,2 kHz (proteção do formante do cantor) nem acima de 6 kHz (origem desconhecida do pico perto de 7 kHz).
+  - **Validação final:** de ouvido, na Fase 4, com A/B contra o bypass.
 
 ## 4. Interface (v1)
 

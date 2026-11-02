@@ -1,5 +1,6 @@
 #include "plugin/PluginProcessor.h"
 
+#include "core/DisplayFormat.h"
 #include "plugin/PluginEditor.h"
 #include "profiles/InstrumentList.h"
 
@@ -27,7 +28,8 @@ namespace
             0.0f,
             juce::AudioParameterFloatAttributes()
                 .withLabel ("dB")
-                .withStringFromValueFunction ([] (float value, int) { return juce::String (value, 1); })));
+                .withStringFromValueFunction ([] (float value, int) { return lapidamix::format::decimal (value, 1); })
+                .withValueFromStringFunction ([] (const juce::String& text) { return lapidamix::format::parseDecimal (text); })));
 
         lapidamix::EqModule::addParameters (layout, lapidamix::voiceProfile);
 

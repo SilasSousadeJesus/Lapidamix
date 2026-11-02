@@ -1,5 +1,7 @@
 #include "modules/EqModule.h"
 
+#include "core/DisplayFormat.h"
+
 namespace lapidamix
 {
     namespace
@@ -25,8 +27,9 @@ namespace lapidamix
                 .withLabel (label)
                 .withStringFromValueFunction ([numDecimals] (float value, int)
                 {
-                    return juce::String (value, numDecimals);
-                });
+                    return format::decimal (value, numDecimals);
+                })
+                .withValueFromStringFunction ([] (const juce::String& text) { return format::parseDecimal (text); });
         }
 
         juce::NormalisableRange<float> makeSkewedRange (float minimum, float maximum, float centre)

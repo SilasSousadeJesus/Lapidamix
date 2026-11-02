@@ -25,8 +25,11 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **Espectro médio (LTAS)** — média do espectro ao longo de um trecho; mostra o que permanece no som e perde o que muda rapidamente.
 - **FFT** — cálculo que transforma um pedaço de áudio no seu espectro.
 - **Formante** — pico largo de energia causado pelo formato do trato vocal; muda com a vogal.
+- **Formante do cantor** — concentração de energia, em geral perto de 2,5 a 3,5 kHz, que ajuda vozes treinadas a se destacar. É uma qualidade da voz, não um defeito.
 - **Harmônicos** — frequências múltiplas da fundamental que acompanham cada nota.
 - **Janela (em análise de áudio)** — curva aplicada a um pedaço de áudio antes da FFT, para reduzir erros nas bordas.
+- **Percentil** — valor abaixo do qual fica certa parte das medidas. O percentil de 5% da fundamental indica as notas mais graves, ignorando os 5% mais baixos; o de 50% é a mediana, o valor do meio.
+- **RMS** — forma de resumir várias diferenças num só número, sem que as positivas e as negativas se anulem.
 - **Periodicidade** — o quanto um som se repete com regularidade: a voz cantada tem muita; respiração e ruído, pouca.
 - **Planicidade espectral** — medida de quanto um som se parece com ruído (perto de 1) ou com um tom (perto de 0).
 - **Proeminência** — quanto um pico se destaca da própria vizinhança no espectro.

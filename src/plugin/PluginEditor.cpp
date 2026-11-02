@@ -1,5 +1,6 @@
 #include "plugin/PluginEditor.h"
 
+#include "core/DisplayFormat.h"
 #include "profiles/InstrumentList.h"
 
 namespace
@@ -17,6 +18,21 @@ namespace
     juce::String utf8 (const char* text)
     {
         return juce::String::fromUTF8 (text);
+    }
+
+    juce::String seconds (float value)
+    {
+        return lapidamix::format::decimal (value, 1) + " s";
+    }
+
+    juce::String hertz (float value)
+    {
+        return lapidamix::format::decimal (value, 0) + " Hz";
+    }
+
+    juce::String percent (float fraction)
+    {
+        return lapidamix::format::decimal (fraction * 100.0f, 0) + "%";
     }
 }
 
@@ -136,9 +152,9 @@ void LapidamixAudioProcessorEditor::updateAnalysisStatus()
         case Controller::State::capturing:
             analyseButton.setButtonText ("Parar");
             analyseButton.setEnabled (true);
-            analysisStatus.setText (utf8 ("Ouvindo: ") + juce::String (analysis.getVoiceSeconds(), 1) + " de "
-                                        + juce::String (Controller::targetVoiceSeconds, 0) + utf8 (" s de voz válida (")
-                                        + juce::String (analysis.getCapturedSeconds(), 1) + " s de captura)",
+            analysisStatus.setText (utf8 ("Ouvindo: ") + seconds (analysis.getVoiceSeconds()) + " de "
+                                        + seconds (Controller::targetVoiceSeconds) + utf8 (" de voz válida (")
+                                        + seconds (analysis.getCapturedSeconds()) + " de captura)",
                                     juce::dontSendNotification);
             break;
 
@@ -167,16 +183,14 @@ void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::Analysi
         return;
     }
 
-    const auto hertz = [] (float value) { return juce::String (value, 0) + " Hz"; };
-
-    auto text = utf8 ("Voz válida: ") + juce::String (result.voiceSeconds, 1) + " s | Com som: "
-              + juce::String (result.soundSeconds, 1) + " s | Captura: " + juce::String (result.capturedSeconds, 1) + " s\n";
+    auto text = utf8 ("Voz válida: ") + seconds (result.voiceSeconds) + " | Com som: "
+              + seconds (result.soundSeconds) + " | Captura: " + seconds (result.capturedSeconds) + "\n";
 
     if (result.voiceSeconds > 0.0f)
         text << "Fundamental: mediana " << hertz (result.fundamentalMedian)
              << " | grave (5%) " << hertz (result.fundamentalLow)
              << " | aguda (95%) " << hertz (result.fundamentalHigh)
-             << utf8 (" | confiança ") << juce::String (result.confidence * 100.0f, 0) << "%\n";
+             << utf8 (" | confiança ") << percent (result.confidence) << "\n";
     else
         text << utf8 ("Nenhuma voz válida encontrada.\n");
 
@@ -194,8 +208,8 @@ void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::Analysi
         text << utf8 ("Ressonâncias candidatas:");
 
         for (const auto& resonance : result.resonances)
-            text << " " << hertz (resonance.frequency) << " (+" << juce::String (resonance.prominenceDb, 1)
-                 << " dB, " << juce::String (resonance.presence * 100.0f, 0) << "% do tempo)";
+            text << " " << hertz (resonance.frequency) << " (+" << lapidamix::format::decimal (resonance.prominenceDb, 1)
+                 << " dB, " << percent (resonance.presence) << " do tempo)";
 
         text << "\n";
     }

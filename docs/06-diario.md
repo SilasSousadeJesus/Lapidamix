@@ -16,6 +16,154 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Ajuste da regra de ressonância encerrado
+
+**Fase:** 3 — Análise, só medir (preparação do fechamento). A Fase 4 não foi iniciada.
+
+**O que foi feito:**
+- Teto de 6 kHz aprovado, sem o mínimo de +8 dB (D88, confirma P46). Ajuste encerrado para a v1.0.
+- Registradas as zonas de atuação, as regiões excluídas e o motivo de cada uma, na especificação e nas decisões.
+- Validação final de ouvido incluída na Fase 4, com A/B contra o bypass e mostrando antes de aplicar.
+- Melhorias na detecção movidas para `05-ideias-futuro.md`.
+
+**Decisões tomadas:** D88.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:** a regra ainda não está no plugin e só foi simulada. Nas vozes do VocalSet, 17 de 72 janelas e 8 de 20 vozes recebem corte; se isso é pouco, só a validação de ouvido dirá.
+
+**Próximos passos:**
+- O usuário conclui os testes da lista em `08-plano-testes.md`.
+
+---
+
+## 02/11/2026 — Regra de ressonância aprovada e simulada
+
+**Fase:** 3 — Análise, só medir (preparação do fechamento). A Fase 4 não foi iniciada.
+
+**O que foi feito:**
+- P45 aprovada com zona proibida de 2,5 a 4,2 kHz e pico nas duas metades da captura (D87). Zona que acompanhe cada voz registrada em `05-ideias-futuro.md`.
+- Regra simulada em `banco regra`, com os ajustes separados e juntos, e com duas variantes para a proposta P46. Nada foi implementado no plugin.
+
+**Decisões tomadas:** D87. Proposta nova: P46.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- A regra aprovada não atende ao critério de poucos cortes: 40 de 72 janelas e 14 de 20 vozes, contra 48 de 72 e 16 de 20 antes. 29 dos 40 cortes ficam acima de 6 kHz.
+- Com a zona maior, várias vozes trocam o corte de cerca de 3,6 kHz para cerca de 7 kHz.
+- Parei e propus a P46 sem mudar a regra (D81).
+
+**Próximos passos:**
+- O usuário conclui os testes da lista e decide a P46.
+
+---
+
+## 02/11/2026 — Modo sugestão decidido e regra de ressonância proposta
+
+**Fase:** 3 — Análise, só medir (preparação do fechamento). A Fase 4 não foi iniciada.
+
+**O que foi feito:**
+- Opção B do modo sugestão registrada e incluída na Fase 4 (D85). Candidata definida como não sendo defeito (D86).
+- Artigo do VocalSet lido: mesma cabine e mesmo modelo de microfone (AT2020).
+- Ferramenta `origem` criada, e o pico de 6,2 a 7,4 kHz testado por vogal, por pessoa e fora da voz.
+- Regra conservadora proposta (P45) e simulada em `banco regra`. Nada foi implementado no plugin.
+- Lista do que falta para fechar a Fase 3 registrada em `08-plano-testes.md`.
+- Corrigido o `11-bancos-de-vozes.md`: são 11 homens e 9 mulheres, e não o contrário.
+
+**Decisões tomadas:** D85, D86. Proposta nova: P45.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- Um pico fixo do equipamento ou da sala não explica o resultado sozinho: o pico muda com a vogal e a pessoa, e nem todos o têm. Uma contribuição do microfone segue possível, mas não dá para separar. Investigação encerrada.
+- A regra simulada age em 48 de 72 janelas do VocalSet, e 12 cortes ficam logo acima da zona proibida.
+- A exigência do pico nas duas metades da captura ainda não foi simulada.
+
+**Próximos passos:**
+- O usuário faz os testes da lista e decide a P45.
+
+---
+
+## 02/11/2026 — Reaper, correções na interface e vozes do VocalSet
+
+**Fase:** 3 — Análise, só medir (preparação do fechamento). A Fase 4 não foi iniciada.
+
+**O que foi feito:**
+- Resultados do teste do usuário no Reaper registrados em `08-plano-testes.md`.
+- Interface: corrigido o acento de "RTA (saída)"; casas decimais padronizadas, com vírgula; curvas de voz e de todo o som com cor e espessura bem diferentes. Plugin compilado em Release, sem erros, e conferido numa imagem da janela.
+- Ferramentas novas: `tools/captura-interface` (imagem da janela) e `banco`, em `tools/medidor-voz`, com variantes sem o limite de busca e sem o corte de candidatas (D84).
+- 20 vozes do VocalSet medidas e 5 detalhadas, com comparação do limite de 6 vezes a fundamental.
+- Reavaliação do modo sugestão preparada em `05-ideias-futuro.md`.
+
+**Decisões tomadas:** nenhuma. Propostas novas: P43 e P44.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- A causa das casas decimais: `juce::String (valor, 0)` não arredonda. Isso também afetava os controles de frequência e os números do gráfico.
+- O resultado do SM57 no Reaper não bate com o início da gravação, e parece vir de perto de 90 s. Assim, 100 × 87 Hz parece ser diferença de trecho, não de tomada. A P42 continua necessária.
+- Nas 5 vozes do VocalSet, os picos inseridos foram pouco encontrados, mesmo acima do início da busca, e o corte de 3 candidatas não explica. Causa desconhecida; nada foi mudado (D81). Proposta P43.
+- O VocalSet não informa notas nem ressonâncias: não há gabarito. A aguda (95%) dobra em algumas janelas do male8 e do male6, sem confirmação se é registro agudo ou erro de oitava.
+- Nenhum material testado passou de cerca de 395 Hz de mediana.
+
+**Próximos passos:**
+- O usuário conclui os testes no Reaper e decide P43 e P44.
+
+---
+
+## 02/11/2026 — Duração e ressonâncias decididas; medidores no repositório
+
+**Fase:** 3 — Análise, só medir (etapa d)
+
+**O que foi feito:**
+- A04 encerrada: mantidos 30 s de voz válida (D82).
+- P40 e P41 aprovadas (D83) e implementadas no `VoiceAnalyzer`: limite de 4 dB e busca acima de 6 vezes a fundamental mediana. Plugin compilado em Release, sem erros.
+- Medidores guardados em `tools/medidor-voz`, sem áudio e usando o código real da análise (D84). Medições repetidas: mesmos números da simulação da P41.
+- Opções da margem do passa-alta registradas para a Fase 4 (P42).
+
+**Decisões tomadas:** D82, D83, D84. Proposta nova: P42.
+
+**Commits:** este commit.
+
+**Problemas / dúvidas:**
+- Na entrada anterior, os medidores foram apagados, e esse código foi recuperado de uma cópia na pasta de rascunho. A D84 evita repetir isso.
+- O limite de 6 vezes a fundamental ainda não foi testado em vozes agudas, em que a busca começa mais alto.
+- A verificação sintética antiga foi apagada e não foi repetida com o limite de 4 dB. Nela, um pico de +9 dB perto de 4 kHz media só +3,3 dB, e agora ficaria de fora. Na voz real, esse pico mediu de 6,4 a 8,4 dB.
+
+**Próximos passos:**
+- O usuário faz o teste no Reaper e a conferência no Praat (D77), e testa outras vozes.
+
+---
+
+## 02/11/2026 — Voz real: A04, microfones e P40
+
+**Fase:** 3 — Análise, só medir (etapa d, parte feita fora do DAW)
+
+**O que foi feito:**
+- Gravações do usuário (SM7dB e SM57) copiadas para `test-audio/voz-usuario/`, fora do Git; os originais continuam em Downloads.
+- Estabilidade medida com 10, 20, 30 e 45 s de voz válida, em programa temporário fora do projeto que usa o `VoiceAnalyzer` sem alteração.
+- Comparação dos dois microfones: a fundamental ficou quase igual, e o espectro, diferente, principalmente de 2 a 10 kHz.
+- Picos inseridos no áudio para testar a D73 (reconstruída) e a P40. Uma cópia temporária do analisador simulou variações, sem mudar o código do plugin.
+- Regra registrada no `AGENTS.md` (D81). Resultados em `08-plano-testes.md`. Programas temporários apagados.
+
+**Decisões tomadas:** D81. Proposta nova: P41. A04 e P40 seguem aguardando o usuário.
+
+**Commits:** este commit. O hash `ecae02e` entrou nas entradas anteriores (D68).
+
+**Problemas / dúvidas:**
+- As gravações são tomadas diferentes, então a comparação bloco a bloco da fundamental não vale como teste.
+- Nesta voz, a medida de ressonâncias não funcionou em 300 e 500 Hz: os picos inseridos não foram achados, e surgem candidatas duvidosas perto de 500 Hz. A partir de 1 kHz ela funcionou; 800 Hz não foi medido.
+- Percentil de 5%: varia entre trechos, e mais tempo não resolve. Afeta a D78 na Fase 4.
+- A D73 comparada é uma reconstrução, porque o código original não ficou guardado.
+- Uma só voz e uma só música: tudo isso precisa ser confirmado em outras vozes.
+
+**Próximos passos:**
+- O usuário decide a A04 e as P40 e P41.
+- Teste no Reaper e conferência no Praat (D77).
+
+---
+
 ## 02/11/2026 — Banco de vozes VocalSet
 
 **Fase:** 3 — Análise, só medir (preparação do teste com vozes reais)
@@ -27,7 +175,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D80.
 
-**Commits:** este commit.
+**Commits:** `ecae02e`.
 
 **Problemas / dúvidas:**
 - O `tar` do Windows e o .NET não leram o zip, por ter mais de 4 GB sem zip64. O 7-Zip extraiu com um aviso sobre isso, e sem erros de CRC.
@@ -50,7 +198,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D69 a D79. Proposta nova: P40.
 
-**Commits:** este commit.
+**Commits:** `ecae02e`.
 
 **Problemas / dúvidas:**
 - A verificação encontrou dois erros meus: limites de silêncio calculados como amplitude em vez de potência, e falsas ressonâncias vindas de harmônicos coincidentes. Ambos foram corrigidos.
@@ -75,7 +223,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D67 e D68. Propostas novas: P31 a P39.
 
-**Commits:** este commit.
+**Commits:** `ecae02e`.
 
 **Problemas / dúvidas:**
 - O PDF do artigo do YIN não pôde ser lido; o valor do limite citado na nota é de memória e está marcado como suposição.
@@ -119,7 +267,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D59 a D66.
 
-**Commits:** este commit.
+**Commits:** `ecae02e`.
 
 **Problemas / dúvidas:**
 - A faixa de frequência dos parâmetros continua de 20 Hz a 20 kHz, porque o DAW precisa de uma faixa fixa; o limite de 45% é aplicado no processamento, e a janela pode mostrar um valor acima do aplicado em taxas de amostragem baixas.
@@ -143,7 +291,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D58. Propostas novas: P23 a P30.
 
-**Commits:** este commit.
+**Commits:** `ecae02e`.
 
 **Problemas / dúvidas:**
 - A página do ReaEQ não abriu e o artigo de Vicanek só pôde ser lido em parte, como indicado na nota.

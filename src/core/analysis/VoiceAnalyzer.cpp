@@ -10,7 +10,7 @@ namespace lapidamix
 {
     namespace
     {
-        // Valores iniciais, a calibrar nos testes (D70, D71, D73).
+        // Valores iniciais, a calibrar nos testes (D70, D71, D83).
         constexpr double blockSeconds = 0.025;
         constexpr float absoluteSilenceDb = -60.0f;
         constexpr float relativeSilenceDb = -20.0f;
@@ -28,7 +28,8 @@ namespace lapidamix
         constexpr float maximumHarmonicSearch = 0.4f;
         constexpr int minimumNeighbours = 3;
         constexpr int minimumObservations = 8;
-        constexpr float minimumProminenceDb = 3.0f; // Medido nos harmônicos; calibrado em voz sintética.
+        constexpr float minimumProminenceDb = 4.0f; // Medido nos harmônicos (D83).
+        constexpr float minimumHarmonicNumber = 6.0f; // A partir daqui, os harmônicos ficam a menos de 1/4 de oitava (D83).
         constexpr float framePresenceDb = 2.0f;
         constexpr float minimumPresence = 0.3f;
         constexpr int minimumNotes = 3;
@@ -429,7 +430,7 @@ namespace lapidamix
 
         result.numDistinctNotes = (int) allNotes.size();
 
-        // Ressonâncias: picos estreitos em relação à vizinhança da própria voz (D14, D73).
+        // Ressonâncias: picos estreitos em relação à vizinhança da própria voz (D14, D83).
         // Cada ponto reúne também os vizinhos diretos, porque as notas não caem sempre no mesmo ponto.
         const auto getProminence = [&] (int point)
         {
@@ -447,6 +448,10 @@ namespace lapidamix
 
         for (int point = 1; point + 1 < numGridPoints; ++point)
         {
+            // Com harmônicos mais espaçados que isso, não dá para medir a largura do pico.
+            if (getGridFrequency (point) < minimumHarmonicNumber * result.fundamentalMedian)
+                continue;
+
             const auto value = getProminence (point);
 
             if (value < minimumProminenceDb || value < getProminence (point - 1) || value < getProminence (point + 1))

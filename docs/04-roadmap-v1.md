@@ -31,12 +31,12 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** dá para mixar a voz "na mão" com o plugin, respeitando a regra de ouro do tempo real.
 
 ## Fase 3 — Análise (só medir)
-- **Andamento (D37):** estudo concluído (`07-referencias.md`); proposta aprovada (D69 a D79); implementação concluída e verificada com voz sintética; teste com voz real aguardando o usuário (D77).
+- **Andamento (D37):** estudo concluído (`07-referencias.md`); proposta aprovada (D69 a D79); implementação concluída e verificada com voz sintética; voz do usuário gravada e medida fora do DAW (`08-plano-testes.md`); duração confirmada em 30 s (D82, encerra a A04); medida de ressonâncias ajustada (D83); análise testada no Reaper com a voz do usuário; 5 vozes do VocalSet medidas fora do DAW; restante do teste no Reaper aguardando o usuário (D77).
 - **Entregas:** etapa de estudo da análise, por onde a fase começa (D37); gravação da voz de teste (voz seca no SM7dB, sem efeitos, ~30 s — D33); resposta à A04 (quantos segundos de análise são necessários — D34); botão Analisar; detecção dos trechos cantados; espectro médio; detecção da fundamental e das ressonâncias. O plugin **mostra** as medidas, ainda sem aplicar nada. RTA simples como ferramenta de diagnóstico (D74).
 - **Pronto quando:** as medidas batem com o que se ouve/vê em outras ferramentas, em 3 a 5 vozes bem diferentes (as 20 vozes ficam para a Fase 5).
 
 ## Fase 4 — Correção automática
-- **Entregas:** regras que transformam as medidas em bandas de EQ; limites de segurança; intensidade.
+- **Entregas:** regras que transformam as medidas em bandas de EQ; limites de segurança; intensidade; mostrar as bandas pretendidas antes de aplicar, com botão Aplicar (D85). Regra da banda de ressonância (D87, D88), com validação final de ouvido, em A/B contra o bypass. Decidir a margem de segurança do passa-alta (P42).
 - **Pronto quando:** na minha voz, o resultado soa melhor que o original no teste A/B.
 
 ## Fase 5 — Testes com várias vozes

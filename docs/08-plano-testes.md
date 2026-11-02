@@ -21,6 +21,7 @@
 - Nenhuma correção acima dos limites de segurança.
 - Fundamental preservada (peso da voz mantido).
 - Teste A/B com bypass: o resultado soa melhor que o original.
+- Banda de ressonância: validação final de ouvido, em A/B contra o bypass, vendo as bandas antes de aplicar (D85, D88).
 - Teste "às cegas": ouvir sem saber qual versão é qual.
 
 **Adaptação**
@@ -35,3 +36,185 @@
 | 02/11/2026 | Sinais gerados por programa temporário, sem DAW | 0.1.0 (com EQ) | Transparência bit a bit, curvas das 5 bandas, bypass, ganho de saída, extremos de 22,05 a 192 kHz, denormais, mono, salvamento e pedidos de memória na thread de áudio | ✅ Todas as verificações passaram | Feito por Claude, em compilação Debug. Não substitui o teste no Reaper (D66) |
 | 02/11/2026 | Voz do usuário e ruído, no Reaper, em 44,1 e 96 kHz | 0.1.0 (com EQ) | Os 5 passos da D66: transparência, curva de cada banda, mexer durante a reprodução, salvar e reabrir, mixar a voz à mão | ✅ Todos passaram | Teste feito e informado pelo usuário. Encerra a Fase 2 |
 | 02/11/2026 | Tons e voz sintética, gerados por programa temporário, sem DAW | 0.1.0 (com análise) | Fundamental de 65 a 1047 Hz em 3 taxas; voz válida contra todo o som; média em potência; ressonâncias inseridas e falsas candidatas; ruído e silêncio; captura e RTA sem alterar o som nem pedir memória; meta de 30 s; salvar e reabrir | ✅ Todas as verificações passaram | Feito por Claude, em compilação Debug. Não substitui o teste com voz real (D77), que ainda não foi feito |
+| 02/11/2026 | Voz cantada do usuário, SM7dB e SM57 (`test-audio/voz-usuario/`), por programa temporário, sem DAW | 0.1.0 (com análise) | A04, comparação de microfones e P40; detalhes abaixo | ⚠️ Fundamental e microfones: como esperado. Ressonâncias: nesta voz, falham em 300 e 500 Hz e funcionam a partir de 1 kHz, com dúvidas em 3 e 6 kHz (P41) | Feito por Claude. Uma só voz e uma só música. Não substitui o teste no Reaper nem a conferência no Praat (D77) |
+
+| 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, com `tools/medidor-voz` | 0.1.0 (com a D83) | Mesmas medições, depois de implementar a D83 no plugin | ✅ Mesmos números da simulação da P41 | Feito por Claude. Compilação Release do plugin sem erros. Não substitui o teste no Reaper (D77) |
+
+| 02/11/2026 | Voz cantada do usuário, SM7dB e SM57, no Reaper | 0.1.0 (com a D83) | Análise com o plugin, olhando medidas e curvas | ✅ Análise funcionou nas duas; ⚠️ o resultado do SM57 não corresponde ao início da gravação (detalhes abaixo) | Teste feito e informado pelo usuário. Mostrou os problemas de texto corrigidos no registro seguinte |
+| 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
+| 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
+
+## Teste no Reaper (02/11/2026)
+
+| | Voz válida / captura | Mediana | Grave (5%) | Aguda (95%) | Confiança | Candidatas |
+|---|---|---|---|---|---|---|
+| SM7dB | 30 s em 52,6 s | 133 Hz | 100 Hz | 153 Hz | 99% | Nenhuma |
+| SM57 | 30 s em 38,1 s | 142 Hz | 87 Hz | 152 Hz | 99% | 4800 Hz (+6 dB, 72% do tempo) |
+
+**O que o usuário viu:**
+- **SM7dB:** montanha larga de cerca de 120 a 250 Hz e queda forte a partir de cerca de 2 kHz (escuro e embolado, como ele descrevia). As curvas de voz e de todo o som ficaram quase iguais.
+- **SM57:** graves mais concentrados em cerca de 200 Hz e bem mais energia de 2 a 8 kHz. A curva de todo o som ficou acima da de voz entre cerca de 5 e 8 kHz (sibilância).
+
+**Conclusões do usuário:**
+- A análise se adapta ao som (D25): é a mesma voz, com retratos diferentes por microfone.
+- As duas médias funcionaram.
+- A variação do grave (5%), de 100 para 87 Hz, confirma a necessidade da margem de segurança do passa-alta (P42).
+- A candidata em 4,8 kHz pode ter contribuição da elevação natural de presença do SM57; o usuário vai conferir de ouvido.
+
+**Ressalva da conferência, com o `banco inicio`:** o usuário indicou que tocou sempre do início, mas o resultado do SM57 não bate com o início da gravação.
+
+| SM57 | Captura | Mediana | Grave (5%) | Candidata |
+|---|---|---|---|---|
+| Reaper | 38,1 s | 142 Hz | 87 Hz | 4800 Hz (+6 dB, 72%) |
+| Medidor, do início | 51,0 s | 132 Hz | 98 Hz | 4941 Hz (+6,6 dB, 74%) |
+| Plugin sem DAW, do início | 51,2 s | 132 Hz | 98 Hz | 4941 Hz (+6,5 dB, 74%) |
+| Medidor, a partir de 90 s | 35,7 s | 142 Hz | 87 Hz | 4800 Hz (+5,8 dB, 71%) |
+
+O SM7dB bate com o início (50,5 s no medidor, 52,6 s no Reaper, 133 Hz, 99 Hz). Com as duas gravações do início, o grave (5%) é 99 × 98 Hz. Portanto, 100 × 87 Hz parece vir de **trechos diferentes da música, não de tomadas diferentes**. A necessidade da P42 continua, porque trechos diferentes de uma mesma gravação também variam: o próprio SM57 dá 98 Hz no início e 87 Hz perto de 90 s. A causa no Reaper não foi confirmada; repetir o teste do SM57.
+
+## Medições com o VocalSet (02/11/2026)
+
+**Escolha.** Medi as 20 vozes e escolhi 5 pelo resultado, usando os trechos cantados, sem a fala. O material é fixo por cantor, por isso as vozes de cada grupo têm medianas parecidas.
+
+| Voz | Por que entrou | Mediana (5% a 95%) | Busca a partir de | YIN × outro estimador | Candidatas no material inteiro |
+|---|---|---|---|---|---|
+| female3 | Aguda, a maior mediana, com picos fortes | 395 Hz (265 a 581) | 2371 Hz | 99,9% | 3701 (+10,8), 7192 (+9,8), 2854 (+5,0) |
+| female7 | Aguda, quase sem picos: contraste com a female3 | 387 Hz (268 a 572) | 2320 Hz | 99,9% | 3921 (+4,2) |
+| male9 | Homem cantando na faixa das vozes femininas | 377 Hz (260 a 562) | 2263 Hz | 99,0% | 2617 (+7,5), 3596 (+5,1) |
+| male8 | A voz mais grave | 174 Hz (127 a 262) | 1046 Hz | 98,0% (1,8% de oitava) | 6987 (+9,2), 2694 (+7,0), 2138 (+5,8) |
+| male6 | Fundamental mais difícil: menor concordância | 196 Hz (136 a 313) | 1175 Hz | 95,4% | 3494 (+11,7), 6987 (+8,4), 1347 (+6,4) |
+
+Também medi escalas e arpejos da female3 e do male8. Eles não subiram a mediana (357 e 175 Hz). **Nenhum material testado passou de cerca de 395 Hz de mediana**: vozes muito agudas continuam sem teste.
+
+**Esperado e observado.**
+- **Fundamental:** esperava-se cerca de uma oitava entre os grupos, o que apareceu. O YIN concorda com o outro estimador em 95% a 100% dos blocos nas 20 vozes. Não é a conferência no Praat (D77).
+- **Aguda (95%):** em janelas de 30 s, chega a cerca do dobro em duas vozes (male8: 521 Hz; male6: 572 e 663 Hz). Pode ser registro agudo real ou erro de oitava; não foi confirmado. O grave (5%) não sofreu com isso.
+
+**Estabilidade.** Os valores estão como 30 s / 45 s.
+
+| Voz | Pior erro da mediana | Grave (5%) entre janelas | Espectro de 500 Hz a 2 kHz | Espectro de 2 a 10 kHz |
+|---|---|---|---|---|
+| female3 | 5,7% / 1,1% | 10,6% / 9,6% | 4,8 / 4,0 dB | 4,3 / 2,4 dB |
+| female7 | 6,6% / 10,2% | 8,8% / 7,8% | 4,7 / 5,4 dB | 3,1 / 3,2 dB |
+| male9 | 10,4% / 2,6% | 3,7% / 6,9% | 4,4 / 3,5 dB | 3,0 / 2,3 dB |
+| male8 | 10,2% / 1,7% | 1,5% / 0,7% | 4,7 / 5,0 dB | 2,4 / 2,5 dB |
+| male6 | 12,6% / 9,3% | 4,4% / 7,6% | 4,8 / 3,1 dB | 4,4 / 3,9 dB |
+
+Essas vozes variam mais que a do usuário, provavelmente porque cada janela pega um trecho musical diferente. Com 45 s, a mediana melhora em 4 das 5 vozes, mas há só 2 ou 3 janelas. Isso não muda a D82, mas mostra que a estabilidade depende do que é cantado.
+
+**Limite de 6 vezes a fundamental (D83).** Picos de +9 dB, Q 8, nas 5 vozes, sem contar trechos que já tinham candidata na frequência. Para comparar, a voz do usuário está na última linha.
+
+| Variante | 1 kHz | 2,2 kHz | 3 kHz | 4 kHz | 6 kHz |
+|---|---|---|---|---|---|
+| Com o limite (plugin atual) | 0/19 | 5/15 | 6/14 | 4/18 | 3/19 |
+| Sem o limite | 3/19 | 10/14 | 8/16 | 4/18 | 1/19 |
+| Com o limite, sem o corte de 3 candidatas | 0/19 | 5/14 | 6/14 | 3/17 | 4/19 |
+| Voz do usuário, com o limite | 6/6 | 5/6 | 3/6 | 5/5 | 2/6 |
+
+- O limite custa acertos logo abaixo do ponto de início: em 2,2 kHz nas vozes agudas e em 1 kHz no male8.
+- Ele também tira candidatas duvidosas: sem ele, surgem picos de 1,4 a 2 kHz nas vozes agudas, com 3 a 9 notas e mudando de lugar.
+- **O problema maior não é o limite:** mesmo acima do início, os picos inseridos são pouco encontrados nessas vozes, e o corte de 3 candidatas não explica isso. A causa ainda é desconhecida.
+
+**Picos fortes que se repetem entre cantores.** Nas 20 vozes, as candidatas chegam a +12 dB, contra +4 a +6 dB na voz do usuário. Há um pico de 6,2 a 7,4 kHz em 13 das 20 vozes, e picos de cerca de 2,1 a 4 kHz na maioria. A região de 2,5 a 3,5 kHz pode ser o formante do cantor, uma qualidade desejada; isso não foi confirmado. Candidata não significa defeito (D86).
+
+**O pico de 6,2 a 7,4 kHz vem do equipamento ou da sala? (`origem`)** O artigo do VocalSet confirma a mesma cabine e o mesmo modelo de microfone: "Audio-Technica AT2020 condenser microphone" (seção 3.2), com os cantores perto dele. Não informa o pré-amplificador. Testes, considerando 5,5 a 8,5 kHz:
+
+| Pergunta | Esperado se for o equipamento | Observado |
+|---|---|---|
+| O pico muda com a vogal? | Não | Muda: espalhamento mediano de 0,25 oitava, de 0 a 0,54 |
+| O pico muda de pessoa para pessoa? | Quase não | Muda: de 5,6 a 8,2 kHz |
+| Todos têm o pico? | Sim, com altura parecida | Não: de quase nada (female7, com até 2 dB) a 14 dB (male6, male10) |
+| Aparece na respiração inspirada e nos silêncios, no mesmo lugar? | Sim | Não há um lugar comum |
+| Homens e mulheres diferem? | Não | Medianas parecidas: 7066 e 6864 Hz. É o único ponto a favor |
+| O analisador cria o pico? | — | Não parece: nas gravações do usuário, a mesma medida dá de 1,6 a 3,5 dB |
+
+**Conclusão:** um pico fixo do equipamento ou da sala não explica o resultado sozinho. Pode haver uma contribuição do microfone na região, mas não dá para separar sem a curva dele, e a voz varia nesse pico. Investigação encerrada aqui, como pediu o usuário (D86). Os silêncios variam 30 dB entre cantores (-48 a -78 dB), o que indica ajustes de gravação ou edição diferentes, ainda que no mesmo lugar.
+
+**Simulação da regra P45**, no `banco regra`, em janelas de 30 s; os valores da regra estão em `02-decisoes.md`.
+
+| Material | Resultado |
+|---|---|
+| SM7dB | Nenhum corte (0 de 3 janelas) |
+| SM57 | 4941 Hz, -2,2 dB, em 1 de 3 janelas |
+| 20 vozes do VocalSet | Corta em 48 de 72 janelas; 16 das 20 vozes têm ao menos um corte; 4 nunca têm |
+| Onde cortou no VocalSet | 23 cortes de 6 a 7,4 kHz; 12 de 3,6 a 4,2 kHz, logo acima da zona proibida; 13 em outros pontos |
+| Pico de +9 dB, Q 8, no SM7dB / SM57 | 1 kHz: 2/3 e 2/3. 2,2 kHz: 2/3 e 1/3. 3 kHz: 0/3 e 0/3, como previsto. 4 kHz: 3/3 e 3/3. 6 kHz: 0/3 e 1/3 |
+
+- A regra é segura na sua intensidade (no máximo -3 dB) e deixa a voz do usuário quase intacta.
+- Ela ainda age muito em vozes treinadas, e os 12 cortes de 3,6 a 4,2 kHz podem atingir o formante em vozes mais agudas. A faixa do formante muda com o tipo de voz: daí a sugestão de ampliar a zona até cerca de 4,2 kHz.
+- A frequência escolhida muda entre janelas em algumas vozes, como a female3 (3596 e 6987 Hz). Daí a sugestão de exigir o pico nas duas metades da captura. Essa exigência ainda não foi simulada.
+- Nada disso está no plugin. A regra só existe na ferramenta de teste.
+
+**Simulação da regra aprovada (D87).** Critério do usuário: as vozes do VocalSet são treinadas e gravadas em estúdio, então devem receber poucos cortes. **A regra aprovada não atende a esse critério.**
+
+| Variante | Janelas com corte | Vozes com corte | Abaixo de 2,5 kHz | 2,5 a 4,2 kHz | 4,2 a 6 kHz | Acima de 6 kHz |
+|---|---|---|---|---|---|---|
+| Antes (zona até 3,5 kHz) | 48 de 72 | 16 de 20 | 9 | 12 | 4 | 23 |
+| Só a zona até 4,2 kHz | 41 de 72 | 14 de 20 | 9 | 0 | 4 | 28 |
+| Só as duas metades | 47 de 72 | 16 de 20 | 7 | 12 | 4 | 24 |
+| **Regra aprovada (os dois ajustes)** | **40 de 72** | **14 de 20** | 7 | 0 | 4 | 29 |
+| Aprovada + teto de 6 kHz (P46) | 17 de 72 | 8 de 20 | 10 | 0 | 7 | 0 |
+| Aprovada + mínimo de +8 dB | 32 de 72 | 11 de 20 | 5 | 0 | 1 | 26 |
+| Aprovada + teto de 6 kHz + mínimo de +8 dB | 6 de 72 | 4 de 20 | 5 | 0 | 1 | 0 |
+
+"Metade" é a metade da voz válida: cerca de 15 s cada. O pico conta como presente se a metade tiver uma candidata a até 1/12 de oitava dele.
+
+- Quando uma candidata fica de fora, a regra passa à seguinte elegível. Por isso, os cortes acima de 6 kHz aumentam com a zona maior: várias vozes trocam de 3,6 kHz para cerca de 7 kHz.
+- A exigência das duas metades quase não muda o total: esses picos são mesmo persistentes.
+- **Voz do usuário, com a regra aprovada:** SM7dB sem cortes; SM57 com -2,2 dB em 4941 Hz, em 1 de 3 janelas.
+- **Pico de +9 dB, Q 8, com a regra aprovada, SM7dB / SM57:** 1 kHz: 2/3 e 2/3. 2,2 kHz: 2/3 e 1/3. 3 e 4 kHz: 0/3 e 0/3, por estarem na zona proibida. 6 kHz: 0/3 e 1/3.
+- **Mínimo de +8 dB:** picos de +9 dB inseridos na voz do usuário mediram quase sempre menos de 8 dB, então a banda quase nunca agiria em um pico real desse tamanho.
+- **Decisão do usuário (D88):** regra aprovada com teto de 6 kHz, sem o mínimo de +8 dB. Na simulação, 17 de 72 janelas e 8 de 20 vozes recebem corte. Ajuste encerrado para a v1.0; a validação final será de ouvido, na Fase 4.
+
+## O que falta para fechar a Fase 3 (D77)
+
+Fazer no Reaper, com o plugin reaberto:
+
+1. Interface: acentos, casas decimais e as duas curvas.
+2. SM57 do início, com o cursor no zero: cerca de 51 s de captura, 132 Hz, grave de 98 Hz, candidata em 4941 Hz (+6,5 dB).
+3. Cancelamento com análise e RTA ligados: deve dar silêncio.
+4. ReaEQ antes do plugin, com +9 dB estreitos em 2,2 kHz, no SM7dB: candidata perto de 2,2 kHz, medindo menos que 9 dB.
+5. RTA: ligar uma banda do EQ muda o RTA, mas não as médias.
+6. Parar antes de 10 s de voz: aparece o aviso.
+7. Salvar e reabrir: medidas e curvas voltam.
+8. Vozes female3, female7, male9, male8 e male6, com arquivos de `excerpts/straight`: fundamental no Praat dentro de ±3%. Se possível, ouvir male6 e male8 para saber se há trechos realmente agudos.
+9. Durante os testes: nenhum estalo e CPU baixa.
+10. De ouvido: comparar a região de 4,8 kHz entre os dois microfones.
+
+## Medições com voz real (02/11/2026)
+
+Para repetir, ver `tools/medidor-voz/README.md` (D84). A tabela de ressonâncias abaixo mostra os métodos comparados; a linha da P41 é o método atual do plugin (D83).
+
+**Material:** duas tomadas diferentes da mesma música, não gravadas ao mesmo tempo (correlação da forma de onda 0,12), com 140 e 136 s. Por isso a comparação bloco a bloco da fundamental não vale como teste. O SM57 chega a 0 dB em 3 trechos curtos (35 amostras), o que não deve pesar na média. Voz do usuário: fundamental mediana perto de 136 Hz, notas de E2 a D#3.
+
+**Estabilidade (A04).** Cada gravação foi dividida em janelas separadas, que não compartilham áudio; valores são a mediana dos pares, SM7dB / SM57. Com 45 s há só 1 par, e com 30 s, 3 pares.
+
+| Voz válida | Captura real | Espectro 100–500 Hz | Espectro 500 Hz–2 kHz | Espectro 2–10 kHz | Mediana da f0, pior caso contra a gravação inteira | Percentil de 95%, pior caso contra a gravação inteira | Percentil de 5%, entre janelas |
+|---|---|---|---|---|---|---|---|
+| 10 s | 11 a 23 s | 7,1 / 5,6 dB | 3,9 / 3,7 dB | 2,4 / 2,8 dB | 5,2% / 5,0% | 1,8% / 2,0% | 13,9% / 11,6% |
+| 20 s | 24 a 39 s | 5,0 / 3,8 dB | 2,9 / 3,4 dB | 1,6 / 2,2 dB | 4,2% / 3,8% | 0,9% / 0,9% | 11,5% / 16,9% |
+| 30 s | 36 a 51 s | 5,6 / 3,7 dB | 1,9 / 2,0 dB | 1,6 / 1,9 dB | 3,2% / 3,0% | 0,4% / 0,7% | 10,9% / 12,5% |
+| 45 s | 53 a 78 s | 4,7 / 3,1 dB | 2,7 / 2,6 dB | 1,6 / 2,3 dB | 3,0% / 2,4% | 0,4% / 0,2% | 9,5% / 11,7% |
+
+- De 10 para 30 s há ganho claro; de 30 para 45 s, não, exceto um pequeno ganho na fundamental.
+- Abaixo de 500 Hz e no percentil de 5%, mais tempo quase não ajuda: o resultado depende de quais notas foram cantadas. Isso importa para a D78 na Fase 4, porque a análise pode não ver as notas mais graves se elas só aparecerem em outra parte da música.
+
+**Microfones (fluxo real de 30 s / gravação inteira).**
+- Fundamental mediana: 132,8 × 132,2 Hz (0,5%) / 137,2 × 135,5 Hz (1,2%). Percentil de 95%: diferença de 1,2% / 0,9%. Percentil de 5%: 1,1% / 4,1%.
+- Espectro: 5,7 dB rms de diferença na forma, nos dois casos. De 2 a 10 kHz, a diferença é de 7,7 dB, contra 1,6 a 1,9 dB entre janelas do mesmo microfone. O SM57 tem de 8 a 13 dB a mais de 5 a 12,5 kHz, comparado ao SM7dB. De 100 a 500 Hz, a diferença (4,9 dB) não se separa da variação entre janelas (3,7 a 5,6 dB).
+- O YIN concordou com um segundo estimador, escrito só para esta medição, em 99,9% e 99,4% dos blocos, dentro de 3%. Não é o Praat.
+
+**Ressonâncias (P40, D73 e P41).** Picos estreitos inseridos no áudio, em 3 janelas de 30 s por microfone; picos que já existiam não entram na conta. A D73 é uma reconstrução minha, porque o código original não ficou guardado.
+
+| Método | Candidatas sem pico inserido | Repetem em outra janela | +9 dB, Q 8: 300 Hz | 500 Hz | 1 kHz | 2,2 kHz | 3 kHz | 4 kHz | 6 kHz |
+|---|---|---|---|---|---|---|---|---|---|
+| D73 (reconstruída) | 0 | — | 0/6 | 0/6 | 0/6 | 0/6 | 0/6 | 2/6 | 1/6 |
+| P40 como está (3 dB) | 18 | 11 | 0/6 | 0/3 | 6/6 | 6/6 | 3/6 | 5/5 | 3/6 |
+| 4 dB, sem limite pela f0 | 14 | 11 | 0/6 | 0/3 | 6/6 | 5/6 | 3/6 | 6/6 | 2/6 |
+| 3 dB e acima de 6× a f0 | 18 | 8 | 0/6 | 0/6 | 6/6 | 6/6 | 3/6 | 4/4 | 3/6 |
+| P41: 4 dB e acima de 6× a f0 | 9 | 5 | 0/6 | 0/6 | 6/6 | 5/6 | 3/6 | 5/5 | 2/6 |
+
+- Sem pico inserido, a P41 acha cerca de 4,9 kHz em 5 das 6 janelas, nos dois microfones e em 10 a 12 notas: é o único achado que se repete de forma clara. Não sabemos se vem da voz, da sala ou dos microfones.
+- As candidatas de 490 a 583 Hz têm só 3 a 5 notas e mudam de lugar entre as janelas. Podem ser o primeiro formante, mas isso é suposição.
+- Picos em 3 kHz e 6 kHz continuam incertos, e nenhum método achou 300 Hz.
+- **Risco a conferir em outras vozes:** o limite de 6 vezes a fundamental acompanha a voz. Numa voz com mediana de 400 Hz, por exemplo, a busca só começaria em 2,4 kHz. Essa conta ainda não foi testada com vozes agudas.

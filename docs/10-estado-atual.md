@@ -8,26 +8,28 @@
 
 - **Fase:** Fase 3 (Análise, só medir), em andamento (D67).
 - **Etapa:** teste com voz real (etapa d da D37).
-- **Último passo concluído:** VocalSet baixado em `test-audio/vocalset/`, fora do Git (D80), depois de implementar e verificar a análise e o RTA com voz sintética (D69 a D76).
-- **Próximo passo:** o usuário fazer o teste com voz real (D77) e decidir a P40. Depois, confirmar a duração da análise (A04) e fechar a Fase 3.
+- **Último passo concluído:** ajuste da regra da banda de ressonância encerrado para a v1.0 (D87, D88), com teto de 6 kHz: na simulação, corta em 17 de 72 janelas do VocalSet. Ainda não está no plugin.
+- **Próximo passo:** o usuário concluir a lista de testes em `08-plano-testes.md` (em andamento). A Fase 4 não começa antes do pedido do usuário.
 
 ## Bloqueios
 
-Nenhum bloqueio técnico. O fechamento da Fase 3 depende da gravação da voz de teste e do teste com vozes reais (D33, D77).
+Nenhum bloqueio técnico. O fechamento da Fase 3 depende do restante do teste no Reaper (D77).
 
 ## Pendências
 
-- **Modo sugestão / modo professor:** reavaliar na Fase 3 (`05-ideias-futuro.md`).
-- **Propostas a decidir nas fases em que forem usadas (D31):** P03, P06, P08 e P12.
-- **P40:** ajuste na medida de ressonâncias, já implementado e aguardando decisão do usuário.
-- **Fase 3:** gravar a voz de teste (D33; em andamento pelo usuário), usar as outras vozes (VocalSet já em `test-audio/vocalset/`; gravações de conhecidos a obter — D79, D80) e medir a duração da análise (A04).
+- **Banda de ressonância:** regra decidida (D87, D88), a implementar na Fase 4, com validação final de ouvido em A/B contra o bypass (D85). Melhorias na detecção estão em `05-ideias-futuro.md`.
+- **SM57 no Reaper:** o resultado não corresponde ao início da gravação (parece vir de perto de 90 s). Repetir.
+- **Propostas a decidir nas fases em que forem usadas (D31):** P03, P06, P08, P12 e P42.
+- **Margem do passa-alta (P42):** o percentil de 5% variou cerca de 11% a 13% entre trechos de 30 s da música. Opções registradas; decidir na Fase 4.
+- **Fase 3:** restante do teste no Reaper com a voz gravada (`test-audio/voz-usuario/`) e as 5 vozes do VocalSet (`11-bancos-de-vozes.md`). Gravações de conhecidos ainda a obter (D79).
 - **Antes de distribuir o plugin:** analisar as licenças de terceiros em `external/JUCE/JUCE.spdx.json`.
 
 ## Últimos commits relevantes
 
 | Commit | O que fez |
 |---|---|
-| este commit | Análise e RTA da Fase 3, ainda sem o teste com voz real, e registro do VocalSet (D67 a D80) |
+| este commit | Ajustes da análise com voz real, correções na interface, ferramentas de teste e regras para a Fase 4 (D81 a D88) |
+| `ecae02e` | Análise e RTA da Fase 3, ainda sem o teste com voz real, e registro do VocalSet (D67 a D80) |
 | `cbf6f27` | Correção do diário e do estado atual da Fase 2 (D57) |
 | `e4adbce` | EQ manual de 5 bandas e conclusão da Fase 2 (D58 a D66) |
 | `b0548ff` | Documentos evoluem junto com o trabalho (D57) |

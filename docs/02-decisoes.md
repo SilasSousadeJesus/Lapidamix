@@ -78,7 +78,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D70 | 02/11/2026 | **Trechos analisados:** blocos de 25 ms em duas classes. **Com som:** acima de -60 dBFS e no máximo 20 dB abaixo da média da gravação. **Voz válida:** com som e periódico pelo YIN, o que rejeita respiração e ruído (confirma P05 e P32, com ajuste) | Valores iniciais a calibrar nos testes |
 | D71 | 02/11/2026 | **Espectro médio:** método de Welch com janela de Hann, cerca de 186 ms e 75% de sobreposição; **a média é feita em potência e só depois convertida para dB**. Duas curvas, ambas mostradas: **voz cantada** (principal) e **todos os trechos com som**, incluindo consoantes como "s". Suavização de 1/6 de oitava (confirma P33, com ajustes) | Média em dB distorceria o resultado; as duas curvas dão à Fase 4 a informação para decidir sobre o ar, e ajudam o de-esser no futuro |
 | D72 | 02/11/2026 | **Fundamental:** YIN escrito por nós a partir do artigo, de 60 a 1100 Hz, com mediana, percentis de 5% e 95% e confiança; faixa no perfil de instrumento (confirma P34) | Percentis são menos sensíveis a erros isolados |
-| D73 | 02/11/2026 | **Ressonâncias candidatas:** picos de 150 Hz a 8 kHz pelo menos 4 dB acima da vizinhança, comparando 1/24 e 1/1 oitava, presentes em notas diferentes; até 3 candidatas (confirma P35) | Sempre relativo à própria voz (D14); nada é corrigido nesta fase. Valores a calibrar |
+| D73 | 02/11/2026 | **Ressonâncias candidatas:** picos de 150 Hz a 8 kHz pelo menos 4 dB acima da vizinhança, comparando 1/24 e 1/1 oitava, presentes em notas diferentes; até 3 candidatas (confirma P35) | Sempre relativo à própria voz (D14); nada é corrigido nesta fase. Valores a calibrar. **Substituída em parte pela D83** |
 | D74 | 02/11/2026 | **RTA simples:** saída do plugin, de 20 Hz a 20 kHz, FFT de 4096 pontos com janela de Hann, cerca de 30 quadros por segundo, com `AbstractFifo`; só calcula com a janela aberta. O RTA bonito fica para a interface final (confirma P14 e P36) | Ferramenta de diagnóstico |
 | D75 | 02/11/2026 | **Duração da análise:** concluir ao atingir **30 s de voz válida** (não de tempo total) ou ao clicar Parar, com aviso se houver menos de 10 s de voz; limite de 120 s de captura. Confirmar a meta medindo a estabilidade com 10, 20, 30 e 45 s (confirma P37, com ajuste) | Pausas e respirações não contam como voz. As fontes só cobrem fala; a resposta final à A04 depende das medições |
 | D76 | 02/11/2026 | **Arquitetura e salvamento:** análise em `src/core/analysis/`, sem depender da interface; RTA em `src/plugin/`; resultados salvos com o projeto, sem guardar áudio (confirma P38) | Segue D28 e D30, e permite testar a análise sem DAW |
@@ -86,6 +86,14 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D78 | 02/11/2026 | **Proteção da fundamental na Fase 4:** o passa-alta se baseia nas notas mais graves (ex.: percentil de 5%), não na mediana, e nunca fica acima delas (confirma P04, com ajuste) | O passa-alta precisa ficar abaixo das notas mais baixas cantadas |
 | D79 | 02/11/2026 | **Vozes de teste (responde A06):** gravações de conhecidos, com permissão, e um banco de trilhas separadas. Os áudios ficam fora do Git. Opções e licenças em `11-bancos-de-vozes.md` | Combina microfones e salas comuns com material de referência |
 | D80 | 02/11/2026 | **VocalSet aprovado como banco de vozes**, baixado na pasta `test-audio/vocalset/`, ignorada pelo Git. O crédito da licença CC BY 4.0 fica em `11-bancos-de-vozes.md` e no `README.md`. Os bancos são registrados em `11-bancos-de-vozes.md` | Licença mais clara entre as opções; o documento próprio mostra onde achar mais vozes no futuro |
+| D81 | 02/11/2026 | **Método aprovado que não funciona:** se uma verificação mostrar que um método aprovado não funciona, parar, explicar e propor a mudança antes de implementar. Regra no `AGENTS.md` | A P40 foi implementada antes de ser aprovada; a decisão sobre um método aprovado cabe ao usuário |
+| D82 | 02/11/2026 | **Duração da análise (responde A04):** manter a meta de **30 s de voz válida** da D75 | Medido com a voz do usuário em dois microfones: a medida melhora até 30 s, e 45 s quase não acrescenta (`08-plano-testes.md`) |
+| D83 | 02/11/2026 | **Medida de ressonâncias (confirma P40 e P41; substitui em parte a D73):** medir cada pico só nos harmônicos das notas cantadas, em relação à mediana dos harmônicos dos dois lados, numa vizinhança de 1 oitava; o pico precisa ficar acima dos dois lados e ser mais estreito que um formante; limite de **4 dB**; busca só acima de **6 vezes a fundamental mediana**, dentro da faixa de 150 Hz a 8 kHz | Com voz real, a comparação de resoluções da D73 quase não achou picos; abaixo de 6 vezes a fundamental, os harmônicos ficam espaçados demais. Consequência aceita: ressonâncias abaixo desse ponto não são detectadas. Valores a validar em outras vozes |
+| D84 | 02/11/2026 | **Ferramentas de teste no repositório:** medidores e scripts de teste ficam em `tools/`, sem áudio, para repetir as medições sempre que o método mudar. Os áudios continuam em `test-audio/`, fora do Git | Medidores temporários apagados obrigavam a refazer o trabalho, e não dá para comparar resultados sem repetir a mesma medição |
+| D85 | 02/11/2026 | **Mostrar antes de aplicar (confirma a opção B da P44):** na Fase 4, o plugin mostra as bandas que pretende usar e tem um botão Aplicar. O objetivo continua sendo a mixagem automática | Permite conferir de ouvido antes de aplicar, com pouco custo de interface. As explicações seguem como ideia futura |
+| D86 | 02/11/2026 | **Ressonância candidata não é defeito (parte da P43):** uma candidata é só um pico medido, e não basta para justificar um corte. Sem investigação sem fim: a v1.0 usa uma regra conservadora, e o resto fica para depois | No VocalSet, picos fortes se repetem entre cantores, e a regra 3 manda não destruir o timbre |
+| D87 | 02/11/2026 | **Regra da banda de ressonância na v1.0 (confirma P45, com ajustes), a implementar na Fase 4:** só corta uma candidata com pelo menos +6 dB, presente em pelo menos 60% do tempo, em pelo menos metade das notas, estreita (teste da D83) e presente nas duas metades da captura. Nunca entre **2,5 e 4,2 kHz**. Só a mais forte, na única banda de ressonância. Corte de um terço da altura do pico, até -3 dB, com Q 4. Sem candidata elegível, a banda fica desligada. **Observação:** a zona fixa em Hz é uma simplificação para a v1.0 | Protege o timbre, com corte pequeno. Uma zona que acompanhe cada voz fica em `05-ideias-futuro.md`. Simulação em `08-plano-testes.md`. **Completada pela D88** |
+| D88 | 02/11/2026 | **Banda de ressonância da v1.0, ajuste encerrado (confirma P46; completa a D87):** a banda é conservadora e limitada de propósito. **Atua** de 6 vezes a fundamental até 2,5 kHz, e de 4,2 a 6 kHz. **Não atua** abaixo de 6 vezes a fundamental (os harmônicos ficam espaçados demais para medir a largura do pico), de 2,5 a 4,2 kHz (proteger o formante do cantor) nem acima de 6 kHz (origem desconhecida do pico que se repete perto de 7 kHz, sem evidência de defeito). Sem mínimo de +8 dB: continua +6 dB. **Validação final de ouvido, na Fase 4**, com A/B contra o bypass e mostrando antes de aplicar (D85) | Na simulação com o teto, 17 de 72 janelas e 8 de 20 vozes do VocalSet recebem corte. O mínimo de +8 dB foi recusado porque deixaria passar um pico real de +9 dB. Melhorias na detecção ficam em `05-ideias-futuro.md` |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -97,7 +105,7 @@ Serão decididas nas fases em que forem usadas (D31).
 | P06 | Controle de **intensidade** (0–100%) e **bypass** | Ajuste fino e comparação antes/depois |
 | P08 | Curva-alvo como **faixa saudável de equilíbrio**, não como linha exata | Forma de cumprir a D14 |
 | P12 | **Numeração seguinte:** v2 = violão | Continua a lógica da D19, seguindo a ordem da D18 |
-| P40 | **Ajuste na medida de ressonâncias (detalha a D73):** medir cada pico só nos harmônicos das notas cantadas, em relação à mediana dos harmônicos dos dois lados, numa vizinhança de 1 oitava; o pico precisa ficar acima dos dois lados e ser mais estreito que um formante; limite de 3 dB nessa nova medida, em vez de 4 dB | Já implementado, porque a comparação de resoluções da D73 gerava falsas candidatas nos testes sintéticos (harmônicos que coincidem entre notas). O limite foi calibrado só em voz sintética e precisa de validação com voz real |
+| P42 | **Margem de segurança do passa-alta (decidir na Fase 4):** (a) posicionar o passa-alta bem abaixo do percentil de 5%, por exemplo meia oitava; (b) continuar acompanhando a nota mais grave enquanto a música toca | Complementa a D78. Nas medições, o percentil de 5% variou cerca de 11% a 13% entre trechos de 30 s, e mais tempo quase não ajudou (`08-plano-testes.md`) |
 
 ## Propostas encerradas
 
@@ -138,17 +146,24 @@ Serão decididas nas fases em que forem usadas (D31).
 | P37 | Duração da análise | Confirmada com ajuste: ver D75 |
 | P38 | Arquitetura e salvamento | Confirmada: ver D76 |
 | P39 | Teste da Fase 3 | Confirmada: ver D77 |
+| P40 | Medida de ressonâncias nos harmônicos, com limite de 3 dB | Confirmada, com o limite ajustado pela P41: ver D83 |
+| P41 | Limite de 4 dB e busca só acima de 6 vezes a fundamental mediana | Confirmada: ver D83 |
+| P43 | Ressonância candidata não é defeito | Confirmada: ver D86. A investigação sem fim foi descartada, e a regra virou a P45 |
+| P44 | Modo sugestão | Opção B confirmada: ver D85 |
+| P45 | Regra da banda de ressonância | Confirmada, com zona até 4,2 kHz e pico nas duas metades: ver D87 |
+| P46 | Teto de 6 kHz na banda de ressonância | Confirmada, sem o mínimo de +8 dB: ver D88 |
 
 ## ❓ Em aberto
 
 | # | Pergunta |
 |---|---|
-| A04 | Quantos segundos de análise são necessários? **Meta inicial de 30 s de voz válida (D75), a confirmar com medições** |
+| — | Nenhuma no momento |
 
 ## Perguntas encerradas
 
 | # | Pergunta | Resultado |
 |---|---|---|
+| A04 | Quantos segundos de análise são necessários? | 30 s de voz válida: D82 |
 | A01 | Qual DAW será usado nos testes principais? | Reaper: ver D21 |
 | A02 | Qual licença de código aberto usar? | AGPLv3: ver D42 |
 | A03 | O plugin deve explicar cada ajuste que fez (ex.: "cortei 3 dB em 250 Hz porque…")? | Movida para `05-ideias-futuro.md`: ver D23 |

@@ -17,7 +17,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 3 — Análise (só medir): em andamento** (D67). A análise e o RTA estão implementados (D69 a D76), e o teste com voz real (D77) aguarda o usuário. Nada corrige o som sozinho até a Fase 4. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
+**Fase 3 — Análise (só medir): em andamento** (D67). A análise e o RTA estão implementados (D69 a D76, D82, D83), e o teste com voz real no Reaper (D77) aguarda o usuário. Nada corrige o som sozinho até a Fase 4. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 
@@ -25,6 +25,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 - **Uma coisa por vez.** Não adiantar fases, não adicionar processadores ou funcionalidades fora do escopo atual, mesmo que pareçam úteis. Ideias novas vão para `docs/05-ideias-futuro.md`.
 - **Não tome decisões de projeto sozinho.** Se algo não está decidido, pergunte ou registre como proposta. Nunca transforme uma sugestão sua em decisão.
 - **Não comece a implementar sem eu pedir.** Planejar e propor é bem-vindo; executar exige meu "pode fazer".
+- **Método aprovado que não funciona (D81):** se uma verificação mostrar que um método aprovado não funciona, pare, explique e proponha a mudança antes de implementar.
 - Mudanças pequenas e verificáveis. Depois de cada mudança, diga como eu testo.
 
 ## Regras técnicas inegociáveis
@@ -52,6 +53,10 @@ Antes de implementar um módulo novo (processador, análise ou perfil de instrum
 **Limites:** estudar documentação pública e princípios é permitido. Não copiar código de plugins de referência (produtos fechados), interface visual nem presets, não usar nomes de marcas no nosso produto e não desmontar plugins originais.
 
 **Código aberto de terceiros (D39):** bibliotecas e exemplos podem ser usados se a licença for compatível com a AGPLv3 (D42), com crédito ao autor. Cada caso precisa da minha aprovação e de registro em `docs/02-decisoes.md`. O JUCE já está aprovado (D26).
+
+## Ferramentas de teste (D84)
+
+Guardar medidores e scripts de teste em `tools/`, nunca como programas temporários fora do repositório, para repetir as medições sempre que o método mudar. Sem áudio: as gravações ficam em `test-audio/`, fora do Git. Depois de mudar um método de análise, repetir a medição e registrar o resultado em `docs/08-plano-testes.md`.
 
 ## Documentação (fonte da verdade)
 
