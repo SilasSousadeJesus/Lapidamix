@@ -9,9 +9,32 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 **Fase:** …
 **O que foi feito:** …
 **Decisões tomadas:** (referência ao 02, ex.: D17)
+**Commits:** (hashes dos commits da sessão; o commit que traz a própria entrada é citado pela mensagem)
 **Problemas / dúvidas:** …
 **Próximos passos:** …
 ```
+
+---
+
+## 02/11/2026 — Contexto vivo do projeto
+
+**Fase:** 1 concluída; Fase 2 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Convenções de código confirmadas.
+- Criado `docs/10-estado-atual.md` como primeiro arquivo a ser lido, com as regras de início e fim de sessão no `CLAUDE.md`.
+- Modelo do diário passa a citar os commits; mensagens de commit passam a citar fase/etapa e decisões.
+- Proposto o `AGENTS.md` (P22), ainda não criado.
+
+**Decisões tomadas:** D54 e D55. Proposta nova: P22.
+
+**Commits:** `9228abe` (conclusão da Fase 1) e "Fase 1: adiciona o contexto vivo do projeto (D54, D55)", que traz esta entrada.
+
+**Problemas / dúvidas:** um commit não pode citar o próprio hash, então o commit que traz a entrada é citado pela mensagem.
+
+**Próximos passos:**
+- Decidir a P22.
+- A Fase 2 só começa quando o usuário autorizar.
 
 ---
 

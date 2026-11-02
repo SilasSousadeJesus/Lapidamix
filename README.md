@@ -6,7 +6,7 @@ A voz é só o primeiro instrumento. A primeira versão (v1.0) analisa uma trilh
 
 ## Status
 
-**Em desenvolvimento.** O planejamento está concluído, mas ainda não há código nem plugin para instalar. O andamento está em [`docs/04-roadmap-v1.md`](docs/04-roadmap-v1.md), e a documentação começa em [`docs/00-indice.md`](docs/00-indice.md).
+**Em desenvolvimento.** Já existe um plugin VST3 vazio, que só deixa o áudio passar e ainda não mixa nada. Ainda não há versão para instalar. O estado atual está em [`docs/10-estado-atual.md`](docs/10-estado-atual.md), o andamento em [`docs/04-roadmap-v1.md`](docs/04-roadmap-v1.md), e a documentação começa em [`docs/00-indice.md`](docs/00-indice.md).
 
 ## Licença
 

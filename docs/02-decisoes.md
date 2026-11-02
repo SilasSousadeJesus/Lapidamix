@@ -59,6 +59,8 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D51 | 02/11/2026 | **Identificação do plugin:** produto e fabricante "Lapidamix", códigos `Lpmx` (fabricante) e `Lpd1` (plugin), formato só VST3, trilhas mono e estéreo, sem latência (confirma P19) | Depois do primeiro uso real, não trocar os códigos: projetos salvos deixariam de achar o plugin |
 | D52 | 02/11/2026 | **Instalação durante o desenvolvimento:** copiar o plugin para a pasta VST3 do usuário (`%LOCALAPPDATA%\Programs\Common\VST3`) após cada compilação (confirma P20) | Não exige administrador |
 | D53 | 02/11/2026 | **Teste da Fase 1 no Reaper:** carregar o plugin, conferir a lista só com "Voz", ouvir com e sem bypass, fazer o teste de cancelamento, salvar e reabrir o projeto (confirma P21) | Mostra de forma objetiva se o áudio passa sem alterações |
+| D54 | 02/11/2026 | **Convenções de código:** nomes em inglês, comentários e documentação em português, commits pequenos com mensagens em português | Confirmação do usuário |
+| D55 | 02/11/2026 | **Contexto vivo:** `docs/10-estado-atual.md` é o primeiro arquivo a ser lido. Ao iniciar uma sessão, ler o estado atual e as últimas entradas do diário; ao terminar, atualizar os dois. Cada entrada do diário cita os commits da sessão, e cada mensagem de commit cita fase/etapa e as decisões relacionadas | Qualquer IA deve conseguir continuar o trabalho sem depender do histórico do chat |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -74,6 +76,7 @@ Serão decididas nas fases em que forem usadas (D31).
 | P08 | Curva-alvo como **faixa saudável de equilíbrio**, não como linha exata | Forma de cumprir a D14 |
 | P12 | **Numeração seguinte:** v2 = violão | Continua a lógica da D19, seguindo a ordem da D18 |
 | P14 | **RTA:** um RTA simples na Fase 3 como ferramenta de diagnóstico, e o RTA bonito na interface final | Ajuda a conferir as medidas da análise |
+| P22 | **`AGENTS.md` como arquivo único de regras:** mover o conteúdo do `CLAUDE.md` para o `AGENTS.md` e deixar no `CLAUDE.md` só a linha `@AGENTS.md`, que faz o Claude Code importar o outro arquivo | Evita duplicar o conteúdo; ferramentas que leem `AGENTS.md` recebem as regras completas |
 
 ## Propostas encerradas
 

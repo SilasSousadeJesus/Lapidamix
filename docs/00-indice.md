@@ -11,6 +11,8 @@
 
 ## Documentos
 
+**Comece por `10-estado-atual.md`** (D55).
+
 | Arquivo | Para que serve | Quando atualizar |
 |---|---|---|
 | `00-indice.md` | Porta de entrada: lista os documentos e o status geral | Sempre que mudar a fase do projeto |
@@ -23,6 +25,7 @@
 | `07-referencias.md` | Plugins, projetos e materiais usados como inspiração | Ao estudar uma nova referência |
 | `08-plano-testes.md` | Como validar se o plugin funciona e soa bem | Ao definir testes e ao registrar resultados |
 | `09-glossario.md` | Termos técnicos explicados de forma simples | Sempre que surgir um termo novo |
+| `10-estado-atual.md` | Fase e etapa atuais, próximo passo, bloqueios, pendências e últimos commits. É o primeiro arquivo a ser lido | Ao final de cada sessão |
 
 As regras de trabalho para o Claude Code estão em `CLAUDE.md`, e a apresentação do projeto está em `README.md`, ambos na raiz do projeto.
 

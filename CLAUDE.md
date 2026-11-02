@@ -10,6 +10,11 @@ A primeira versão (v1.0) analisa uma trilha de voz e aplica automaticamente um 
 
 Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
+## Início e fim de cada sessão (D55)
+
+- **Ao iniciar:** ler `docs/10-estado-atual.md` e as últimas entradas de `docs/06-diario.md`.
+- **Ao terminar:** atualizar os dois.
+
 ## Fase atual
 
 **Fase 1 — Ambiente e plugin "vazio": concluída.** A Fase 2 ainda não começou. Não escrever código da Fase 2 até o usuário pedir explicitamente o início dela. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
@@ -64,15 +69,16 @@ A pasta `docs/` é a **fonte da verdade** do projeto (✅ D24). O Google Drive g
 | `docs/07-referencias.md` | Plugins e projetos de referência |
 | `docs/08-plano-testes.md` | Como validar o plugin |
 | `docs/09-glossario.md` | Termos técnicos explicados |
+| `docs/10-estado-atual.md` | Fase e etapa atuais, próximo passo e pendências. É o primeiro arquivo a ser lido |
 
 ### Manutenção dos documentos
 
 - **Decisão nova:** registrar primeiro em `docs/02-decisoes.md` (próximo número Dxx, com data e motivo), depois ajustar os documentos afetados. Só registre como decisão (✅) o que eu confirmei.
-- **Fim de cada sessão:** adicionar uma entrada no topo de `docs/06-diario.md` seguindo o modelo do arquivo, e atualizar o status em `docs/00-indice.md` e `docs/04-roadmap-v1.md` se algo mudou.
+- **Fim de cada sessão:** adicionar uma entrada no topo de `docs/06-diario.md` seguindo o modelo do arquivo, citando os commits da sessão, atualizar `docs/10-estado-atual.md` e atualizar o status em `docs/00-indice.md` e `docs/04-roadmap-v1.md` se algo mudou.
 - Legenda: ✅ Decidido · 🟡 Proposta · ❓ Em aberto. Datas em DD/MM/AAAA.
 - Nunca apagar decisões antigas: marcar como "Substituída por Dxx".
 
-## Convenções de código (🟡 proposta, confirmar na Fase 1)
+## Convenções de código (✅ D54)
 
 - Nomes de código (classes, funções, variáveis) em inglês; comentários e documentação em português.
-- Commits pequenos, mensagens em português descrevendo o que mudou.
+- Commits pequenos, mensagens em português descrevendo o que mudou e citando fase/etapa e as decisões relacionadas (D55).
