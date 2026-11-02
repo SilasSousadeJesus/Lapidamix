@@ -12,7 +12,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 0 — Planejamento: concluída.** A Fase 1 ainda não começou. Nenhum código de plugin deve ser escrito até o usuário pedir explicitamente o início da Fase 1. A licença (A02) precisa ser decidida antes do primeiro commit com código da Fase 1 (D41). Veja `docs/04-roadmap-v1.md`.
+**Fase 0 — Planejamento: concluída.** A Fase 1 ainda não começou. Nenhum código de plugin deve ser escrito até o usuário pedir explicitamente o início da Fase 1. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 
@@ -46,7 +46,7 @@ Antes de implementar um módulo novo (processador, análise ou perfil de instrum
 
 **Limites:** estudar documentação pública e princípios é permitido. Não copiar código de plugins de referência (produtos fechados), interface visual nem presets, não usar nomes de marcas no nosso produto e não desmontar plugins originais.
 
-**Código aberto de terceiros (D39):** bibliotecas e exemplos podem ser usados se a licença for compatível, com crédito ao autor. Cada caso precisa da minha aprovação e de registro em `docs/02-decisoes.md`. O JUCE já está aprovado (D26).
+**Código aberto de terceiros (D39):** bibliotecas e exemplos podem ser usados se a licença for compatível com a AGPLv3 (D42), com crédito ao autor. Cada caso precisa da minha aprovação e de registro em `docs/02-decisoes.md`. O JUCE já está aprovado (D26).
 
 ## Documentação (fonte da verdade)
 

@@ -15,6 +15,25 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Escolha da licença
+
+**Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- AGPLv3 registrada como licença do projeto, e A02 encerrada.
+- Arquivo `LICENSE` adicionado, com o texto da AGPLv3.
+- Documentos ajustados, inclusive a regra de código de terceiros, que agora exige compatibilidade com a AGPLv3.
+
+**Decisões tomadas:** D42.
+
+**Problemas / dúvidas:**
+- Segue a dúvida sobre o momento de decidir o nome (A05, D35).
+
+**Próximos passos:**
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
 ## 02/11/2026 — Repositório público e prazo da licença
 
 **Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.

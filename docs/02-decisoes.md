@@ -47,6 +47,7 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D39 | 02/11/2026 | **Esclarece a D37:** "não copiar código" vale para os plugins de referência (produtos fechados). **Código aberto de terceiros** (bibliotecas, exemplos) pode ser usado se a licença for compatível, com crédito ao autor; cada caso precisa da aprovação do usuário e de registro neste arquivo. O JUCE já está aprovado (D26) | Evita reescrever o que já existe em código aberto, mantendo controle sobre cada uso |
 | D40 | 02/11/2026 | O repositório no GitHub (https://github.com/SilasSousadeJesus/MixingAssistant) é **público desde 02/11/2026**. Isso antecipa a parte de "aberto" da D12. Substitui a D32 | Decisão do usuário |
 | D41 | 02/11/2026 | A licença (A02) **precisa ser decidida antes do primeiro commit com código da Fase 1**. Substitui a D22 | O repositório já é público (D40); a licença deixa de ser adiada sem prazo |
+| D42 | 02/11/2026 | A licença do projeto é a **AGPLv3** (responde A02) | Escolha do usuário. É o caminho de código aberto do JUCE (D26) e combina com um projeto aberto e não comercial |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -78,7 +79,6 @@ Serão decididas nas fases em que forem usadas (D31).
 
 | # | Pergunta |
 |---|---|
-| A02 | Qual licença de código aberto usar? **Prazo (D41):** precisa ser decidida antes do primeiro commit com código da Fase 1 |
 | A04 | Quantos segundos de análise são necessários? **Adiada para a Fase 3 (D34)** |
 | A05 | Nome definitivo do plugin. **"Mixing Assistant" é provisório; decidir na abertura do projeto (D35)** |
 
@@ -87,4 +87,5 @@ Serão decididas nas fases em que forem usadas (D31).
 | # | Pergunta | Resultado |
 |---|---|---|
 | A01 | Qual DAW será usado nos testes principais? | Reaper: ver D21 |
+| A02 | Qual licença de código aberto usar? | AGPLv3: ver D42 |
 | A03 | O plugin deve explicar cada ajuste que fez (ex.: "cortei 3 dB em 250 Hz porque…")? | Movida para `05-ideias-futuro.md`: ver D23 |

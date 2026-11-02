@@ -13,14 +13,14 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 | 6 | Fechamento da v1.0 | ⚪ Não iniciada |
 
 ## Fase 0 — Planejamento
-- **Entregas:** documentação do projeto (feito); pasta do projeto com `CLAUDE.md` e `docs/` (feito); decisões em aberto resolvidas ou adiadas (`02-decisoes.md`): licença A02 (D41), segundos de análise A04 (D34) e nome A05 (D35) (feito).
+- **Entregas:** documentação do projeto (feito); pasta do projeto com `CLAUDE.md` e `docs/` (feito); decisões em aberto resolvidas ou adiadas (`02-decisoes.md`): licença A02 (D42), segundos de análise A04 (D34) e nome A05 (D35) (feito).
 - **Propostas essenciais (D31):** P01 (JUCE), P02 (VST3), P09 (separação tempo real/análise), P11 (Git) e P13 (núcleo comum + perfis + módulos). ✅ Todas confirmadas (D26 a D30).
 - **Demais propostas:** P03 a P08, P12 e P14 serão decididas nas fases em que forem usadas; não impedem o fechamento da Fase 0.
 - **Pronto quando:** propostas essenciais confirmadas (feito). A gravação da voz de teste passou para a Fase 3 (D33).
 
 ## Fase 1 — Ambiente e plugin "vazio"
 - **Entregas:** ferramentas instaladas no Windows; um plugin que só deixa o áudio passar, carregando no Reaper (D21); estrutura da arquitetura (núcleo comum, perfis e módulos, ainda vazios — D30); lista de instrumentos só com "Voz".
-- **Antes do primeiro commit com código:** decidir a licença (A02 — D41).
+- **Licença:** AGPLv3, decidida antes do primeiro commit com código (D41, D42).
 - **Pronto quando:** o plugin abre no Reaper e o áudio passa sem alterações nem estalos.
 
 ## Fase 2 — EQ manual
