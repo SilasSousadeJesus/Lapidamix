@@ -15,6 +15,23 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Esclarecimento sobre código de terceiros
+
+**Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Esclarecido que "não copiar código" vale para os plugins de referência (produtos fechados).
+- Regra do código aberto de terceiros adicionada ao `CLAUDE.md` e ao `07-referencias.md`.
+
+**Decisões tomadas:** D39.
+
+**Problemas / dúvidas:** a D39 exige licença compatível, mas a licença do projeto ainda está adiada (A02, D22). Cada caso precisará avaliar isso antes da aprovação.
+
+**Próximos passos:**
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
 ## 02/11/2026 — Método de trabalho e ajustes no roadmap
 
 **Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.

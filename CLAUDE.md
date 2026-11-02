@@ -44,7 +44,9 @@ Antes de implementar um módulo novo (processador, análise ou perfil de instrum
 3. **Implementação própria**, dentro da arquitetura da D30.
 4. **Teste no Reaper e ajuste.**
 
-**Limites:** estudar documentação pública e princípios é permitido. Não copiar código, interface visual nem presets, não usar nomes de marcas no nosso produto e não desmontar plugins originais.
+**Limites:** estudar documentação pública e princípios é permitido. Não copiar código de plugins de referência (produtos fechados), interface visual nem presets, não usar nomes de marcas no nosso produto e não desmontar plugins originais.
+
+**Código aberto de terceiros (D39):** bibliotecas e exemplos podem ser usados se a licença for compatível, com crédito ao autor. Cada caso precisa da minha aprovação e de registro em `docs/02-decisoes.md`. O JUCE já está aprovado (D26).
 
 ## Documentação (fonte da verdade)
 
