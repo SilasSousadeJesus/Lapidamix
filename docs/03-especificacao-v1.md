@@ -45,7 +45,7 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 
 ## 5. Arquitetura técnica
 
-- ✅ **Regra de ouro do tempo real (D09):** nada no `processBlock()` pode bloquear a thread de áudio — sem prints, sem alocação de memória (ex.: `std::vector::push_back`), sem acesso a disco. Detalhes em `CLAUDE.md`.
+- ✅ **Regra de ouro do tempo real (D09):** nada no `processBlock()` pode bloquear a thread de áudio — sem prints, sem alocação de memória (ex.: `std::vector::push_back`), sem acesso a disco. Detalhes em `AGENTS.md`.
 - ✅ Duas partes separadas (D28):
   - **Tempo real:** só aplica o EQ, de forma rápida e previsível.
   - **Análise:** roda fora da thread de áudio, calcula as bandas e entrega os valores prontos de forma segura.

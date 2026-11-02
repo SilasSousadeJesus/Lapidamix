@@ -41,7 +41,8 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **AGPLv3** — licença de código aberto, a opção aberta do JUCE e a licença deste projeto (D42). Em termos simples: exige que o código de quem a usa também fique disponível sob ela.
 - **Git** — ferramenta que guarda o histórico de todas as mudanças do projeto e permite voltar atrás.
 - **Commit** — um "ponto salvo" no Git, com uma mensagem dizendo o que mudou.
-- **CLAUDE.md** — arquivo na raiz do projeto que o Claude Code lê sempre que abre a pasta; contém as regras de trabalho.
+- **AGENTS.md** — arquivo na raiz do projeto com as regras de trabalho para as IAs (D56).
+- **CLAUDE.md** — arquivo na raiz do projeto que o Claude Code lê sempre que abre a pasta; aqui, ele só importa o `AGENTS.md`.
 
 ## Tempo real
 - **Thread de áudio** — a parte do programa que processa o som, em pedaços pequenos, centenas de vezes por segundo.

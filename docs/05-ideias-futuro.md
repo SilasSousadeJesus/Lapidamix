@@ -10,6 +10,10 @@ Entram nas versões 1.1, 1.2 etc., até fechar a cadeia de sinal da voz (D19). A
 - Nivelamento de ganho de saída.
 - Efeitos de ambiência (reverb, delay) — bem mais à frente.
 
+## Modo sugestão / modo professor
+- O plugin analisa e mostra o EQ sugerido numa interface bonita, e o usuário decide se aplica ou ajusta à mão.
+- Reavaliar na Fase 3. O objetivo principal continua sendo a mixagem automática.
+
 ## Interface
 - Interface bonita (só com o sistema rodando — ver D08).
 - 🟡 RTA bonito, com o espectro e as bandas aplicadas (P14).

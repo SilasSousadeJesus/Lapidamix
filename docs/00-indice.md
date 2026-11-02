@@ -27,7 +27,7 @@
 | `09-glossario.md` | Termos técnicos explicados de forma simples | Sempre que surgir um termo novo |
 | `10-estado-atual.md` | Fase e etapa atuais, próximo passo, bloqueios, pendências e últimos commits. É o primeiro arquivo a ser lido | Ao final de cada sessão |
 
-As regras de trabalho para o Claude Code estão em `CLAUDE.md`, e a apresentação do projeto está em `README.md`, ambos na raiz do projeto.
+As regras de trabalho para as IAs estão em `AGENTS.md`, importado pelo `CLAUDE.md` (D56), e a apresentação do projeto está em `README.md`, todos na raiz do projeto.
 
 ## Convenções
 

@@ -16,6 +16,26 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Regras movidas para o AGENTS.md
+
+**Fase:** 1 concluída; Fase 2 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Regras movidas para o `AGENTS.md`; o `CLAUDE.md` ficou só com a linha `@AGENTS.md`.
+- Teste numa sessão nova, sem usar ferramentas: ela citou corretamente a regra 3, a seção da D37 com as 4 etapas, a leitura de início de sessão e o nome do projeto. A importação funciona no Claude Code.
+- Ideia do modo sugestão / modo professor registrada em `05-ideias-futuro.md`, para reavaliar na Fase 3.
+
+**Decisões tomadas:** D56 (confirma P22).
+
+**Commits:** "Fase 1: move as regras para o AGENTS.md (D56)", que traz esta entrada.
+
+**Problemas / dúvidas:** o `AGENTS.md` só foi testado no Claude Code, não em outras ferramentas de IA.
+
+**Próximos passos:**
+- A Fase 2 só começa quando o usuário autorizar, pela etapa de estudo do EQ (D37, D38).
+
+---
+
 ## 02/11/2026 — Contexto vivo do projeto
 
 **Fase:** 1 concluída; Fase 2 aguardando a autorização do usuário.
