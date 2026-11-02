@@ -15,6 +15,24 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Método de trabalho e ajustes no roadmap
+
+**Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.
+
+**O que foi feito:**
+- Registrado o método de 4 etapas para cada módulo novo, com seus limites, em `02-decisoes.md` e como regra no `CLAUDE.md`.
+- Roadmap ajustado nas Fases 1, 2 e 3, resolvendo os três pontos soltos da entrada anterior.
+- `07-referencias.md`, `01-visao.md` e `08-plano-testes.md` alinhados às novas decisões; modelo de nota de estudo criado em `07-referencias.md`.
+
+**Decisões tomadas:** D37 e D38.
+
+**Problemas / dúvidas:** nenhum no momento.
+
+**Próximos passos:**
+- A Fase 1 só começa quando o usuário autorizar.
+
+---
+
 ## 02/11/2026 — Fechamento da Fase 0
 
 **Fase:** 0 — Planejamento (concluída nesta sessão)

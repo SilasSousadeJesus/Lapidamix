@@ -19,7 +19,7 @@ Não há objetivo comercial. O foco não é se diferenciar de produtos existente
 
 ## Princípios
 
-- **Soar bem e funcionar** vale mais do que ser original. Podemos nos inspirar livremente em projetos existentes.
+- **Soar bem e funcionar** vale mais do que ser original. Podemos nos inspirar em projetos existentes, dentro dos limites da D37.
 - **Não destruir o timbre:** correções suaves e com limites, para que uma voz, por exemplo, continue soando como ela mesma. Na dúvida, corrigir menos.
 - **Inteligente e adaptável:** as regras são fixas, mas o resultado se adapta à voz/instrumento analisado (D25). Nada de usar uma voz específica como molde, porque isso faria outras vozes não funcionarem.
 - **Começar pequeno:** uma coisa por vez. Primeiro só EQ; os outros processadores entram depois, um a um.

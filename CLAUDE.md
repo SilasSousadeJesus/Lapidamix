@@ -35,6 +35,17 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 5. Plataforma: **Windows**. DAW de testes: **Reaper** (D21). Framework: **JUCE/C++** (D26). Formato inicial: **VST3** (D27).
 6. **Crescer sem refazer:** a arquitetura precisa permitir adicionar instrumentos e processadores sem refazer o que existe (D20). Modelo: núcleo comum + perfis de instrumento + processadores como módulos encaixáveis (D30).
 
+## Método para cada módulo novo (D37)
+
+Antes de implementar um módulo novo (processador, análise ou perfil de instrumento), seguir estas 4 etapas, nesta ordem:
+
+1. **Estudo:** pesquisar plugins de referência, manuais, documentação pública e princípios de DSP, e escrever uma nota curta em `docs/07-referencias.md`, separando o que é fato do que é suposição sobre o funcionamento interno de produtos fechados.
+2. **Proposta:** propor como será o nosso módulo com base no estudo e **esperar minha aprovação**.
+3. **Implementação própria**, dentro da arquitetura da D30.
+4. **Teste no Reaper e ajuste.**
+
+**Limites:** estudar documentação pública e princípios é permitido. Não copiar código, interface visual nem presets, não usar nomes de marcas no nosso produto e não desmontar plugins originais.
+
 ## Documentação (fonte da verdade)
 
 A pasta `docs/` é a **fonte da verdade** do projeto (✅ D24). O Google Drive guarda apenas a versão original.

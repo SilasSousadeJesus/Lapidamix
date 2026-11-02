@@ -4,7 +4,7 @@
 
 ## Material de teste
 - **Voz principal:** minha voz seca no SM7dB, sem nenhum efeito, ~30 s cantados.
-- **Variedade:** vozes graves e agudas, masculinas e femininas, microfones diferentes (dinâmicos e condensadores), gravações boas e problemáticas. Meta: pelo menos 20 vozes diferentes.
+- **Variedade:** vozes graves e agudas, masculinas e femininas, microfones diferentes (dinâmicos e condensadores), gravações boas e problemáticas. Meta: de 3 a 5 vozes bem diferentes na Fase 3 e pelo menos 20 vozes diferentes na Fase 5 (D38).
 - Arquivos de áudio de teste ficam fora do Git (são grandes); registrar aqui de onde vieram.
 
 ## O que verificar

@@ -1,6 +1,6 @@
 # 04 - Roadmap da v1.0
 
-Cada fase só começa quando a anterior atingir o critério de "pronto" **e o usuário autorizar**. ✅ Roadmap confirmado (D36).
+Cada fase só começa quando a anterior atingir o critério de "pronto" **e o usuário autorizar**. ✅ Roadmap confirmado (D36) e ajustado (D38). Todo módulo novo segue as 4 etapas da D37: estudo, proposta, implementação própria, teste no Reaper e ajuste.
 
 | Fase | Nome | Status |
 |---|---|---|
@@ -19,16 +19,17 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** propostas essenciais confirmadas (feito). A gravação da voz de teste passou para a Fase 3 (D33).
 
 ## Fase 1 — Ambiente e plugin "vazio"
-- **Entregas:** ferramentas instaladas no Windows; um plugin que só deixa o áudio passar, carregando no Reaper (D21).
+- **Entregas:** ferramentas instaladas no Windows; um plugin que só deixa o áudio passar, carregando no Reaper (D21); estrutura da arquitetura (núcleo comum, perfis e módulos, ainda vazios — D30); lista de instrumentos só com "Voz".
 - **Pronto quando:** o plugin abre no Reaper e o áudio passa sem alterações nem estalos.
 
 ## Fase 2 — EQ manual
-- **Entregas:** as bandas de EQ funcionando com controles manuais; parâmetros salvos com o projeto; bypass.
+- **Entregas:** etapa de estudo do EQ (D37); o EQ como primeiro módulo da arquitetura, com as bandas funcionando com controles manuais; parâmetros salvos com o projeto; bypass.
+- **Material:** pode usar qualquer gravação de voz que o usuário já tenha.
 - **Pronto quando:** dá para mixar a voz "na mão" com o plugin, respeitando a regra de ouro do tempo real.
 
 ## Fase 3 — Análise (só medir)
-- **Entregas:** gravação da voz de teste (voz seca no SM7dB, sem efeitos, ~30 s — D33); resposta à A04 (quantos segundos de análise são necessários — D34); botão Analisar; detecção dos trechos cantados; espectro médio; detecção da fundamental e das ressonâncias. O plugin **mostra** as medidas, ainda sem aplicar nada. 🟡 RTA simples como ferramenta de diagnóstico (P14).
-- **Pronto quando:** as medidas batem com o que se ouve/vê em outras ferramentas, em vozes diferentes.
+- **Entregas:** etapa de estudo da análise, por onde a fase começa (D37); gravação da voz de teste (voz seca no SM7dB, sem efeitos, ~30 s — D33); resposta à A04 (quantos segundos de análise são necessários — D34); botão Analisar; detecção dos trechos cantados; espectro médio; detecção da fundamental e das ressonâncias. O plugin **mostra** as medidas, ainda sem aplicar nada. 🟡 RTA simples como ferramenta de diagnóstico (P14).
+- **Pronto quando:** as medidas batem com o que se ouve/vê em outras ferramentas, em 3 a 5 vozes bem diferentes (as 20 vozes ficam para a Fase 5).
 
 ## Fase 4 — Correção automática
 - **Entregas:** regras que transformam as medidas em bandas de EQ; limites de segurança; intensidade.

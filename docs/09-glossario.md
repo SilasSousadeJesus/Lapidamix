@@ -6,6 +6,7 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **Ar** — agudos bem altos (acima de ~10 kHz) que dão sensação de abertura e brilho à voz.
 - **Bypass** — desliga o efeito temporariamente para comparar antes e depois.
 - **Cadeia de sinal** — a sequência de processadores por onde o som passa (ex.: EQ, depois compressor, depois de-esser).
+- **DSP (processamento digital de sinais)** — a matemática usada para analisar e modificar o som no computador.
 - **Efeito de proximidade** — microfones direcionais (como o SM7dB) acentuam os graves quando se canta perto deles. Causa comum de voz escura e embolada.
 - **Embolado** — excesso de energia nos graves e médio-graves que deixa a voz confusa e sem definição.
 - **EQ (equalizador)** — aumenta ou reduz o volume de faixas de frequência.

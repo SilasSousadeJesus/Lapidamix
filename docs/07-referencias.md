@@ -1,6 +1,6 @@
 # 07 - Referências
 
-Projetos e materiais usados como inspiração. Funcionalidades e ideias podem ser aproveitadas livremente; código só pode ser reaproveitado se a licença for compatível com a do nosso projeto.
+Projetos e materiais usados como inspiração. Estudar documentação pública e princípios é permitido. Não copiamos código, interface visual nem presets, não usamos nomes de marcas no nosso produto e não desmontamos plugins originais (D37).
 
 ## Plugins comerciais (referência de funcionalidade e uso)
 
@@ -16,7 +16,7 @@ Projetos e materiais usados como inspiração. Funcionalidades e ideias podem se
 | Referência | Uso | Observação |
 |---|---|---|
 | JUCE (C++) | Framework para construir o plugin (VST3/AU/AAX) | Opções de licença: AGPLv3 (código aberto) ou licença comercial, conforme o [LICENSE.md do JUCE](https://raw.githubusercontent.com/juce-framework/JUCE/master/LICENSE.md), consultado em 01/11/2026. Confirmar termos ao decidir a A02 (D22) |
-| Matchering (Python) | Matemática de comparação de espectro com um alvo | Licença GPL: código só pode ser reaproveitado se o nosso projeto for compatível |
+| Matchering (Python) | Matemática de comparação de espectro com um alvo | Estudar só os princípios; não copiar o código (D37) |
 | VST3 SDK (Steinberg) | Formato do plugin | Usado através do JUCE |
 
 ## Material de teste
@@ -26,4 +26,12 @@ Projetos e materiais usados como inspiração. Funcionalidades e ideias podem se
 
 ## Anotações de estudo
 
-(Registrar aqui o que for aprendido ao estudar cada referência.)
+Uma nota curta por módulo, escrita na etapa de estudo (D37). **Modelo de nota:**
+
+```
+### DD/MM/AAAA — Nome do módulo
+**Fontes consultadas:** …
+**Fatos (documentados):** …
+**Suposições (funcionamento interno de produtos fechados):** …
+**O que levar para a proposta:** …
+```
