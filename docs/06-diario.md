@@ -16,6 +16,26 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Segundo teste no Reaper, resultados parciais
+
+**Fase:** 3 — Análise, só medir (etapa d). **A fase não foi fechada.** A Fase 4 não foi iniciada.
+
+**O que foi feito:**
+- Registrados os resultados informados da interface e do SM7dB.
+- Candidata de 4800 Hz (+4,1 dB) conferida no medidor: está no limite de 4 dB, depende do ponto de início e não seria cortada pela regra D87/D88.
+- Critérios da Fase 3 verificados: não dá para dar como atendidos.
+
+**Decisões tomadas:** nenhuma.
+
+**Commits:** este commit. O hash `139cd83` entrou nas entradas anteriores (D68).
+
+**Problemas / dúvidas:** a mensagem do usuário trouxe sem preencher o campo com SM57 do início, cancelamento, RTA, aviso de menos de 10 s, salvar e reabrir, ressonância artificial e VocalSet. Sem esses resultados, em especial a comparação das vozes com outra ferramenta, a fase não fecha.
+
+**Próximos passos:**
+- O usuário informa os resultados que faltam, e a fase é reavaliada.
+
+---
+
 ## 02/11/2026 — Ajuste da regra de ressonância encerrado
 
 **Fase:** 3 — Análise, só medir (preparação do fechamento). A Fase 4 não foi iniciada.
@@ -28,7 +48,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D88.
 
-**Commits:** este commit.
+**Commits:** `139cd83`.
 
 **Problemas / dúvidas:** a regra ainda não está no plugin e só foi simulada. Nas vozes do VocalSet, 17 de 72 janelas e 8 de 20 vozes recebem corte; se isso é pouco, só a validação de ouvido dirá.
 
@@ -47,7 +67,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D87. Proposta nova: P46.
 
-**Commits:** este commit.
+**Commits:** `139cd83`.
 
 **Problemas / dúvidas:**
 - A regra aprovada não atende ao critério de poucos cortes: 40 de 72 janelas e 14 de 20 vozes, contra 48 de 72 e 16 de 20 antes. 29 dos 40 cortes ficam acima de 6 kHz.
@@ -73,7 +93,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D85, D86. Proposta nova: P45.
 
-**Commits:** este commit.
+**Commits:** `139cd83`.
 
 **Problemas / dúvidas:**
 - Um pico fixo do equipamento ou da sala não explica o resultado sozinho: o pico muda com a vogal e a pessoa, e nem todos o têm. Uma contribuição do microfone segue possível, mas não dá para separar. Investigação encerrada.
@@ -98,7 +118,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** nenhuma. Propostas novas: P43 e P44.
 
-**Commits:** este commit.
+**Commits:** `139cd83`.
 
 **Problemas / dúvidas:**
 - A causa das casas decimais: `juce::String (valor, 0)` não arredonda. Isso também afetava os controles de frequência e os números do gráfico.
@@ -124,7 +144,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D82, D83, D84. Proposta nova: P42.
 
-**Commits:** este commit.
+**Commits:** `139cd83`.
 
 **Problemas / dúvidas:**
 - Na entrada anterior, os medidores foram apagados, e esse código foi recuperado de uma cópia na pasta de rascunho. A D84 evita repetir isso.
@@ -149,7 +169,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D81. Proposta nova: P41. A04 e P40 seguem aguardando o usuário.
 
-**Commits:** este commit. O hash `ecae02e` entrou nas entradas anteriores (D68).
+**Commits:** `139cd83`. O hash `ecae02e` entrou nas entradas anteriores (D68).
 
 **Problemas / dúvidas:**
 - As gravações são tomadas diferentes, então a comparação bloco a bloco da fundamental não vale como teste.

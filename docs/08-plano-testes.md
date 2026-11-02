@@ -44,6 +44,15 @@
 | 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
 | 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
 
+## Segundo teste no Reaper (02/11/2026)
+
+Informado pelo usuário: interface e SM7dB. **Os resultados dos outros itens não foram informados**: a mensagem trouxe esse campo sem preencher.
+
+- **Interface:** acentos, casas decimais e curvas corretos.
+- **SM7dB, duas análises seguidas:** 30,0 s de voz em 49,9 s e 49,2 s de captura; mediana 133 Hz; grave de 99 e 100 Hz; aguda de 153 Hz; confiança de 99%; candidata em 4800 Hz (+4,1 dB, 49% e 50% do tempo).
+- **A candidata nova não é uma mudança no plugin:** ela está no limite de 4 dB. No medidor, começar 1 s depois basta para a candidata aparecer perto dali (4941 Hz, +4,0 dB), e começar do zero dá "nenhuma". Pequenas diferenças no ponto de início mudam o resultado nesse limite.
+- **Não seria cortada pela regra D87/D88:** +4,1 dB fica abaixo do mínimo de +6 dB, e 49% a 50% do tempo fica abaixo do mínimo de 60%.
+
 ## Teste no Reaper (02/11/2026)
 
 | | Voz válida / captura | Mediana | Grave (5%) | Aguda (95%) | Confiança | Candidatas |
@@ -168,9 +177,11 @@ Essas vozes variam mais que a do usuário, provavelmente porque cada janela pega
 
 ## O que falta para fechar a Fase 3 (D77)
 
+**Situação em 02/11/2026:** o item 1 foi concluído. Os itens 2 a 10 ainda não têm resultado informado, e a Fase 3 continua aberta. O critério do roadmap depende principalmente do item 8.
+
 Fazer no Reaper, com o plugin reaberto:
 
-1. Interface: acentos, casas decimais e as duas curvas.
+1. ✅ Interface: acentos, casas decimais e as duas curvas.
 2. SM57 do início, com o cursor no zero: cerca de 51 s de captura, 132 Hz, grave de 98 Hz, candidata em 4941 Hz (+6,5 dB).
 3. Cancelamento com análise e RTA ligados: deve dar silêncio.
 4. ReaEQ antes do plugin, com +9 dB estreitos em 2,2 kHz, no SM7dB: candidata perto de 2,2 kHz, medindo menos que 9 dB.

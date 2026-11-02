@@ -9,7 +9,8 @@
 - **Fase:** Fase 3 (Análise, só medir), em andamento (D67).
 - **Etapa:** teste com voz real (etapa d da D37).
 - **Último passo concluído:** ajuste da regra da banda de ressonância encerrado para a v1.0 (D87, D88), com teto de 6 kHz: na simulação, corta em 17 de 72 janelas do VocalSet. Ainda não está no plugin.
-- **Próximo passo:** o usuário concluir a lista de testes em `08-plano-testes.md` (em andamento). A Fase 4 não começa antes do pedido do usuário.
+- **Testes no Reaper:** interface e SM7dB informados e registrados. Os outros itens ainda não têm resultado, então a fase não foi fechada.
+- **Próximo passo:** o usuário informar os resultados dos itens 2 a 10 da lista em `08-plano-testes.md`, para reavaliar o fechamento. A Fase 4 não começa antes do pedido do usuário.
 
 ## Bloqueios
 
@@ -28,7 +29,8 @@ Nenhum bloqueio técnico. O fechamento da Fase 3 depende do restante do teste no
 
 | Commit | O que fez |
 |---|---|
-| este commit | Ajustes da análise com voz real, correções na interface, ferramentas de teste e regras para a Fase 4 (D81 a D88) |
+| este commit | Resultados parciais do segundo teste no Reaper, sem fechar a Fase 3 |
+| `139cd83` | Ajustes da análise com voz real, correções na interface, ferramentas de teste e regras para a Fase 4 (D81 a D88) |
 | `ecae02e` | Análise e RTA da Fase 3, ainda sem o teste com voz real, e registro do VocalSet (D67 a D80) |
 | `cbf6f27` | Correção do diário e do estado atual da Fase 2 (D57) |
 | `e4adbce` | EQ manual de 5 bandas e conclusão da Fase 2 (D58 a D66) |
