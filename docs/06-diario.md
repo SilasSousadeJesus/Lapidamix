@@ -22,14 +22,14 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 **O que foi feito:**
 - Repositório Git criado na pasta do projeto, com `.gitignore` para deixar os áudios de fora.
 - Primeiro commit com o `CLAUDE.md` e a pasta `docs/`.
-- GitHub CLI (`gh`) instalado no computador.
+- GitHub CLI (`gh`) instalado no computador e login feito na conta `SilasSousadeJesus`.
+- Repositório privado criado e enviado: https://github.com/SilasSousadeJesus/MixingAssistant
 
 **Decisões tomadas:** D32 (repositório privado na conta `SilasSousadeJesus`).
 
-**Problemas / dúvidas:** o `gh` ainda não reconhece o login, então o repositório ainda não foi criado no GitHub.
+**Problemas / dúvidas:** nenhum no momento. A branch se chama `master`, o padrão do Git neste computador.
 
 **Próximos passos:**
-- Concluir o login no `gh`, criar o repositório privado e enviar os arquivos.
 - Gravar ~30 s de voz seca no SM7dB (sem efeitos) para testes.
 - Responder ou adiar A04 e A05.
 - Confirmar o roadmap.
