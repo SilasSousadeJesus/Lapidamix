@@ -15,6 +15,116 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fechamento da Fase 1
+
+**Fase:** 1 — Ambiente e plugin "vazio" (concluída nesta sessão)
+
+**O que foi feito:**
+- O usuário fez os 5 passos do teste no Reaper (D53), e todos passaram.
+- Resultado registrado em `08-plano-testes.md` e status atualizado.
+
+**Decisões tomadas:** nenhuma nova.
+
+**Problemas / dúvidas:**
+- O código, o submódulo e os documentos desta fase ainda não têm commit.
+- As convenções de código do `CLAUDE.md` continuam como proposta, a confirmar.
+
+**Próximos passos:**
+- Confirmar as convenções de código.
+- A Fase 2 só começa quando o usuário autorizar, pela etapa de estudo do EQ (D37, D38).
+
+---
+
+## 02/11/2026 — Plugin vazio compilado
+
+**Fase:** 1 — Ambiente e plugin "vazio" (Etapa 4 em andamento)
+
+**O que foi feito:**
+- Plugin compilado em Release com 0 erros e 0 avisos, e copiado para `C:\Users\USER\AppData\Local\Programs\Common\VST3`.
+- Maior caminho gerado na compilação: 179 caracteres, sem necessidade de mover o projeto nem ativar caminhos longos.
+
+**Decisões tomadas:** nenhuma nova.
+
+**Problemas / dúvidas:** o teste no Reaper ainda não foi feito; a Fase 1 só fica pronta depois dele. Nada desta fase tem commit.
+
+**Próximos passos:**
+- O usuário faz os 5 passos do teste no Reaper (D53) e informa o resultado.
+
+---
+
+## 02/11/2026 — Plugin vazio criado
+
+**Fase:** 1 — Ambiente e plugin "vazio" (Etapa 3 concluída)
+
+**O que foi feito:**
+- Medido o caminho do projeto: 54 caracteres. Pior caso dentro do JUCE: 202 caracteres; arquivos de compilação ainda não medidos.
+- JUCE 9.0.4 adicionado como submódulo em `external/JUCE`.
+- Criados o `CMakeLists.txt`, as pastas da D50 e o plugin vazio em `src/plugin/`, com a lista de instrumentos só com "Voz".
+- Crédito ao JUCE adicionado ao `README.md`.
+
+**Decisões tomadas:** nenhuma nova.
+
+**Problemas / dúvidas:** o código ainda não foi compilado; isso é a Etapa 4. Nada desta etapa tem commit.
+
+**Próximos passos:**
+- Aprovação da Etapa 4 (compilar e testar no Reaper).
+
+---
+
+## 02/11/2026 — Ferramentas de compilação conferidas
+
+**Fase:** 1 — Ambiente e plugin "vazio" (Etapa 2 concluída)
+
+**O que foi feito:**
+- Usuário instalou a carga de C++ no Visual Studio 2022.
+- Conferidos: MSVC 14.44.35207 (compilador 19.44), Windows SDK 10.0.26100.0 e CMake 3.31.6-msvc6, sem necessidade de instalar o CMake separado (D48).
+- Programa de teste em C++17 compilado com CMake e executado com sucesso, fora do projeto; os arquivos de teste foram removidos.
+
+**Decisões tomadas:** nenhuma nova.
+
+**Problemas / dúvidas:** a primeira tentativa falhou ao compilar dentro da pasta temporária do Windows, em um caminho longo; o mesmo teste funcionou em um caminho curto, fora dela. Causa exata não confirmada, mas não afeta a pasta do projeto.
+
+**Próximos passos:**
+- Aprovação da Etapa 3 (submódulo do JUCE, pastas e plugin vazio).
+
+---
+
+## 02/11/2026 — Plano da Fase 1 aprovado
+
+**Fase:** 1 — Ambiente e plugin "vazio" (Etapa 1 concluída)
+
+**O que foi feito:**
+- Plano aprovado, com fabricante "Lapidamix" e uso do CMake da carga de C++.
+- Conferido que o JUCE 9.0.4 mantém a opção de licença AGPLv3.
+- Conferido que a carga de C++ lista as "Ferramentas do CMake" como componente recomendado.
+
+**Decisões tomadas:** D47 a D53.
+
+**Problemas / dúvidas:** a versão do CMake dessa carga não foi confirmada por nenhuma fonte; será conferida depois da instalação. Nada foi instalado.
+
+**Próximos passos:**
+- Aprovação da Etapa 2 (instalar a carga de C++ e conferir a versão do CMake).
+
+---
+
+## 02/11/2026 — Início da Fase 1: plano
+
+**Fase:** 1 — Ambiente e plugin "vazio" (Etapa 1)
+
+**O que foi feito:**
+- Fase 1 autorizada e status atualizado no roadmap, no índice e no `CLAUDE.md`.
+- Levantamento, sem alterar nada: faltam as ferramentas de C++ do Visual Studio, o Windows SDK e o CMake; Reaper 7.57 e Git já instalados.
+- Plano apresentado e escolhas técnicas registradas como propostas.
+
+**Decisões tomadas:** D46. Propostas novas: P15 a P21.
+
+**Problemas / dúvidas:** o usuário não usa o terminal como administrador, o que influenciou a proposta da pasta de instalação (P20).
+
+**Próximos passos:**
+- Aprovação do plano pelo usuário. Nada será instalado nem criado antes disso.
+
+---
+
 ## 02/11/2026 — Nome definitivo: Lapidamix
 
 **Fase:** 0 concluída; Fase 1 aguardando a autorização do usuário.

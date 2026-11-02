@@ -5,7 +5,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 | Fase | Nome | Status |
 |---|---|---|
 | 0 | Planejamento | ✅ Concluída (02/11/2026) |
-| 1 | Ambiente e plugin "vazio" | ⚪ Não iniciada |
+| 1 | Ambiente e plugin "vazio" | ✅ Concluída (02/11/2026) |
 | 2 | EQ manual | ⚪ Não iniciada |
 | 3 | Análise (só medir) | ⚪ Não iniciada |
 | 4 | Correção automática | ⚪ Não iniciada |
@@ -19,6 +19,7 @@ Cada fase só começa quando a anterior atingir o critério de "pronto" **e o us
 - **Pronto quando:** propostas essenciais confirmadas (feito). A gravação da voz de teste passou para a Fase 3 (D33).
 
 ## Fase 1 — Ambiente e plugin "vazio"
+- **Como trabalhar:** em etapas, com aprovação do usuário entre elas (D46). Etapa 1 (plano): aprovada (D47 a D53). Etapa 2 (instalar as ferramentas): concluída, com MSVC 14.44, Windows SDK 10.0.26100 e CMake 3.31.6. Etapa 3 (criar submódulo, pastas e plugin vazio): concluída, ainda sem compilar. Etapa 4 (compilar e testar no Reaper): concluída, com os 5 passos da D53 aprovados pelo usuário.
 - **Entregas:** ferramentas instaladas no Windows; um plugin que só deixa o áudio passar, carregando no Reaper (D21); estrutura da arquitetura (núcleo comum, perfis e módulos, ainda vazios — D30); lista de instrumentos só com "Voz".
 - **Licença:** AGPLv3, decidida antes do primeiro commit com código (D41, D42).
 - **Pronto quando:** o plugin abre no Reaper e o áudio passa sem alterações nem estalos.

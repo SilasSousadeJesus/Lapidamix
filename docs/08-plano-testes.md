@@ -31,4 +31,4 @@
 
 | Data | Voz / material | Versão do plugin | O que foi testado | Resultado | Observações |
 |---|---|---|---|---|---|
-| | | | | | |
+| 02/11/2026 | Voz do usuário, no Reaper | 0.1.0 (plugin vazio) | Os 5 passos da D53: carregar, conferir a lista, ouvir com e sem o plugin, teste de cancelamento, salvar e reabrir | ✅ Todos passaram | Teste feito e informado pelo usuário. Encerra a Fase 1 |

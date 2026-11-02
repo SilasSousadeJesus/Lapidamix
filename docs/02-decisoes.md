@@ -51,6 +51,14 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D43 | 02/11/2026 | **"Mixing Assistant" continua como nome provisório.** O nome definitivo (A05) deve ser decidido **antes do lançamento da v1.0** e **não pode lembrar nomes de produtos existentes** (ex.: "Mix Assistant", da iZotope). Substitui a D35 | A abertura do projeto foi antecipada (D40), e o nome precisa ser próprio |
 | D44 | 02/11/2026 | **Substituída pela D45.** O nome definitivo do projeto é **Prumix** (prumo + mix: a mix "no prumo", alinhada e equilibrada). Substitui o provisório "Mixing Assistant" e encerra a A05. **Busca feita pelo usuário:** não há produto de áudio com esse nome; o mais parecido é "Primix", fabricante de misturadores industriais, de outra categoria. **Nomes descartados:** "Mixo" (já existe um app de DJ) e "MixCraft" (já existe a DAW da Acoustica) | Nome próprio, de acordo com a D43. **Verificação complementar (Claude, 02/11/2026):** também não encontrou produto chamado exatamente "Prumix", mas encontrou nomes de áudio parecidos: "ProMix Bundle" (AyaicWare) e "pMix" (Oli Larkin) |
 | D45 | 02/11/2026 | O nome definitivo do projeto é **Lapidamix** (lapidar + mix: revelar o brilho que já existe no som, sem destruir o timbre). Substitui a D44 (Prumix), descartada pela semelhança com o "ProMix Bundle", da mesma categoria | Nome próprio, de acordo com a D43. **Busca complementar (Claude, 02/11/2026):** não encontrou produto nem repositório do GitHub com esse nome; os nomes de áudio mais próximos, "LAMA Mix" (Ross Video/HHB) e "LiquidMix", têm semelhança fraca. Não foi uma pesquisa de marca registrada |
+| D46 | 02/11/2026 | **Início da Fase 1 autorizado**, em etapas, com aprovação do usuário entre elas. Etapa 1: plano, sem instalar nada nem criar código | Autorização do usuário; mudanças pequenas e verificáveis |
+| D47 | 02/11/2026 | **Compilador:** Visual Studio Community 2022 com a carga "Desenvolvimento para desktop com C++" (MSVC e Windows SDK) (confirma P15) | O VS 2022 já está instalado e é estável, ao contrário da VS 2026 Insiders |
+| D48 | 02/11/2026 | **Compilação com CMake**, gerando projeto do Visual Studio 2022, **usando o CMake que vem com a carga de C++**, desde que seja 3.22 ou superior; nesse caso, não instalar o CMake separado (confirma P16, com ajuste) | Evita uma instalação a mais. A carga lista as "Ferramentas do CMake" como recomendadas. Conferido depois da instalação (02/11/2026): CMake 3.31.6-msvc6 |
+| D49 | 02/11/2026 | **JUCE como submódulo Git** em `external/JUCE`, fixado na versão 9.0.4 (confirma P17) | Versão exata registrada, sem copiar o código do JUCE. O `LICENSE.md` da versão 9.0.4 mantém a opção AGPLv3 (conferido em 02/11/2026) |
+| D50 | 02/11/2026 | **Estrutura de pastas:** `src/plugin/`, `src/core/` (`analysis/`, `eq/`, `safety/`), `src/profiles/`, `src/modules/` e `external/` (confirma P18) | Forma de seguir a D30 e a D28 |
+| D51 | 02/11/2026 | **Identificação do plugin:** produto e fabricante "Lapidamix", códigos `Lpmx` (fabricante) e `Lpd1` (plugin), formato só VST3, trilhas mono e estéreo, sem latência (confirma P19) | Depois do primeiro uso real, não trocar os códigos: projetos salvos deixariam de achar o plugin |
+| D52 | 02/11/2026 | **Instalação durante o desenvolvimento:** copiar o plugin para a pasta VST3 do usuário (`%LOCALAPPDATA%\Programs\Common\VST3`) após cada compilação (confirma P20) | Não exige administrador |
+| D53 | 02/11/2026 | **Teste da Fase 1 no Reaper:** carregar o plugin, conferir a lista só com "Voz", ouvir com e sem bypass, fazer o teste de cancelamento, salvar e reabrir o projeto (confirma P21) | Mostra de forma objetiva se o áudio passa sem alterações |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -77,6 +85,13 @@ Serão decididas nas fases em que forem usadas (D31).
 | P10 | A pasta `docs/` passa a ser a **fonte da verdade**; o Google Drive fica só com a versão original | Confirmada: ver D24 |
 | P11 | Versionar o projeto com **Git** desde o início | Confirmada: ver D29 |
 | P13 | **Modelo de arquitetura:** núcleo comum (análise, EQ, limites de segurança) + perfis de instrumento + processadores como módulos encaixáveis. Na v1 o usuário escolhe o instrumento numa lista que só tem "Voz" | Confirmada: ver D30 |
+| P15 | Compilador: Visual Studio Community 2022 com a carga de C++ | Confirmada: ver D47 |
+| P16 | Compilação com CMake instalado à parte (`Kitware.CMake`, via winget), gerando projeto do Visual Studio 2022 | Confirmada com ajuste: usar o CMake da carga de C++, ver D48 |
+| P17 | JUCE como submódulo Git em `external/JUCE`, versão 9.0.4 | Confirmada: ver D49 |
+| P18 | Estrutura de pastas do código | Confirmada: ver D50 |
+| P19 | Identificação do plugin | Confirmada: ver D51 |
+| P20 | Instalação na pasta VST3 do usuário | Confirmada: ver D52 |
+| P21 | Teste da Fase 1 no Reaper | Confirmada: ver D53 |
 
 ## ❓ Em aberto
 

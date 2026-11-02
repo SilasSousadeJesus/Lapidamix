@@ -12,7 +12,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 0 — Planejamento: concluída.** A Fase 1 ainda não começou. Nenhum código de plugin deve ser escrito até o usuário pedir explicitamente o início da Fase 1. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
+**Fase 1 — Ambiente e plugin "vazio": concluída.** A Fase 2 ainda não começou. Não escrever código da Fase 2 até o usuário pedir explicitamente o início dela. Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 
@@ -32,7 +32,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 2. **Separação em duas partes (D28):** a parte de tempo real só aplica o EQ; a análise roda fora da thread de áudio e entrega os valores prontos de forma segura.
 3. **Não destruir o timbre:** correções suaves e com limites; na dúvida, corrigir menos.
 4. **Adaptável:** nada de valores calibrados para uma voz ou um instrumento específico. As regras são fixas, mas o resultado depende da análise do áudio recebido (D25).
-5. Plataforma: **Windows**. DAW de testes: **Reaper** (D21). Framework: **JUCE/C++** (D26). Formato inicial: **VST3** (D27).
+5. Plataforma: **Windows**. DAW de testes: **Reaper** (D21). Framework: **JUCE/C++** (D26), como submódulo na versão 9.0.4 (D49). Formato inicial: **VST3** (D27). Compilação: Visual Studio 2022 e CMake (D47, D48). O CMake vem com o Visual Studio e não está no PATH: `C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe`. Não compilar na pasta temporária do Windows. Comandos: `cmake -S . -B build -G "Visual Studio 17 2022" -A x64` e `cmake --build build --config Release --target Lapidamix_VST3 --parallel`.
 6. **Crescer sem refazer:** a arquitetura precisa permitir adicionar instrumentos e processadores sem refazer o que existe (D20). Modelo: núcleo comum + perfis de instrumento + processadores como módulos encaixáveis (D30).
 
 ## Método para cada módulo novo (D37)

@@ -20,6 +20,7 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **Q** — largura de uma banda de EQ. Q baixo = banda larga e suave (soa natural). Q alto = banda estreita e cirúrgica.
 - **Ressonância** — pico de energia numa frequência específica que se destaca e incomoda.
 - **RTA (analisador em tempo real)** — gráfico que mostra o espectro do som enquanto ele toca.
+- **Teste de cancelamento (null test)** — tocar o áudio original junto com uma cópia de polaridade invertida. Se as duas forem idênticas, elas se anulam e o resultado é silêncio; assim se prova que um plugin não alterou o som.
 - **Voz seca** — gravação sem nenhum efeito aplicado.
 
 ## Plugins e software
@@ -27,6 +28,10 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **DAW** — programa de gravação e mixagem (Reaper, Pro Tools etc.).
 - **Plugin de insert** — efeito colocado diretamente numa trilha, processando todo o áudio dela.
 - **VST3 / AU / AAX** — formatos de plugin. VST3: maioria dos DAWs no Windows. AU: Mac. AAX: Pro Tools.
+- **Compilador** — programa que transforma o código em um arquivo que o computador executa. No Windows, usaremos o MSVC, da Microsoft.
+- **CMake** — ferramenta que descreve, em um arquivo de texto, como compilar o projeto, e prepara essa compilação.
+- **Windows SDK** — conjunto de arquivos da Microsoft necessário para criar programas para o Windows.
+- **Submódulo Git** — forma de um repositório apontar para uma versão exata de outro repositório, sem copiar o código dele.
 - **JUCE** — framework em C++ muito usado para criar plugins de áudio.
 - **Parâmetro** — cada controle do plugin (ganho, frequência…), que o DAW pode salvar e automatizar.
 - **Núcleo comum** — a parte do programa compartilhada por todos os instrumentos (D30).

@@ -11,3 +11,7 @@ A voz é só o primeiro instrumento. A primeira versão (v1.0) analisa uma trilh
 ## Licença
 
 [AGPLv3](LICENSE).
+
+## Créditos
+
+Feito com o [JUCE](https://juce.com), usado sob a licença AGPLv3.
