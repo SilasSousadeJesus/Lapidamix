@@ -52,6 +52,7 @@ namespace lapidamix
         float referenceLow;
         float referenceHigh;
         float minimumActionDb;
+        float minimumVoiceSeconds;
 
         HighPass highPass;
         Mud mud;

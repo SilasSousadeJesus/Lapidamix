@@ -8,6 +8,8 @@ Termos técnicos usados no projeto, em linguagem simples.
 - **Biquad** — tipo comum de filtro digital, leve e sem latência, usado para construir cada banda de um EQ.
 - **Sino (bell)** — banda de EQ que aumenta ou reduz uma região em torno de uma frequência central.
 - **Prateleira (shelf)** — banda de EQ que aumenta ou reduz tudo acima (alta) ou abaixo (baixa) de uma frequência.
+- **LUFS** — unidade padrão de volume percebido (norma ITU-R BS.1770). Uma diferença de 1 LU equivale a 1 dB. O LUFS integrado mede o volume médio de toda a gravação, ignorando os trechos muito baixos.
+- **Ponderação K** — o peso que o LUFS dá a cada frequência: reduz os graves muito baixos e reforça um pouco os agudos, para se aproximar do ouvido.
 - **Latência** — atraso entre o som entrar e sair do plugin.
 - **Fase linear** — modo de EQ que preserva a fase do som, mas cria latência.
 - **Oversampling** — processar internamente em uma taxa de amostragem mais alta; gasta mais processamento.

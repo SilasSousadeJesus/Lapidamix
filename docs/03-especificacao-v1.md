@@ -10,7 +10,7 @@ Legenda: ✅ Decidido · 🟡 Proposta · ❓ Em aberto
 2. Aperta **"Analisar"** e dá play num trecho cantado.
 3. O plugin escuta, analisa e calcula as correções.
 4. O plugin mostra as bandas que pretende usar, com a explicação de cada uma, e o usuário clica em **Aplicar**. ✅ (D85, D92, D99)
-5. O usuário compara com o **bypass**, com o volume compensado, e, se quiser, ajusta a **intensidade** ou as bandas à mão. ✅ (D98, D99)
+5. O usuário compara com o **bypass**, com o volume compensado por um valor fixo no controle Saída, e, se quiser, ajusta a **intensidade**, a Saída ou as bandas à mão. ✅ (D98, D99, D102)
 
 ## 2. Análise (o "cérebro")
 
@@ -53,7 +53,7 @@ Princípio ✅ (D14, D25): as regras são fixas, mas o resultado se adapta à vo
 - ✅ Botão Analisar/Parar, indicador de status e resultados em texto (D69, D75).
 - ✅ Gráfico com o RTA simples e as duas médias; o RTA bonito fica para a interface final (D71, D74).
 - ✅ Lista de bandas pretendidas, explicação em texto, botão Aplicar e intensidade (Fase 4; D85, D92, D98, D99).
-- 🟡 Os parâmetros devem ser salvos com o projeto do DAW e automatizáveis.
+- 🟡 Os parâmetros devem ser salvos com o projeto do DAW e automatizáveis. ✅ Exceção: a intensidade não é automatizável (D104).
 
 ## 5. Arquitetura técnica
 

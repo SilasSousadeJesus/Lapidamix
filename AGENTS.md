@@ -17,7 +17,7 @@ Detalhes: `docs/01-visao.md` e `docs/03-especificacao-v1.md`.
 
 ## Fase atual
 
-**Fase 4 — Correção automática: em andamento** (D93). Proposta aprovada (D94 a D100), implementação em 6 passos pequenos, na ordem da D99. Veja o passo atual em `docs/10-estado-atual.md`. A Fase 3 foi concluída com exceções registradas (D90). Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
+**Fase 4 — Correção automática: em andamento** (D93). Proposta aprovada (D94 a D102), implementação em 6 passos pequenos, na ordem da D99. Veja o passo atual em `docs/10-estado-atual.md`. A Fase 3 foi concluída com exceções registradas (D90). Licença do projeto: AGPLv3 (D42). Veja `docs/04-roadmap-v1.md`.
 
 ## Como trabalhar comigo (o usuário)
 

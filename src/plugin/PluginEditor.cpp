@@ -11,7 +11,9 @@ namespace
     constexpr int nameWidth = 110;
     constexpr int toggleWidth = 36;
     constexpr int columnGap = 8;
-    constexpr int resultsHeight = 96;
+    constexpr int resultsHeight = 76;
+    constexpr int planHeight = 116;
+    constexpr int applyColumnWidth = 220;
     constexpr int plotHeight = 220;
     constexpr int refreshRateHz = 30;
     constexpr int maximumShownResonances = 3;
@@ -34,6 +36,50 @@ namespace
     juce::String percent (float fraction)
     {
         return lapidamix::format::decimal (fraction * 100.0f, 0) + "%";
+    }
+
+    juce::String describeGainBand (const lapidamix::BandCorrection& band)
+    {
+        using Reason = lapidamix::CorrectionReason;
+
+        switch (band.reason)
+        {
+            case Reason::applied:
+                if (! band.isEnabled)
+                    return "desligada, intensidade em 0%";
+
+                return (band.gainDb > 0.0f ? "+" : "") + lapidamix::format::decimal (band.gainDb, 1) + " dB em " + hertz (band.frequency)
+                     + ", Q " + lapidamix::format::decimal (band.q, 1);
+            case Reason::withinRange:          return "nada, dentro da faixa";
+            case Reason::protectedFundamental: return utf8 ("nada, a fundamental ocupa essa região");
+            case Reason::noEligiblePeak:       return utf8 ("nada, nenhum pico cumpre a regra");
+            case Reason::noAnalysis:
+            case Reason::inconsistentFundamental:
+            case Reason::notAutomatic:
+                break;
+        }
+
+        return {};
+    }
+
+    juce::String describePlan (const lapidamix::CorrectionPlan& plan, float compensationDb)
+    {
+        using Reason = lapidamix::CorrectionReason;
+
+        auto text = utf8 ("Correções propostas (só valem depois de clicar em Aplicar):\n");
+        text << "Passa-alta: " << (plan.highPass.isEnabled ? hertz (plan.highPass.frequency) : juce::String ("desligada, intensidade em 0%"));
+
+        if (plan.highPass.reason == Reason::inconsistentFundamental)
+            text << utf8 (", posição conservadora: a medida do grave parece inconsistente");
+
+        text << "\nEmbolado: " << describeGainBand (plan.mud)
+             << utf8 ("\nRessonância: ") << describeGainBand (plan.resonance)
+             << utf8 ("\nPresença: ") << describeGainBand (plan.presence)
+             << utf8 ("\nAr: não age sozinha; ajuste à mão, se quiser")
+             << utf8 ("\nSaída: ") << (compensationDb > 0.0f ? "+" : "") << lapidamix::format::decimal (compensationDb, 1)
+             << " dB, para manter o volume";
+
+        return text;
     }
 }
 
@@ -113,9 +159,39 @@ LapidamixAudioProcessorEditor::LapidamixAudioProcessorEditor (LapidamixAudioProc
 
     analysisResults.setJustificationType (juce::Justification::topLeft);
     addAndMakeVisible (analysisResults);
+
+    planText.setJustificationType (juce::Justification::topLeft);
+    addAndMakeVisible (planText);
+
+    applyButton.setButtonText ("Aplicar");
+    applyButton.setEnabled (false);
+    applyButton.onClick = [this]
+    {
+        audioProcessor.applyCurrentCorrection();
+        analysisStatus.setText (utf8 ("Correções aplicadas. Compare com o bypass e ajuste à mão, se quiser."), juce::dontSendNotification);
+    };
+    addAndMakeVisible (applyButton);
+
+    setUpLabel (intensityLabel, "Intensidade (%)");
+    setUpSlider (intensitySlider);
+    intensityAttachment = std::make_unique<ParameterState::SliderAttachment> (
+        parameters, LapidamixAudioProcessor::intensityParameterId, intensitySlider);
+
+    // Só depois da ligação ao parâmetro, para abrir a janela não contar como mudança.
+    intensitySlider.onValueChange = [this]
+    {
+        audioProcessor.handleIntensityChange();
+        updatePlanText();
+    };
+
+    // Mover a intensidade reescreve as bandas e a Saída (D104).
+    setUpLabel (intensityNote, "Ajuste a intensidade antes de mexer nas bandas à mão");
+    intensityNote.setFont (juce::FontOptions (12.0f));
+    intensityNote.setJustificationType (juce::Justification::topLeft);
+
     addAndMakeVisible (spectrumPlot);
 
-    setSize (windowWidth, 2 * margin + rowHeight * (lapidamix::numEqBands + 3) + resultsHeight + plotHeight);
+    setSize (windowWidth, 2 * margin + rowHeight * (lapidamix::numEqBands + 3) + resultsHeight + planHeight + plotHeight);
 
     // O RTA só calcula com a janela aberta (D74).
     audioProcessor.getRta().setActive (true);
@@ -177,6 +253,9 @@ void LapidamixAudioProcessorEditor::updateAnalysisStatus()
 
 void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::AnalysisResult& result)
 {
+    updatePlanText();
+    const auto plan = audioProcessor.getCorrectionPlan();
+
     if (! result.isValid)
     {
         analysisResults.setText ({}, juce::dontSendNotification);
@@ -221,13 +300,20 @@ void LapidamixAudioProcessorEditor::showAnalysisResult (const lapidamix::Analysi
         text << "\n";
     }
 
-    if (result.voiceSeconds < lapidamix::AnalysisController::minimumVoiceSeconds)
-        text << utf8 ("Atenção: menos de 10 s de voz válida; as medidas podem variar.");
+    if (! plan.isAvailable)
+        text << utf8 ("Pouca voz para propor correções. Cante mais ou repita o trecho em loop até chegar a 10 s.");
 
     analysisResults.setText (text, juce::dontSendNotification);
     spectrumPlot.setAnalysisCurves (result.voiceCurve, result.soundCurve);
 
     analysisStatus.setText (utf8 ("Análise concluída. Nada foi alterado no som."), juce::dontSendNotification);
+}
+
+void LapidamixAudioProcessorEditor::updatePlanText()
+{
+    const auto plan = audioProcessor.getCorrectionPlan();
+    planText.setText (plan.isAvailable ? describePlan (plan, audioProcessor.getCompensationDb (plan)) : juce::String(), juce::dontSendNotification);
+    applyButton.setEnabled (plan.isAvailable);
 }
 
 void LapidamixAudioProcessorEditor::setUpLabel (juce::Label& label, const char* text)
@@ -293,5 +379,15 @@ void LapidamixAudioProcessorEditor::resized()
     analysisStatus.setBounds (analysisRow);
 
     analysisResults.setBounds (area.removeFromTop (resultsHeight));
+
+    auto planArea = area.removeFromTop (planHeight);
+    auto applyColumn = planArea.removeFromRight (applyColumnWidth);
+    applyButton.setBounds (applyColumn.removeFromTop (rowHeight - 6));
+    intensityLabel.setBounds (applyColumn.removeFromTop (rowHeight - 6));
+    intensitySlider.setBounds (applyColumn.removeFromTop (rowHeight - 6));
+    intensityNote.setBounds (applyColumn);
+    planArea.removeFromRight (columnGap);
+    planText.setBounds (planArea);
+
     spectrumPlot.setBounds (area);
 }

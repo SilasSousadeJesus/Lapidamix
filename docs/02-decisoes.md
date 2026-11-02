@@ -107,6 +107,9 @@ Toda decisão nova entra aqui primeiro. Nunca apagar uma decisão: se ela mudar,
 | D99 | 02/11/2026 | **Fluxo e ordem (confirma P53 e P54):** Analisar → lista de bandas e explicação (D92) → Aplicar, que escreve nos parâmetros existentes; volume compensado no ganho de saída, para o A/B ser justo. Implementar em passos pequenos: regras; dados da análise; lista e Aplicar; intensidade e volume; explicações; verificação sem DAW e **A/B no Reaper, feito pelo usuário no fim da fase** | O A/B é o critério da fase e não pode ser dispensado |
 | D100 | 02/11/2026 | **Intensidade no passa-alta (confirma P55; completa a D98):** em 0%, a banda fica desligada. De 0% a 100%, a frequência sai de 40 Hz e sobe até o valor calculado, em proporção de oitavas. O Q fica fixo. É a única banda em que a intensidade muda a frequência | O passa-alta não tem ganho para escalar. Assim ele age menos em intensidade baixa e nunca sobe acima do calculado |
 | D101 | 02/11/2026 | **Pouca voz:** abaixo de 10 s de voz válida, o plugin não propõe bandas: mostra as medidas e um aviso que orienta a solução: "Pouca voz para propor correções. Cante mais ou repita o trecho em loop até chegar a 10 s." | Com tão pouca voz, as medidas variam demais para decidir um corte. O aviso diz o que fazer |
+| D102 | 02/11/2026 | **Compensação de volume (detalha a D99):** um valor fixo, calculado a partir da análise no momento do Aplicar e escrito no controle Saída, visível e ajustável à mão. Quando a intensidade mudar, a compensação acompanha. Nada de ganho que muda durante a reprodução | Um ganho que muda continuamente seria um compressor, fora do escopo (D04) |
+| D103 | 02/11/2026 | **Volume em LUFS (substitui a P56):** a compensação compara o volume antes e depois do plano com a ponderação K da ITU-R BS.1770, a mesma do LUFS, em vez da ponderação A. O plugin aplica a ponderação ao espectro da análise, sem os portões da norma. A conferência usa um medidor de LUFS integrado completo, em `tools/verifica-plugin`, e o medidor do Reaper | Pedido do usuário: é o padrão para volume percebido de música e pode ser conferido no Reaper. A troca foi simples: só mudou o peso de cada frequência |
+| D104 | 02/11/2026 | **Intensidade depois de aplicar (confirma a P57, com ajuste):** mover a intensidade reaplica o plano e sobrescreve ajustes manuais nas bandas e na Saída. Com uma análise nova ainda não aplicada, só muda a proposta. Não é automatizável. Fica um aviso curto junto ao controle: "Ajuste a intensidade antes de mexer nas bandas à mão" | O aviso é pedido do usuário, para ninguém perder ajustes sem perceber. Automatizar a intensidade reescreveria outros parâmetros durante a reprodução |
 
 ## 🟡 Propostas aguardando confirmação
 
@@ -174,6 +177,8 @@ Serão decididas nas fases em que forem usadas (D31).
 | P53 | Fluxo | Confirmada: ver D99 |
 | P54 | Ordem e teste | Confirmada: ver D99 |
 | P55 | Intensidade no passa-alta | Confirmada: ver D100 |
+| P56 | Volume da compensação com ponderação A | Substituída por LUFS (ponderação K): ver D103 |
+| P57 | Intensidade depois de aplicar | Confirmada, com um aviso na janela: ver D104 |
 
 ## ❓ Em aberto
 

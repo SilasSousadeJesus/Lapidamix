@@ -5,6 +5,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "core/analysis/AnalysisController.h"
+#include "core/correction/CorrectionRules.h"
 #include "modules/EqModule.h"
 #include "plugin/RtaAnalyzer.h"
 
@@ -15,6 +16,7 @@ public:
     static constexpr auto instrumentParameterId = "instrument";
     static constexpr auto bypassParameterId = "bypass";
     static constexpr auto outputGainParameterId = "output_gain";
+    static constexpr auto intensityParameterId = "correction_intensity";
 
     LapidamixAudioProcessor();
     ~LapidamixAudioProcessor() override;
@@ -60,6 +62,17 @@ public:
     lapidamix::AnalysisResult getLastAnalysisResult();
     int getResultVersion() const noexcept { return resultVersion.load(); }
 
+    // O que o plugin pretende fazer com a última análise, na intensidade atual.
+    // Nada muda até o usuário aplicar (D85).
+    lapidamix::CorrectionPlan getCorrectionPlan();
+    float getCompensationDb (const lapidamix::CorrectionPlan& plan);
+
+    // Tudo isto roda só na thread de mensagens.
+    // Escreve o plano e a compensação nos parâmetros: fica visível, ajustável à mão e salvo no projeto (D99, D102).
+    void applyCorrectionPlan (const lapidamix::CorrectionPlan& plan);
+    void applyCurrentCorrection();
+    void handleIntensityChange();
+
 private:
     void storeAnalysisResult (const lapidamix::AnalysisResult& result);
 
@@ -80,6 +93,10 @@ private:
 
     juce::CriticalSection resultLock; // Nunca usado na thread de áudio.
     lapidamix::AnalysisResult lastResult;
+
+    // A correção aplicada corresponde à última análise? Mover a intensidade só a refaz nesse caso.
+    std::atomic<bool> correctionIsApplied { false };
+    std::atomic<float> appliedIntensity { 0.0f };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LapidamixAudioProcessor)
 };

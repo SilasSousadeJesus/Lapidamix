@@ -2,6 +2,9 @@
 
 #include <cmath>
 
+#include <juce_dsp/juce_dsp.h>
+
+#include "core/Loudness.h"
 #include "core/analysis/SpectrumGrid.h"
 
 namespace lapidamix
@@ -110,15 +113,99 @@ namespace lapidamix
             band.reason = CorrectionReason::applied;
             return band;
         }
+
+        // A grade é logarítmica: cada ponto representa uma faixa proporcional à frequência.
+        template <typename GetPower>
+        float sumPerceivedDb (const std::vector<float>& curve, GetPower getBandPower)
+        {
+            auto sum = 0.0;
+
+            for (int point = 0; point < spectrum::numDisplayPoints; ++point)
+            {
+                const auto frequency = spectrum::getDisplayFrequency (point);
+                sum += std::pow (10.0, curve[(size_t) point] / 10.0) * loudness::getKWeightingPower (frequency) * frequency * getBandPower (frequency);
+            }
+
+            return 10.0f * (float) std::log10 (sum + 1.0e-20);
+        }
+    }
+
+    CorrectionPlan scaleCorrectionPlan (const CorrectionPlan& plan, float intensity, const CorrectionSettings& settings)
+    {
+        auto scaled = plan;
+        const auto isOn = intensity > 0.0f;
+
+        const auto scaleGain = [&] (BandCorrection& band)
+        {
+            band.gainDb *= intensity;
+            band.isEnabled = band.isEnabled && isOn;
+        };
+
+        scaleGain (scaled.mud);
+        scaleGain (scaled.resonance);
+        scaleGain (scaled.presence);
+
+        const auto lowest = settings.highPass.minimumFrequency;
+
+        if (plan.highPass.frequency > 0.0f)
+            scaled.highPass.frequency = lowest * std::pow (plan.highPass.frequency / lowest, intensity);
+
+        scaled.highPass.isEnabled = plan.highPass.isEnabled && isOn;
+        return scaled;
+    }
+
+    float getPerceivedLevelDb (const std::vector<float>& curve)
+    {
+        if ((int) curve.size() != spectrum::numDisplayPoints)
+            return spectrum::silenceDb;
+
+        return sumPerceivedDb (curve, [] (float) { return 1.0; });
+    }
+
+    float estimateCompensationDb (const AnalysisResult& analysis, const CorrectionPlan& plan, double sampleRate)
+    {
+        if (! plan.isAvailable || (int) analysis.soundCurve.size() != spectrum::numDisplayPoints)
+            return 0.0f;
+
+        using Filter = juce::dsp::IIR::Coefficients<float>;
+        using ArrayCoefficients = juce::dsp::IIR::ArrayCoefficients<float>;
+
+        std::vector<Filter> filters;
+
+        // A banda de ar não entra: o plano não mexe nela (D97).
+        if (plan.highPass.isEnabled)
+            filters.emplace_back (ArrayCoefficients::makeHighPass (sampleRate, plan.highPass.frequency, 0.707f));
+
+        for (const auto* band : { &plan.mud, &plan.resonance, &plan.presence })
+            if (band->isEnabled)
+                filters.emplace_back (ArrayCoefficients::makePeakFilter (sampleRate, band->frequency, band->q, juce::Decibels::decibelsToGain (band->gainDb)));
+
+        const auto before = getPerceivedLevelDb (analysis.soundCurve);
+        const auto after = sumPerceivedDb (analysis.soundCurve, [&] (float frequency)
+        {
+            auto power = 1.0;
+
+            for (const auto& filter : filters)
+            {
+                const auto magnitude = filter.getMagnitudeForFrequency ((double) frequency, sampleRate);
+                power *= magnitude * magnitude;
+            }
+
+            return power;
+        });
+
+        return before - after;
     }
 
     CorrectionPlan makeCorrectionPlan (const AnalysisResult& analysis, const CorrectionSettings& settings)
     {
         CorrectionPlan plan;
 
-        // Sem voz medida, nada é proposto.
-        if (! analysis.isValid || analysis.voiceSeconds <= 0.0f || (int) analysis.voiceCurve.size() != spectrum::numDisplayPoints)
+        // Com pouca voz, as medidas variam demais para decidir um corte (D101).
+        if (! analysis.isValid || analysis.voiceSeconds < settings.minimumVoiceSeconds || (int) analysis.voiceCurve.size() != spectrum::numDisplayPoints)
             return plan;
+
+        plan.isAvailable = true;
 
         const auto referenceDb = spectrum::getCurveRegionDb (analysis.voiceCurve, settings.referenceLow, settings.referenceHigh);
 

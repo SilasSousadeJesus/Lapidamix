@@ -30,6 +30,8 @@ namespace lapidamix
     // O que o plugin pretende fazer. Nada aqui altera o som: quem aplica é o usuário (D85, D99).
     struct CorrectionPlan
     {
+        bool isAvailable = false; // Falso sem análise ou com pouca voz: nada é proposto (D101).
+
         BandCorrection highPass;
         BandCorrection mud;
         BandCorrection resonance;
@@ -39,4 +41,14 @@ namespace lapidamix
 
     // Regras fixas, com resultado que depende da voz analisada (D25). Sem áudio nem interface.
     CorrectionPlan makeCorrectionPlan (const AnalysisResult& analysis, const CorrectionSettings& settings);
+
+    // Intensidade de 0 a 1: escala os ganhos (D98). No passa-alta, sobe em oitavas a partir do mínimo (D100).
+    CorrectionPlan scaleCorrectionPlan (const CorrectionPlan& plan, float intensity, const CorrectionSettings& settings);
+
+    // Volume de uma curva de espectro, com a ponderação K do LUFS (D103). Serve para comparar antes e depois:
+    // sem os portões da BS.1770, o valor sozinho não é uma leitura de LUFS.
+    float getPerceivedLevelDb (const std::vector<float>& curve);
+
+    // Valor fixo que deixa o volume igual ao de antes do plano, calculado a partir da análise (D102).
+    float estimateCompensationDb (const AnalysisResult& analysis, const CorrectionPlan& plan, double sampleRate);
 }

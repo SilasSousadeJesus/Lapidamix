@@ -31,6 +31,19 @@ namespace
                 .withStringFromValueFunction ([] (float value, int) { return lapidamix::format::decimal (value, 1); })
                 .withValueFromStringFunction ([] (const juce::String& text) { return lapidamix::format::parseDecimal (text); })));
 
+        // Não automatizável: mover a intensidade reescreve outros parâmetros, o que não pode
+        // acontecer durante a reprodução (P57).
+        layout.add (std::make_unique<juce::AudioParameterFloat> (
+            juce::ParameterID { LapidamixAudioProcessor::intensityParameterId, 1 },
+            "Intensidade",
+            juce::NormalisableRange<float> { 0.0f, 100.0f, 1.0f },
+            100.0f,
+            juce::AudioParameterFloatAttributes()
+                .withLabel ("%")
+                .withAutomatable (false)
+                .withStringFromValueFunction ([] (float value, int) { return lapidamix::format::decimal (value, 0); })
+                .withValueFromStringFunction ([] (const juce::String& text) { return lapidamix::format::parseDecimal (text); })));
+
         lapidamix::EqModule::addParameters (layout, lapidamix::voiceProfile);
 
         return layout;
@@ -135,6 +148,8 @@ void LapidamixAudioProcessor::storeAnalysisResult (const lapidamix::AnalysisResu
         lastResult = result;
     }
 
+    // A análise nova ainda não foi aplicada: o som continua como estava (D99).
+    correctionIsApplied.store (false);
     ++resultVersion;
 }
 
@@ -142,6 +157,78 @@ lapidamix::AnalysisResult LapidamixAudioProcessor::getLastAnalysisResult()
 {
     const juce::ScopedLock lock (resultLock);
     return lastResult;
+}
+
+lapidamix::CorrectionPlan LapidamixAudioProcessor::getCorrectionPlan()
+{
+    const auto& settings = lapidamix::voiceProfile.correction;
+    const auto intensity = parameters.getRawParameterValue (intensityParameterId)->load() / 100.0f;
+    return lapidamix::scaleCorrectionPlan (lapidamix::makeCorrectionPlan (getLastAnalysisResult(), settings), intensity, settings);
+}
+
+float LapidamixAudioProcessor::getCompensationDb (const lapidamix::CorrectionPlan& plan)
+{
+    return lapidamix::estimateCompensationDb (getLastAnalysisResult(), plan, currentSampleRate.load());
+}
+
+void LapidamixAudioProcessor::applyCurrentCorrection()
+{
+    const auto plan = getCorrectionPlan();
+
+    if (! plan.isAvailable)
+        return;
+
+    applyCorrectionPlan (plan);
+    appliedIntensity.store (parameters.getRawParameterValue (intensityParameterId)->load());
+    correctionIsApplied.store (true);
+}
+
+void LapidamixAudioProcessor::handleIntensityChange()
+{
+    const auto intensity = parameters.getRawParameterValue (intensityParameterId)->load();
+
+    if (correctionIsApplied.load() && ! juce::approximatelyEqual (intensity, appliedIntensity.load()))
+        applyCurrentCorrection();
+}
+
+void LapidamixAudioProcessor::applyCorrectionPlan (const lapidamix::CorrectionPlan& plan)
+{
+    if (! plan.isAvailable)
+        return;
+
+    const auto setValue = [this] (const juce::String& id, float value)
+    {
+        auto* parameter = parameters.getParameter (id);
+        parameter->beginChangeGesture();
+        parameter->setValueNotifyingHost (parameter->convertTo0to1 (value));
+        parameter->endChangeGesture();
+    };
+
+    const auto applyBand = [&] (int bandIndex, const lapidamix::BandCorrection& band)
+    {
+        using Module = lapidamix::EqModule;
+        const auto& profile = lapidamix::voiceProfile.eqBands[(size_t) bandIndex];
+
+        if (band.frequency > 0.0f)
+            setValue (Module::getFrequencyParameterId (bandIndex), band.frequency);
+
+        if (profile.hasGain)
+            setValue (Module::getGainParameterId (bandIndex), band.gainDb);
+
+        if (profile.hasAdjustableQ && band.q > 0.0f)
+            setValue (Module::getQParameterId (bandIndex), band.q);
+
+        setValue (Module::getEnabledParameterId (bandIndex), band.isEnabled ? 1.0f : 0.0f);
+    };
+
+    // Índices na ordem do perfil da voz. A banda de ar fica como o usuário deixou (D97).
+    applyBand (0, plan.highPass);
+    applyBand (1, plan.mud);
+    applyBand (2, plan.resonance);
+    applyBand (3, plan.presence);
+
+    // Valor fixo: não muda durante a reprodução, senão seria um compressor (D04, D102).
+    setValue (outputGainParameterId, getCompensationDb (plan));
 }
 
 float LapidamixAudioProcessor::getTargetOutputGain() const noexcept
@@ -222,6 +309,8 @@ void LapidamixAudioProcessor::changeProgramName (int index, const juce::String& 
 void LapidamixAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = parameters.copyState();
+    state.setProperty ("correctionIsApplied", correctionIsApplied.load(), nullptr);
+    state.setProperty ("appliedIntensity", appliedIntensity.load(), nullptr);
 
     {
         // As medidas são salvas com o projeto, sem guardar áudio (D76).
@@ -249,6 +338,12 @@ void LapidamixAudioProcessor::setStateInformation (const void* data, int sizeInB
             }
 
             state.removeChild (savedResult, nullptr);
+
+            correctionIsApplied.store (state.getProperty ("correctionIsApplied", false));
+            appliedIntensity.store (state.getProperty ("appliedIntensity", 0.0f));
+            state.removeProperty ("correctionIsApplied", nullptr);
+            state.removeProperty ("appliedIntensity", nullptr);
+
             parameters.replaceState (state);
             ++resultVersion;
         }

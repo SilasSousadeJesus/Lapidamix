@@ -11,6 +11,7 @@
 #include <new>
 #include <vector>
 
+#include "core/Loudness.h"
 #include "core/correction/CorrectionRules.h"
 #include "plugin/PluginProcessor.h"
 #include "profiles/InstrumentProfile.h"
@@ -265,16 +266,34 @@ static void testShortAnalysisAndState (const juce::AudioBuffer<float>& audio)
 
     std::unique_ptr<juce::AudioProcessorEditor> editor (processor->createEditor());
     juce::MessageManager::getInstance()->runDispatchLoopUntil (200);
-    const auto warning = collectLabelText (*editor).contains (juce::String::fromUTF8 ("Atenção: menos de 10 s"));
-    check (shortResult.isValid && shortResult.voiceSeconds > 0.0f && shortResult.voiceSeconds < 10.0f && warning,
-           "Aviso aparece com " + juce::String (shortResult.voiceSeconds, 1) + " s de voz");
+    const auto warningText = juce::String::fromUTF8 ("Pouca voz para propor correções. Cante mais ou repita o trecho em loop até chegar a 10 s.");
+    const auto findApplyButton = [] (juce::Component& parent) -> juce::Button*
+    {
+        for (auto* child : parent.getChildren())
+            if (auto* button = dynamic_cast<juce::TextButton*> (child))
+                if (button->getButtonText() == "Aplicar")
+                    return button;
+        return nullptr;
+    };
+
+    auto labels = collectLabelText (*editor);
+    auto* applyButton = findApplyButton (*editor);
+    check (shortResult.isValid && shortResult.voiceSeconds > 0.0f && shortResult.voiceSeconds < 10.0f && labels.contains (warningText),
+           "Aviso com a solucao aparece com " + juce::String (shortResult.voiceSeconds, 1) + " s de voz (D101)");
+    check (applyButton != nullptr && ! applyButton->isEnabled() && ! labels.contains (juce::String::fromUTF8 ("Correções propostas")),
+           "Com pouca voz, nada e proposto e Aplicar fica desligado (D101)");
+    check (labels.contains ("Fundamental: mediana"), "Com pouca voz, as medidas continuam na janela");
     editor.reset();
 
     // Análise completa, sem aviso, para testar salvar e restaurar.
     const auto full = analyseExactly (*processor, audio, (int) (60.0 * kRate));
     editor.reset (processor->createEditor());
     juce::MessageManager::getInstance()->runDispatchLoopUntil (200);
-    check (! collectLabelText (*editor).contains (juce::String::fromUTF8 ("Atenção")), "Sem aviso com " + juce::String (full.voiceSeconds, 1) + " s de voz");
+    labels = collectLabelText (*editor);
+    applyButton = findApplyButton (*editor);
+    check (! labels.contains (warningText), "Sem aviso com " + juce::String (full.voiceSeconds, 1) + " s de voz");
+    check (labels.contains (juce::String::fromUTF8 ("Correções propostas")) && applyButton != nullptr && applyButton->isEnabled(),
+           "Com voz suficiente, a lista aparece e Aplicar fica ligado");
     editor.reset();
 
     juce::MemoryBlock state;
@@ -390,8 +409,14 @@ static void testRules()
 
     {
         const auto plan = makeCorrectionPlan ({}, settings);
-        check (! plan.highPass.isEnabled && ! plan.mud.isEnabled && ! plan.resonance.isEnabled && ! plan.presence.isEnabled && ! plan.air.isEnabled,
+        check (! plan.isAvailable && ! plan.highPass.isEnabled && ! plan.mud.isEnabled && ! plan.resonance.isEnabled && ! plan.presence.isEnabled && ! plan.air.isEnabled,
                "Regras: sem analise, nada e proposto");
+
+        auto analysis = makeKnownAnalysis (-40.0f, -28.0f, -70.0f);
+        analysis.voiceSeconds = 9.9f;
+        const auto littleVoice = makeCorrectionPlan (analysis, settings);
+        analysis.voiceSeconds = 10.0f;
+        check (! littleVoice.isAvailable && ! littleVoice.mud.isEnabled && makeCorrectionPlan (analysis, settings).isAvailable, "Regras: abaixo de 10 s de voz, nada e proposto; com 10 s, sim (D101)");
     }
 
     {
@@ -469,7 +494,103 @@ static void testRules()
     }
 }
 
-// A análise de verdade calculando os dados novos, com sinais de resposta conhecida.
+// O nível de um seno depois de passar pelo plugin, em dB, com os parâmetros já estabilizados.
+static float measureToneDb (LapidamixAudioProcessor& processor, float frequency)
+{
+    juce::AudioBuffer<float> block (2, kBlock);
+    auto phase = 0.0;
+    double sum = 0.0;
+    int count = 0;
+
+    for (int n = 0; n < 200; ++n)
+    {
+        for (int i = 0; i < kBlock; ++i)
+        {
+            phase += juce::MathConstants<double>::twoPi * frequency / kRate;
+            const auto v = 0.1f * (float) std::sin (phase);
+            block.setSample (0, i, v);
+            block.setSample (1, i, v);
+        }
+
+        process (processor, block);
+
+        if (n >= 100)
+            for (int i = 0; i < kBlock; ++i)
+            {
+                sum += block.getSample (0, i) * block.getSample (0, i);
+                ++count;
+            }
+    }
+
+    return juce::Decibels::gainToDecibels ((float) std::sqrt (sum / count) / (0.1f / std::sqrt (2.0f)));
+}
+
+// O botão Aplicar: nada muda antes dele, e depois o som muda como o plano diz (D85, D99).
+static void testApply (const juce::AudioBuffer<float>& audio)
+{
+    using lapidamix::EqModule;
+    LapidamixAudioProcessor processor;
+    prepare (processor);
+
+    // A banda de ar é do usuário: Aplicar não pode mexer nela (D97).
+    setParameter (processor, EqModule::getEnabledParameterId (4), 1.0f);
+    setParameter (processor, EqModule::getGainParameterId (4), 2.0f);
+
+    const auto getValue = [&] (const juce::String& id) { return processor.getParameters().getRawParameterValue (id)->load(); };
+    const auto near = [] (float a, float b, float tolerance) { return std::abs (a - b) <= tolerance; };
+
+    const auto emptyPlan = processor.getCorrectionPlan();
+    processor.applyCorrectionPlan (emptyPlan);
+    check (! emptyPlan.isAvailable && getValue (EqModule::getEnabledParameterId (1)) < 0.5f, "Aplicar: sem analise, nada muda");
+
+    analyseExactly (processor, audio, (int) (60.0 * kRate));
+    const auto plan = processor.getCorrectionPlan();
+    check (plan.isAvailable && getValue (EqModule::getEnabledParameterId (1)) < 0.5f && getValue (EqModule::getEnabledParameterId (3)) < 0.5f,
+           "Aplicar: depois de analisar, as bandas continuam desligadas ate clicar");
+
+    const auto before316 = measureToneDb (processor, 316.0f);
+    processor.applyCorrectionPlan (plan);
+
+    check (near (getValue (EqModule::getFrequencyParameterId (0)), plan.highPass.frequency, 0.5f) && getValue (EqModule::getEnabledParameterId (0)) > 0.5f
+               && near (getValue (EqModule::getFrequencyParameterId (1)), plan.mud.frequency, 0.5f) && near (getValue (EqModule::getGainParameterId (1)), plan.mud.gainDb, 0.06f)
+               && near (getValue (EqModule::getQParameterId (1)), plan.mud.q, 0.01f) && getValue (EqModule::getEnabledParameterId (1)) > 0.5f
+               && near (getValue (EqModule::getFrequencyParameterId (3)), plan.presence.frequency, 0.5f) && near (getValue (EqModule::getGainParameterId (3)), plan.presence.gainDb, 0.06f)
+               && near (getValue (EqModule::getQParameterId (3)), plan.presence.q, 0.01f) && getValue (EqModule::getEnabledParameterId (3)) > 0.5f,
+           "Aplicar: os parametros recebem o plano (passa-alta " + juce::String (plan.highPass.frequency, 0) + " Hz, embolado " + juce::String (plan.mud.gainDb, 1)
+               + " dB, presenca +" + juce::String (plan.presence.gainDb, 1) + " dB)");
+    check (getValue (EqModule::getEnabledParameterId (4)) > 0.5f && near (getValue (EqModule::getGainParameterId (4)), 2.0f, 0.06f), "Aplicar: a banda de ar fica como o usuario deixou (D97)");
+
+    // Os tons passam também pela compensação escrita na Saída.
+    const auto compensation = getValue (LapidamixAudioProcessor::outputGainParameterId);
+    const auto after316 = measureToneDb (processor, (float) plan.mud.frequency) - compensation;
+    const auto after3500 = measureToneDb (processor, plan.presence.frequency) - compensation;
+    const auto after20 = measureToneDb (processor, 20.0f) - compensation;
+    check (near (after316 - before316, plan.mud.gainDb, 1.0f), "Aplicar: o som muda como o plano diz em " + juce::String (plan.mud.frequency, 0) + " Hz: " + juce::String (after316 - before316, 1) + " dB");
+    check (near (after3500, plan.presence.gainDb, 1.0f), "Aplicar: o som muda como o plano diz em 3,5 kHz: " + juce::String (after3500, 1) + " dB");
+    check (after20 < -6.0f, "Aplicar: o passa-alta age em 20 Hz: " + juce::String (after20, 1) + " dB");
+
+    // Analisar de novo não muda o som até um novo clique (D99).
+    const auto gainBefore = getValue (EqModule::getGainParameterId (1));
+    analyseExactly (processor, audio, (int) (40.0 * kRate));
+    check (near (getValue (EqModule::getGainParameterId (1)), gainBefore, 0.001f), "Aplicar: analisar de novo nao muda as bandas");
+
+    // Um plano novo apaga o anterior nas bandas que não agem mais.
+    auto withoutMud = plan;
+    withoutMud.mud.isEnabled = false;
+    withoutMud.mud.gainDb = 0.0f;
+    processor.applyCorrectionPlan (withoutMud);
+    check (getValue (EqModule::getEnabledParameterId (1)) < 0.5f && near (getValue (EqModule::getGainParameterId (1)), 0.0f, 0.06f), "Aplicar: banda que nao age mais desliga e volta a 0 dB");
+
+    // Depois de aplicar, o projeto guarda as bandas.
+    processor.applyCorrectionPlan (plan);
+    juce::MemoryBlock state;
+    processor.getStateInformation (state);
+    LapidamixAudioProcessor restored;
+    restored.setStateInformation (state.getData(), (int) state.getSize());
+    const auto restoredGain = restored.getParameters().getRawParameterValue (EqModule::getGainParameterId (1))->load();
+    check (near (restoredGain, plan.mud.gainDb, 0.06f), "Aplicar: as bandas aplicadas voltam ao reabrir o projeto");
+}
+
 static lapidamix::AnalysisResult analyseMono (const std::vector<float>& mono)
 {
     lapidamix::VoiceAnalyzer::Settings settings;
@@ -478,6 +599,242 @@ static lapidamix::AnalysisResult analyseMono (const std::vector<float>& mono)
     return analyzer.finish (mono.data(), (int) mono.size(), nullptr);
 }
 
+// A BS.1770 só publica os coeficientes de 48 kHz: refaz a transformação bilinear para outra taxa.
+static lapidamix::loudness::Biquad retuneBiquad (const lapidamix::loudness::Biquad& f, double sampleRate)
+{
+    const auto scale = 1.0 - f.a1 + f.a2;
+    const auto squaredK = (1.0 + f.a1 + f.a2) / scale;
+    const auto kOverQ = 2.0 * (1.0 - f.a2) / scale;
+    const auto d = 4.0 / scale;
+
+    const auto k = std::sqrt (squaredK);
+    const auto newK = std::tan (std::atan (k) * lapidamix::loudness::kWeightingSampleRate / sampleRate);
+    const auto low = d * (f.b0 + f.b1 + f.b2) / (4.0 * squaredK);
+    const auto high = d * (f.b0 - f.b1 + f.b2) / 4.0;
+    const auto middle = (f.b0 - f.b2) * d / 2.0 * newK / k;
+    const auto newKOverQ = kOverQ * newK / k;
+    const auto newSquaredK = newK * newK;
+    const auto newD = 1.0 + newKOverQ + newSquaredK;
+
+    return { (high + middle + low * newSquaredK) / newD,
+             2.0 * (low * newSquaredK - high) / newD,
+             (high - middle + low * newSquaredK) / newD,
+             2.0 * (newSquaredK - 1.0) / newD,
+             (1.0 - newKOverQ + newSquaredK) / newD };
+}
+
+// LUFS integrado completo (ITU-R BS.1770): ponderação K, blocos de 400 ms e os dois portões.
+// Medidor independente do plugin, que só compara curvas de espectro (D103).
+static double measureLufs (const juce::AudioBuffer<float>& audio, double sampleRate)
+{
+    using namespace lapidamix::loudness;
+    const auto shelf = retuneBiquad (kWeightingShelf, sampleRate);
+    const auto highPass = retuneBiquad (kWeightingHighPass, sampleRate);
+
+    const auto blockSize = (int) std::round (0.4 * sampleRate);
+    const auto hopSize = blockSize / 4;
+    const auto numSamples = audio.getNumSamples();
+    std::vector<double> squared ((size_t) numSamples, 0.0);
+
+    for (int channel = 0; channel < audio.getNumChannels(); ++channel)
+    {
+        const auto* input = audio.getReadPointer (channel);
+        double x1 = 0.0, x2 = 0.0, y1 = 0.0, y2 = 0.0, z1 = 0.0, z2 = 0.0;
+
+        for (int i = 0; i < numSamples; ++i)
+        {
+            const auto x = (double) input[i];
+            const auto y = shelf.b0 * x + shelf.b1 * x1 + shelf.b2 * x2 - shelf.a1 * y1 - shelf.a2 * y2;
+            const auto z = highPass.b0 * y + highPass.b1 * y1 + highPass.b2 * y2 - highPass.a1 * z1 - highPass.a2 * z2;
+            x2 = x1; x1 = x; y2 = y1; y1 = y; z2 = z1; z1 = z;
+            squared[(size_t) i] += z * z;
+        }
+    }
+
+    std::vector<double> blocks;
+    auto running = 0.0;
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        running += squared[(size_t) i];
+        if (i >= blockSize) running -= squared[(size_t) (i - blockSize)];
+        if (i >= blockSize - 1 && (i - blockSize + 1) % hopSize == 0) blocks.push_back (running / blockSize);
+    }
+
+    const auto toLufs = [] (double power) { return -0.691 + 10.0 * std::log10 (power + 1.0e-30); };
+    const auto gatedMean = [&] (double threshold)
+    {
+        auto sum = 0.0;
+        auto count = 0;
+        for (const auto block : blocks)
+            if (toLufs (block) > threshold) { sum += block; ++count; }
+        return count > 0 ? sum / count : 0.0;
+    };
+
+    return toLufs (gatedMean (toLufs (gatedMean (-70.0)) - 10.0));
+}
+
+// O próprio medidor conferido com sinais de resultado conhecido (EBU Tech 3341, casos 1, 3, 4 e 5).
+static void testLufsMeter()
+{
+    const auto makeTones = [] (std::initializer_list<std::pair<double, double>> parts, double sampleRate)
+    {
+        auto total = 0.0;
+        for (const auto& part : parts) total += part.second;
+
+        juce::AudioBuffer<float> tones (2, (int) (total * sampleRate));
+        auto position = 0;
+
+        for (const auto& part : parts)
+        {
+            const auto gain = std::pow (10.0, part.first / 20.0);
+            const auto length = (int) (part.second * sampleRate);
+
+            for (int i = 0; i < length && position + i < tones.getNumSamples(); ++i)
+            {
+                const auto value = (float) (gain * std::sin (juce::MathConstants<double>::twoPi * 1000.0 * i / sampleRate));
+                tones.setSample (0, position + i, value);
+                tones.setSample (1, position + i, value);
+            }
+
+            position += length;
+        }
+
+        return tones;
+    };
+
+    const auto report = [&] (const char* name, std::initializer_list<std::pair<double, double>> parts)
+    {
+        for (const auto sampleRate : { 44100.0, 48000.0 })
+        {
+            const auto lufs = measureLufs (makeTones (parts, sampleRate), sampleRate);
+            check (std::abs (lufs + 23.0) <= 0.1, juce::String ("Medidor de LUFS, ") + name + " a " + juce::String ((int) sampleRate) + " Hz: " + juce::String (lufs, 2) + " (esperado -23,0)");
+        }
+    };
+
+    report ("caso 1", { { -23.0, 20.0 } });
+    report ("caso 3", { { -36.0, 10.0 }, { -23.0, 60.0 }, { -36.0, 10.0 } });
+    report ("caso 4", { { -72.0, 10.0 }, { -36.0, 10.0 }, { -23.0, 60.0 }, { -36.0, 10.0 }, { -72.0, 10.0 } });
+    report ("caso 5", { { -26.0, 20.0 }, { -20.0, 20.1 }, { -26.0, 20.0 } });
+}
+
+// Intensidade e compensação de volume (D98, D100, D102).
+static void testIntensityAndVolume (const juce::AudioBuffer<float>& audio, const juce::String& name)
+{
+    using namespace lapidamix;
+    const auto& settings = voiceProfile.correction;
+    const auto near = [] (float a, float b, float tolerance) { return std::abs (a - b) <= tolerance; };
+
+    {
+        CorrectionPlan plan;
+        plan.isAvailable = true;
+        plan.highPass.isEnabled = true;
+        plan.highPass.frequency = 70.0f;
+        plan.mud.isEnabled = true;
+        plan.mud.gainDb = -5.0f;
+        plan.presence.isEnabled = true;
+        plan.presence.gainDb = 3.0f;
+
+        const auto half = scaleCorrectionPlan (plan, 0.5f, settings);
+        check (near (half.highPass.frequency, 52.9f, 0.1f) && near (half.mud.gainDb, -2.5f, 0.01f) && near (half.presence.gainDb, 1.5f, 0.01f), "Intensidade 50%: passa-alta 52,9 Hz, ganhos pela metade (D98, D100)");
+
+        const auto full = scaleCorrectionPlan (plan, 1.0f, settings);
+        check (near (full.highPass.frequency, 70.0f, 0.01f) && near (full.mud.gainDb, -5.0f, 0.01f), "Intensidade 100%: plano inteiro");
+
+        const auto off = scaleCorrectionPlan (plan, 0.0f, settings);
+        check (! off.highPass.isEnabled && ! off.mud.isEnabled && ! off.presence.isEnabled && near (off.mud.gainDb, 0.0f, 0.001f), "Intensidade 0%: todas as bandas desligadas (D100)");
+    }
+
+    LapidamixAudioProcessor processor;
+    prepare (processor);
+    const auto getValue = [&] (const juce::String& id) { return processor.getParameters().getRawParameterValue (id)->load(); };
+    const auto outputId = juce::String (LapidamixAudioProcessor::outputGainParameterId);
+    const auto intensityId = juce::String (LapidamixAudioProcessor::intensityParameterId);
+
+    check (! processor.getParameters().getParameter (intensityId)->isAutomatable(), "Intensidade nao e automatizavel (P57)");
+
+    analyseExactly (processor, audio, (int) (60.0 * kRate));
+
+    // Mover a intensidade antes de aplicar não muda o som.
+    setParameter (processor, intensityId, 50.0f);
+    processor.handleIntensityChange();
+    check (getValue (EqModule::getEnabledParameterId (1)) < 0.5f && near (getValue (outputId), 0.0f, 0.001f), "Intensidade antes de aplicar: nada muda");
+    setParameter (processor, intensityId, 100.0f);
+
+    processor.applyCurrentCorrection();
+    const auto full = getValue (outputId);
+    check (full > 0.0f && full < 6.0f, "Compensacao fixa na Saida, a 100%: " + juce::String (full, 1) + " dB");
+
+    // O volume em LUFS, com o plugin de verdade, na gravação inteira, antes e depois (D103).
+    const auto numSamples = audio.getNumSamples() - audio.getNumSamples() % kBlock;
+    juce::AudioBuffer<float> input (2, numSamples), output (2, numSamples);
+    juce::AudioBuffer<float> block (2, kBlock);
+    auto outputChanged = false;
+
+    for (int start = 0; start < numSamples; start += kBlock)
+    {
+        for (int channel = 0; channel < 2; ++channel)
+        {
+            block.copyFrom (channel, 0, audio, channel, start, kBlock);
+            input.copyFrom (channel, start, block, channel, 0, kBlock);
+        }
+
+        process (processor, block);
+
+        for (int channel = 0; channel < 2; ++channel)
+            output.copyFrom (channel, start, block, channel, 0, kBlock);
+
+        if (! juce::approximatelyEqual (getValue (outputId), full)) outputChanged = true;
+    }
+
+    check (! outputChanged, "Compensacao nao muda durante a reproducao (D102)");
+
+    const auto lufsIn = measureLufs (input, kRate);
+    const auto lufsOut = measureLufs (output, kRate);
+    check (std::abs (lufsOut - lufsIn) <= 0.5, name + ": LUFS integrado na gravacao inteira, " + juce::String (lufsIn, 2) + " antes e " + juce::String (lufsOut, 2) + " depois (Saida " + juce::String (full, 1) + " dB)");
+
+    // A intensidade, depois de aplicar, leva a compensação junto.
+    setParameter (processor, intensityId, 50.0f);
+    processor.handleIntensityChange();
+    const auto half = getValue (outputId);
+    check (near (getValue (EqModule::getGainParameterId (1)), -2.5f, 0.06f) && near (getValue (EqModule::getFrequencyParameterId (0)), 40.0f * std::sqrt (processor.getCorrectionPlan().highPass.frequency > 0.0f ? 71.17f / 40.0f : 1.0f), 1.0f)
+               && half > 0.0f && half < full,
+           "Intensidade 50% depois de aplicar: bandas e Saida acompanham (" + juce::String (half, 1) + " dB)");
+
+    setParameter (processor, intensityId, 0.0f);
+    processor.handleIntensityChange();
+    check (getValue (EqModule::getEnabledParameterId (0)) < 0.5f && getValue (EqModule::getEnabledParameterId (1)) < 0.5f && near (getValue (outputId), 0.0f, 0.051f), "Intensidade 0% depois de aplicar: bandas desligadas e Saida em 0 dB");
+
+    setParameter (processor, intensityId, 100.0f);
+    processor.handleIntensityChange();
+    check (near (getValue (outputId), full, 0.06f), "Intensidade de volta a 100%: mesma compensacao");
+
+    // Ajuste à mão fica, e o projeto reabre sem refazer nada.
+    setParameter (processor, outputId, 1.0f);
+    processor.handleIntensityChange();
+    check (near (getValue (outputId), 1.0f, 0.06f), "Saida ajustada a mao continua ate a intensidade mudar");
+
+    juce::MemoryBlock state;
+    processor.getStateInformation (state);
+    LapidamixAudioProcessor restored;
+    prepare (restored);
+    restored.setStateInformation (state.getData(), (int) state.getSize());
+    restored.handleIntensityChange();
+    const auto restoredOutput = restored.getParameters().getRawParameterValue (outputId)->load();
+    check (near (restoredOutput, 1.0f, 0.06f), "Ao reabrir o projeto, o ajuste a mao continua");
+    setParameter (restored, intensityId, 50.0f);
+    restored.handleIntensityChange();
+    check (near (restored.getParameters().getRawParameterValue (EqModule::getGainParameterId (1))->load(), -2.5f, 0.06f), "Depois de reabrir, a intensidade continua agindo");
+
+    // Análise nova não aplicada: mover a intensidade só muda a proposta (P57).
+    const auto gainBefore = getValue (EqModule::getGainParameterId (1));
+    analyseExactly (processor, audio, (int) (40.0 * kRate));
+    setParameter (processor, intensityId, 30.0f);
+    processor.handleIntensityChange();
+    check (near (getValue (EqModule::getGainParameterId (1)), gainBefore, 0.001f), "Analise nova nao aplicada: mover a intensidade nao muda o som");
+}
+
+// A análise de verdade calculando os dados novos, com sinais de resposta conhecida.
 static void testAnalysisData (const juce::AudioBuffer<float>& audio)
 {
     using namespace lapidamix;
@@ -559,6 +916,10 @@ int main()
     const auto sm57 = loadStereo ("VOZ-CANTADA-SHURE-SM57.wav");
 
     testAnalysisData (sm7);
+    testApply (sm7);
+    testLufsMeter();
+    testIntensityAndVolume (sm7, "SM7dB");
+    testIntensityAndVolume (sm57, "SM57");
     testTransparency (sm7);
     testBypassAndGain (sm7);
     testAnalysisIsBeforeEq (sm7);

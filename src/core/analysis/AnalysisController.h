@@ -16,7 +16,6 @@ namespace lapidamix
     {
     public:
         static constexpr float targetVoiceSeconds = 30.0f;
-        static constexpr float minimumVoiceSeconds = 10.0f;
         static constexpr double maximumCaptureSeconds = 120.0;
 
         enum class State

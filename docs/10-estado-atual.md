@@ -7,9 +7,9 @@
 ## Onde estamos
 
 - **Fase:** Fase 4 (Correção automática), em andamento (D93). Fase 3 concluída, com exceções registradas (D90).
-- **Etapa:** implementação (etapa c da D37), passos 1 e 2 de 6 da D99 concluídos.
-- **Último passo concluído:** a análise calcula as duas metades e os saltos de oitava, guarda até 20 candidatas e salva tudo no projeto. As regras ainda não ligam ao som nem à janela. Verificação sem falhas (`08-plano-testes.md`).
-- **Próximo passo:** passo 3, lista de bandas e botão Aplicar. Abaixo de 10 s de voz, sem propor bandas (D101). A/B no Reaper, pelo usuário, no fim da fase.
+- **Etapa:** implementação (etapa c da D37), passos 1 a 4 de 6 da D99 concluídos.
+- **Último passo concluído:** intensidade (D98, D100, D104) e compensação fixa no controle Saída, medida em LUFS (D102, D103). Verificação sem DAW sem falhas (`08-plano-testes.md`).
+- **Próximo passo:** passo 5, explicações (D92). A/B no Reaper, pelo usuário, no fim da fase, com o medidor de LUFS do Reaper.
 
 ## Bloqueios
 
@@ -29,7 +29,8 @@ Nenhum bloqueio técnico.
 
 | Commit | O que fez |
 |---|---|
-| este commit | Fase 4, passos 1 e 2: regras no código e dados novos na análise, ainda sem ligar ao som (D93 a D101) |
+| este commit | Fase 4, passos 3 e 4: lista, Aplicar, intensidade e compensação em LUFS (D102 a D104) |
+| `3162b6a` | Fase 4, passos 1 e 2: regras no código e dados novos na análise, ainda sem ligar ao som (D93 a D101) |
 | `0671ca7` | Explicação simples das correções decidida para a Fase 4 e A03 encerrada (D92) |
 | `a9b79c0` | Fechamento da Fase 3, comparação com o Praat e verificação sem DAW (D89 a D91) |
 | `691ae5e` | Resultados parciais do segundo teste no Reaper, sem fechar a Fase 3 |

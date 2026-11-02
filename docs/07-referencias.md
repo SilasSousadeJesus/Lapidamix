@@ -127,3 +127,11 @@ Uma nota curta por módulo, escrita na etapa de estudo (D37). **Modelo de nota:*
 - O dicionário da voz (D92) tem apoio do guia nas regiões de ronco, embolado, presença, sibilância e ar. **As regiões de corpo, caixa e nasal ficam como prática comum não conferida nesta consulta.** Tudo será validado de ouvido.
 
 **O que levar para a proposta:** corrigir só o que estiver fora de uma faixa; medidas relativas à própria voz; limites parecidos com os da prática citada; controle de intensidade; regras simuladas antes de entrar no plugin.
+
+### 02/11/2026 — Medida de volume em LUFS (D103)
+
+**Fontes:** [ITU-R BS.1770](https://www.itu.int/rec/R-REC-BS.1770) e [EBU Tech 3341](https://tech.ebu.ch/publications/tech3341).
+
+**Conferido:** a [versão BS.1770-1](https://itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.1770-1-200709-S!!PDF-F.pdf) mostrou, num trecho de busca, a1 e a2 do segundo filtro e a2 e b2 do primeiro, iguais aos usados aqui, e confirma que os valores são para 48 kHz.
+
+**Não conferido na fonte:** os PDFs da BS.1770-5 e da Tech 3341 não puderam ser lidos nesta consulta. Os outros três coeficientes do primeiro filtro, os portões de -70 LUFS e -10 LU e os níveis dos casos 1, 3, 4 e 5 da Tech 3341 foram escritos de memória. Os resultados esperados batem com a conta e com o medidor, mas falta a comparação com um medidor externo: o do Reaper.

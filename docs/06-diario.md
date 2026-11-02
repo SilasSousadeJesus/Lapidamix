@@ -16,6 +16,55 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 ---
 
+## 02/11/2026 — Fase 4: intensidade e compensação de volume
+
+**Fase:** 4 — Correção automática (etapa c da D37, passo 4 de 6 da D99)
+
+**O que foi feito:**
+- Compensação registrada como valor fixo, escrito no controle Saída e sem mudar durante a reprodução (D102).
+- Controle de intensidade na janela. Ele escala os ganhos e move o passa-alta em oitavas (D98, D100), e a compensação acompanha.
+- A medida de volume passou da ponderação A para LUFS, a pedido do usuário (D103). A troca foi simples: só mudou o peso de cada frequência.
+- Medidor de LUFS integrado completo na verificação sem DAW. Com o plugin, nas gravações inteiras, a diferença ficou abaixo de 0,1 LU (SM7dB e SM57).
+- Aviso curto junto à intensidade (D104).
+
+**Decisões tomadas:** D102, D103 (substitui a P56), D104 (confirma a P57, com o aviso).
+
+**Commits:** este commit, com os passos 3 e 4.
+
+**Problemas / dúvidas:**
+- Mover a intensidade depois de aplicar sobrescreve ajustes manuais nas bandas e na Saída; o aviso deixa isso claro (D104).
+- A intensidade não é automatizável (D104); a especificação previa parâmetros automatizáveis de forma geral.
+- Falta conferir com o medidor de LUFS do Reaper. Parte dos valores da norma foi escrita de memória, porque os PDFs não puderam ser lidos (`07-referencias.md`).
+
+**Próximos passos:**
+- Passo 5: explicações.
+
+---
+
+## 02/11/2026 — Fase 4: lista de bandas e botão Aplicar
+
+**Fase:** 4 — Correção automática (etapa c da D37, passo 3 de 6 da D99)
+
+**O que foi feito:**
+- Commit e push dos passos 1 e 2 (`3162b6a`).
+- A janela mostra as bandas propostas. O botão Aplicar as escreve nos parâmetros existentes, sem mexer na banda de ar.
+- Abaixo de 10 s de voz: medidas e aviso com a solução, sem lista, e Aplicar desligado (D101).
+- Verificação sem DAW ampliada, inclusive com tons medidos depois de aplicar, e a janela conferida numa imagem.
+
+**Decisões tomadas:** nenhuma nova neste passo.
+
+**Commits:** o mesmo commit do passo 4.
+
+**Problemas / dúvidas:**
+- A janela ficou mais alta para caber a lista.
+- Os textos da lista são curtos, de propósito: as explicações completas vêm no passo 5 (D92).
+- Sem compensação de volume, o A/B ainda não é justo: isso é o passo 4.
+
+**Próximos passos:**
+- Passo 4: intensidade e compensação de volume.
+
+---
+
 ## 02/11/2026 — Fase 4: dados novos na análise
 
 **Fase:** 4 — Correção automática (etapa c da D37, passo 2 de 6 da D99)
@@ -29,7 +78,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D100, D101.
 
-**Commits:** este commit.
+**Commits:** `3162b6a`.
 
 **Problemas / dúvidas:**
 - As metades calculadas dentro da análise mudam o plano em 1 de 78 janelas (male8, janela 2), que ganha -3,0 dB em 1100 Hz.
@@ -51,7 +100,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D94 a D99. Proposta nova: P55.
 
-**Commits:** este commit.
+**Commits:** `3162b6a`.
 
 **Problemas / dúvidas:**
 - As duas metades e os saltos de oitava ainda vêm da ferramenta; sem eles no plugin, a ressonância nunca cortaria, o que é seguro até o passo 2.
@@ -74,7 +123,7 @@ Uma entrada por sessão de trabalho, a mais recente no topo.
 
 **Decisões tomadas:** D93. Propostas novas: P48 a P54.
 
-**Commits:** este commit.
+**Commits:** `3162b6a`.
 
 **Problemas / dúvidas:**
 - A faixa saudável vem de cantores treinados, com um só modelo de microfone. A voz do usuário é mais grave que todas as do banco.

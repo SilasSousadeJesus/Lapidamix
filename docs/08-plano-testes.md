@@ -44,6 +44,44 @@
 | 02/11/2026 | Gravação do SM57 passada pelo plugin, sem DAW (`tools/captura-interface`) | 0.1.0 (textos corrigidos) | Acentos, casas decimais e curvas, numa imagem da janela | ✅ Conferido na imagem | Feito por Claude. Falta o usuário ver no Reaper |
 | 02/11/2026 | 20 vozes do VocalSet (5 em detalhe), com `tools/medidor-voz` | 0.1.0 (com a D83) | Fundamental, candidatas, estabilidade e limite de 6 vezes a fundamental | ⚠️ Fundamental coerente; picos inseridos pouco encontrados nessas vozes (detalhes abaixo) | Feito por Claude, sem DAW. Sem gabarito: o VocalSet não informa notas nem ressonâncias |
 
+## Intensidade e compensação de volume (passo 4, 02/11/2026)
+
+Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela. Falta conferir de ouvido no Reaper.
+
+| Item | Resultado |
+|---|---|
+| Intensidade de 50%, no cálculo | ✅ Ganhos pela metade; passa-alta de 70 Hz vira 52,9 Hz (D100) |
+| Intensidade de 0% | ✅ Bandas desligadas e Saída em 0 dB |
+| Mover a intensidade antes de aplicar | ✅ Nada muda no som; só a lista |
+| Compensação em LUFS (D103), a 100% e a 50% | ✅ SM7dB: +1,7 dB e +0,8 dB. SM57: +1,9 dB e +0,9 dB. Com a ponderação A, o SM7dB dava +1,9 dB e +1,0 dB |
+| LUFS integrado na gravação inteira, com o plugin de verdade | ✅ SM7dB: -21,09 antes e -21,17 depois. SM57: -23,29 antes e -23,36 depois. Diferença menor que 0,1 LU |
+| Medidor de LUFS da verificação, com tons de 1 kHz (casos 1, 3, 4 e 5 da EBU Tech 3341), a 44,1 e 48 kHz | ✅ De -22,98 a -23,01, esperado -23,0 |
+| Aviso junto à intensidade (D104) | ✅ Cabe na janela, conferido numa imagem |
+| Saída durante a reprodução | ✅ Não muda (D102) |
+| Saída ajustada à mão | ✅ Continua, inclusive ao reabrir o projeto, até a intensidade mudar |
+| Análise nova ainda não aplicada | ✅ Mover a intensidade não muda o som (D104) |
+| Antes de aplicar, com análise e RTA ligados | ✅ Saída idêntica à entrada, sem pedidos de memória na thread de áudio |
+
+**Limites:** a igualdade de volume foi medida em duas gravações, com um medidor nosso. Falta a conferência com o medidor de LUFS do Reaper, e parte dos valores da norma não foi conferida na fonte (`07-referencias.md`). A banda de ar ajustada à mão não entra na compensação.
+
+## Lista de bandas e botão Aplicar (passo 3, 02/11/2026)
+
+Verificado por Claude, sem DAW, com `verifica` e uma imagem da janela (`captura`). Falta o usuário conferir no Reaper.
+
+| Item | Resultado |
+|---|---|
+| Depois de analisar, sem clicar | ✅ Bandas continuam desligadas, e a lista aparece |
+| Aplicar, com o SM7dB | ✅ Passa-alta em 71 Hz, -5,0 dB em 316 Hz e +3,0 dB em 3,5 kHz nos parâmetros |
+| O som muda como o plano diz, com tons | ✅ -5,0 dB em 316 Hz; +3,0 dB em 3,5 kHz; -22,1 dB em 20 Hz |
+| Banda de ar ajustada à mão | ✅ Aplicar não mexe nela (D97) |
+| Analisar de novo | ✅ As bandas não mudam até novo clique |
+| Plano novo em que uma banda não age mais | ✅ Ela desliga e volta a 0 dB |
+| Reabrir o projeto | ✅ As bandas aplicadas voltam |
+| Menos de 10 s de voz (6,0 s) | ✅ Medidas e aviso com a solução; sem lista; Aplicar desligado (D101) |
+| Antes de aplicar, com análise e RTA ligados | ✅ Saída idêntica à entrada, sem pedidos de memória na thread de áudio |
+
+O volume ainda não é compensado, e a intensidade ainda não existe (passo 4). Por isso, o A/B com o bypass ainda não é justo.
+
 ## Dados novos na análise do plugin (passo 2, 02/11/2026)
 
 A análise agora calcula as duas metades da voz e os saltos de oitava, guarda até 20 candidatas (a janela mostra as 3 mais fortes) e salva tudo no projeto. Isso roda fora da thread de áudio.

@@ -35,6 +35,7 @@ private:
     void timerCallback() override;
     void updateAnalysisStatus();
     void showAnalysisResult (const lapidamix::AnalysisResult& result);
+    void updatePlanText();
 
     void setUpLabel (juce::Label& label, const char* text);
     void setUpSlider (juce::Slider& slider);
@@ -61,6 +62,12 @@ private:
     juce::TextButton analyseButton;
     juce::Label analysisStatus;
     juce::Label analysisResults;
+    juce::Label planText;
+    juce::TextButton applyButton;
+    juce::Label intensityLabel;
+    juce::Slider intensitySlider;
+    std::unique_ptr<ParameterState::SliderAttachment> intensityAttachment;
+    juce::Label intensityNote;
     SpectrumPlot spectrumPlot;
     int shownResultVersion = -1;
 
